@@ -6,47 +6,143 @@
     <title>Observatoire Hébergements - Office de Tourisme Conques-Marcillac</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23991917'/%3E%3Ctext x='32' y='44' font-size='36' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'%3EH%3C/text%3E%3C/svg%3E">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
     <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            /* Neutres chaudes (pierre calcaire) */
+            --bg: #faf6f0;
+            --surface: #ffffff;
+            --surface-warm: #fdfaf6;
+            --stone-light: #f2ebe3;
+            --stone: #e8ddd0;
+            --stone-dark: #d4c4b0;
+
+            /* Primaire bordeaux Conques */
+            --primary: #991917;
+            --primary-dark: #7a1412;
+            --primary-light: #b52d2a;
+
+            /* Accents territoire */
+            --ochre: #c9823f;
+            --gold: #d4a015;
+            --olive: #7d8a5a;
+
+            /* Textes */
+            --text: #2b211a;
+            --text-mid: #5a4d43;
+            --text-dim: #8b7f73;
+
+            /* Ombres chaudes (teinte brune au lieu de noire) */
+            --shadow-sm: 0 1px 3px rgba(91, 40, 27, 0.04);
+            --shadow-md: 0 4px 12px rgba(91, 40, 27, 0.06);
+            --shadow-lg: 0 8px 24px rgba(91, 40, 27, 0.10);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
-        body { background: #f4f7fc; padding: 0; color: #1e2a3a; }
+        body { background: var(--bg); padding: 0; color: var(--text); }
         .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
 
-        header { text-align: center; margin-bottom: 1.5rem; }
-        header h1 { font-size: 1.8rem; color: #991917; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
-        .sub { color: #991917; margin-top: 6px; font-weight: 500; font-size: 0.9rem; }
+        /* Fine barre de gradient en haut de page */
+        body::before {
+            content: '';
+            display: block;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--ochre) 50%, var(--gold) 100%);
+            position: sticky;
+            top: 0;
+            z-index: 200;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding-top: 0.5rem;
+        }
+        header h1 {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--primary);
+            display: flex; align-items: center; justify-content: center;
+            gap: 14px; flex-wrap: wrap;
+            margin-bottom: 4px;
+        }
+        header h1 i {
+            font-size: 1.6rem;
+            color: var(--primary);
+        }
+        .sub {
+            color: var(--text-mid);
+            margin-top: 6px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
 
         .tabs {
             display: flex; gap: 4px; justify-content: center;
-            background: white; border-radius: 20px; padding: 6px; margin-bottom: 1rem;
-            border: 1px solid #e9edf2; box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-            position: sticky; top: 8px; z-index: 100;
+            background: var(--surface); border-radius: 20px; padding: 6px; margin-bottom: 1rem;
+            border: 1px solid var(--stone); box-shadow: var(--shadow-md);
+            position: sticky; top: 12px; z-index: 100;
             overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
         }
         .tabs::-webkit-scrollbar { display: none; }
         .tab-btn {
             background: transparent; border: none; padding: 10px 20px;
             border-radius: 14px; font-weight: 700; font-size: 0.9rem;
-            color: #3a5a7a; cursor: pointer; transition: 0.15s;
+            color: var(--text-mid); cursor: pointer;
+            transition: all 0.2s;
             display: flex; align-items: center; gap: 8px; white-space: nowrap;
+            flex-shrink: 0;
         }
-        .tab-btn:hover { background: #f8fafc; color: #991917; }
-        .tab-btn.active { background: #991917; color: white; }
+        .tab-btn:hover { background: var(--stone-light); color: var(--primary); }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 12px rgba(153,25,23,0.25);
+        }
+.tab-count {
+    background: rgba(255,255,255,0.25); color: white;
+    padding: 1px 8px; border-radius: 20px;
+    font-size: 0.72rem; font-weight: 700;
+    min-width: 22px; text-align: center;
+    margin-left: 4px;
+}
+.tab-count:empty { display: none; }
+.tab-btn:not(.active) .tab-count {
+    background: #f1f5f9; color: #991917;
+}
 
         .tab-view { display: none; }
         .tab-view.active { display: block; animation: fadeIn 0.2s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-        .btn-icon { background: #991917; color: white; border: none; padding: 10px 22px; border-radius: 40px; font-weight: bold; cursor: pointer; transition: 0.15s; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-icon:hover { opacity: 0.9; }
+        .btn-icon {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 40px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex; align-items: center; gap: 8px;
+            box-shadow: 0 2px 8px rgba(153,25,23,0.20);
+        }
+        .btn-icon:hover {
+            box-shadow: 0 4px 14px rgba(153,25,23,0.30);
+            transform: translateY(-1px);
+        }
         .btn-icon:disabled { opacity: 0.6; cursor: wait; }
         .btn-icon.pdf { background: #2c6e9e; }
         .btn-icon.xls { background: #1d6f42; }
@@ -134,17 +230,75 @@
         .filter-badge:hover { background: #7a1412; }
 
         /* ====== KPI ====== */
-        .kpi-principal-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+.kpi-principal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: stretch;
+}
         .kpi-card-principal {
-            background: #fff9f5; border-radius: 20px; padding: 1.2rem;
-            border-left: 6px solid #991917; box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            text-align: center; cursor: pointer; transition: 0.15s;
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 1.2rem;
+            border-left: 6px solid var(--primary);
+            box-shadow: var(--shadow-md);
+            text-align: center; cursor: pointer;
+            transition: all 0.2s;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
-        .kpi-card-principal:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(153,25,23,0.12); }
-        .kpi-card-principal.active { box-shadow: 0 0 0 3px #991917, 0 8px 20px rgba(153,25,23,0.2); }
-        .kpi-card-principal .kpi-number { font-size: 2rem; font-weight: 800; color: #991917; }
-        .kpi-card-principal .kpi-label { color: #3a5a7a; font-weight: 600; margin-top: 6px; font-size: 0.85rem; }
+        .kpi-card-principal:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        .kpi-card-principal.active {
+            box-shadow: 0 0 0 3px var(--primary), var(--shadow-lg);
+        }
+.kpi-card-principal .kpi-number {
+    font-weight: 800; color: #991917;
+    line-height: 1.1;
+    transition: font-size 0.15s;
+}
+.kpi-card-principal .kpi-label {
+    color: #3a5a7a; font-weight: 600;
+}
+
+/* === CARTES HERO (grandes, mises en avant) === */
+        .kpi-card-principal.kpi-hero {
+            padding: 1.8rem 1.2rem;
+            min-height: 130px;
+            background: linear-gradient(180deg, var(--surface-warm) 0%, #fef3ec 100%);
+            box-shadow: 0 6px 20px rgba(153,25,23,0.10);
+        }
+.kpi-card-principal.kpi-hero .kpi-number {
+    font-size: 2.8rem;
+}
+.kpi-card-principal.kpi-hero .kpi-label {
+    font-size: 1rem;
+    margin-top: 12px;
+}
+
+/* === CARTES SECONDARY (plus petites, discrètes) === */
+        .kpi-card-principal.kpi-secondary {
+            padding: 0.9rem 0.8rem;
+            min-height: 85px;
+            background: var(--surface);
+            border: 1px solid var(--stone);
+            border-left: 6px solid var(--ochre);
+            box-shadow: var(--shadow-sm);
+            opacity: 1;
+        }
+        .kpi-card-principal.kpi-secondary .kpi-number { color: var(--ochre); }
+.kpi-card-principal.kpi-secondary .kpi-number {
+    font-size: 1.9rem;
+}
+.kpi-card-principal.kpi-secondary .kpi-label {
+    font-size: 0.85rem;
+    margin-top: 6px;
+}
 
         .type-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
         .type-chip {
@@ -163,7 +317,14 @@
         .type-chip.active .chip-count { background: rgba(255,255,255,0.25); }
 
         /* ====== CARTE ====== */
-        .map-card { background: white; border-radius: 20px; padding: 1rem; margin-bottom: 1.5rem; border: 1px solid #e9edf2; }
+        .map-card {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--stone);
+            box-shadow: var(--shadow-sm);
+        }
         .map-control { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.8rem; }
         .map-control h3 { color: #991917; font-size: 1.05rem; }
         .map-tabs { display: flex; gap: 4px; background: #f1f5f9; border-radius: 40px; padding: 4px; }
@@ -188,9 +349,33 @@
         .map-legend { background: rgba(255,255,255,0.96); padding: 8px 12px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.2); font-size: 0.78rem; line-height: 1.4; }
         .map-legend .legend-scale { display: flex; height: 10px; margin: 4px 0; border-radius: 2px; overflow: hidden; }
         .map-legend .legend-scale span { flex: 1; }
+	 .map-zoom-hint {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(153,25,23,0.95); color: white;
+            padding: 10px 18px; border-radius: 10px;
+            font-size: 0.85rem; font-weight: 600;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 400;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .map-zoom-hint.show { opacity: 1; }
+	        .map-hint {
+            font-size: 0.75rem; color: #5b7a9a; margin-top: 6px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .map-hint.ctrl-active { color: #991917; font-weight: 600; }
 
         /* ====== DATA TABLE ====== */
-        .data-table { background: white; border-radius: 20px; padding: 0.5rem 1rem 1rem; border: 1px solid #e9edf2; overflow: hidden; }
+        .data-table {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 0.5rem 1rem 1rem;
+            border: 1px solid var(--stone);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
         .db-header {
             display: flex; justify-content: space-between; align-items: center;
             padding: 0.8rem 0.4rem; flex-wrap: wrap; gap: 0.8rem;
@@ -199,23 +384,54 @@
 
         #dataTable { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         #dataTable th, #dataTable td { text-align: left; padding: 11px 8px; border-bottom: 1px solid #e2e8f0; }
-        #dataTable th { background: #f1f5f9; color: #991917; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; }
+        #dataTable th, #dataTable td {
+            text-align: left; padding: 11px 8px;
+            border-bottom: 1px solid var(--stone-light);
+        }
+        #dataTable th {
+            background: var(--stone-light);
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+            border-bottom: 2px solid var(--stone);
+        }
         #dataTable th[data-sort] { cursor: pointer; user-select: none; white-space: nowrap; }
         #dataTable th[data-sort]:hover { background: #e2e8f0; }
         #dataTable th[data-sort] .sort-ind { font-size: 0.7rem; margin-left: 4px; opacity: 0.4; }
         #dataTable th[data-sort].sorted-asc .sort-ind,
         #dataTable th[data-sort].sorted-desc .sort-ind { opacity: 1; color: #991917; }
         #dataTable tbody tr { cursor: pointer; transition: background 0.1s; }
-        #dataTable tbody tr:nth-child(even) { background: #fafbfc; }
-        #dataTable tbody tr:hover { background: #fff9f5; }
+        #dataTable tbody tr:nth-child(even) { background: #fcfaf6; }
+        #dataTable tbody tr:hover { background: var(--surface-warm); }
 
         .badge { background: #e9ecef; padding: 3px 9px; border-radius: 40px; font-size: 0.72rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
         .badge-nc { background: #e9ecef; color: #6b7280; }
-        .badge-1 { background: #fef9c3; color: #713f12; }
-        .badge-2 { background: #fde68a; color: #713f12; }
-        .badge-3 { background: #bbf7d0; color: #14532d; }
-        .badge-4 { background: #86efac; color: #14532d; }
-        .badge-5 { background: #4ade80; color: #14532d; }
+        .badge-1 { background: #faf0e6; color: #8b5a2b; }
+        .badge-2 { background: #f5e0c8; color: #8b5a2b; }
+        .badge-3 { background: #f0d4b0; color: #6b4423; }
+        .badge-4 { background: #e8c898; color: #6b4423; }
+        .badge-5 { background: #e0b878; color: #4a2f1a; }
+	.badge-inactive { background: #e5e7eb; color: #4b5563; margin-left: 6px; font-size: 0.65rem; }
+        #dataTable tbody tr.inactive { opacity: 0.55; }
+        #dataTable tbody tr.inactive:hover { background: #f8f9fa; }
+
+        .row-actions {
+            display: flex; gap: 2px; justify-content: center;
+        }
+        .row-action-btn {
+            background: none; border: none;
+            width: 28px; height: 28px;
+            border-radius: 6px;
+            cursor: pointer; transition: 0.15s;
+            display: flex; align-items: center; justify-content: center;
+            color: #5b7a9a; font-size: 0.8rem;
+        }
+        .row-action-btn:hover { background: #f1f5f9; color: #991917; }
+        .row-action-btn.danger:hover { background: #fef3c7; color: #d97706; }
+        .row-action-btn.success:hover { background: #d1fae5; color: #10b981; }
 
         .pagination-bar { display: flex; align-items: center; justify-content: center; gap: 0.8rem; padding: 1rem 0; flex-wrap: wrap; }
         .pagination-bar button {
@@ -228,10 +444,62 @@
         .pagination-bar .page-info { font-weight: 600; color: #3a5a7a; font-size: 0.85rem; }
         .pagination-bar select { padding: 7px 12px; border-radius: 30px; border: 1px solid #cbd5e1; font-size: 0.85rem; }
 
+        .db-cards-mobile { display: none; }
+
+@media (max-width: 768px) {
+    .db-cards-mobile { display: block; margin-top: 0.5rem; }
+    .data-table table { display: none; }
+    .data-table #paginationTop,
+    .data-table #paginationBottom { display: none; }
+    .db-cards-mobile .mobile-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 14px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: 0.15s;
+        border-left: 4px solid #991917;
+    }
+    .db-cards-mobile .mobile-card:active { background: #fff9f5; }
+    .db-cards-mobile .mobile-card.inactive { opacity: 0.55; border-left-color: #cbd5e1; }
+    .db-cards-mobile .mobile-card-header {
+        display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;
+        margin-bottom: 6px;
+    }
+    .db-cards-mobile .mobile-card-title {
+        font-weight: 700; color: #1e2a3a; font-size: 0.95rem; line-height: 1.3;
+    }
+    .db-cards-mobile .mobile-card-ville {
+        color: #5b7a9a; font-size: 0.82rem; margin-bottom: 4px;
+    }
+    .db-cards-mobile .mobile-card-meta {
+        display: flex; flex-wrap: wrap; gap: 8px;
+        font-size: 0.75rem; color: #5b7a9a;
+        margin-bottom: 6px;
+    }
+    .db-cards-mobile .mobile-card-actions {
+        display: flex; gap: 6px; margin-top: 8px;
+        padding-top: 8px; border-top: 1px solid #f1f5f9;
+    }
+    .db-cards-mobile .mobile-card-actions button {
+        flex: 1;
+        background: white; border: 1px solid #e2e8f0;
+        padding: 6px; border-radius: 8px;
+        font-size: 0.78rem; font-weight: 600;
+        cursor: pointer; color: #3a5a7a;
+        display: flex; align-items: center; justify-content: center; gap: 4px;
+    }
+    .db-cards-mobile .mobile-card-actions button.danger { color: #d97706; }
+    .db-cards-mobile .mobile-card-actions button.success { color: #10b981; }
+}
         .empty-state {
             display: none; flex-direction: column; align-items: center; justify-content: center;
-            padding: 3rem 2rem; text-align: center; background: white; border-radius: 20px;
-            border: 2px dashed #cbd5e1; margin-top: 1rem;
+            padding: 3rem 2rem; text-align: center;
+            background: var(--surface-warm);
+            border-radius: 20px;
+            border: 2px dashed var(--stone-dark);
+            margin-top: 1rem;
         }
         .empty-state i { font-size: 2.5rem; color: #cbd5e1; margin-bottom: 1rem; }
         .empty-state h3 { color: #3a5a7a; margin-bottom: 0.5rem; }
@@ -239,13 +507,26 @@
 
         /* ====== ANALYSIS ====== */
         .charts-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem; }
-        .chart-card { background: white; border-radius: 20px; padding: 1rem; border: 1px solid #e9edf2; }
+        .chart-card {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 1rem;
+            border: 1px solid var(--stone);
+            box-shadow: var(--shadow-sm);
+        }
         .chart-card h3 { margin-bottom: 0.8rem; font-size: 1.05rem; color: #991917; }
         .chart-card > canvas { max-height: 320px; width: 100%; }
         .chart-wrap { position: relative; width: 100%; height: 320px; }
         .chart-wrap canvas { display: block; width: 100% !important; height: 100% !important; max-height: none !important; }
 
-        .stats-summary { background: white; border-radius: 20px; padding: 1rem; border: 1px solid #e9edf2; margin-bottom: 1.2rem; }
+        .stats-summary {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 1rem;
+            border: 1px solid var(--stone);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.2rem;
+        }
         .stats-summary h3 { margin-bottom: 0.8rem; color: #991917; font-size: 1.05rem; }
         .stats-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         .stats-table th, .stats-table td { padding: 10px 8px; text-align: center; border-bottom: 1px solid #e2e8f0; }
@@ -267,11 +548,13 @@
         }
         .modal-overlay.show { display: flex; }
         .modal-content {
-            background: white; border-radius: 20px;
+            background: var(--surface);
+            border-radius: 20px;
             max-width: 720px; width: 100%; max-height: 90vh;
             display: flex; flex-direction: column;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 50px rgba(91, 40, 27, 0.20);
             animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            border-top: 4px solid var(--primary);
         }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .modal-header { padding: 1.1rem 1.5rem; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; }
@@ -286,22 +569,35 @@
         .modal-btn.primary:disabled { background: #e2e8f0; color: #8899aa; cursor: not-allowed; }
         .modal-btn.secondary { background: #f1f5f9; color: #3a5a7a; border: 1px solid #cbd5e1; }
         .modal-btn.secondary:hover { background: #e2e8f0; }
+        .modal-btn.primary.dirty::after {
+            content: ' ●';
+            color: #fbbf24;
+            font-size: 0.7rem;
+            margin-left: 2px;
+        }
         .modal-btn.danger { background: #dc3545; color: white; }
         .modal-btn.danger:hover { background: #b91c1c; }
+        .modal-btn.warning { background: #f59e0b; color: white; }
+        .modal-btn.warning:hover { background: #d97706; }
+        .modal-btn.success { background: #10b981; color: white; }
+        .modal-btn.success:hover { background: #059669; }
 
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
         .form-field { display: flex; flex-direction: column; }
         .form-field.full { grid-column: 1 / -1; }
         .form-field label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: #5b7a9a; font-weight: 700; margin-bottom: 5px; }
         .form-field label .required { color: #991917; }
+	.form-field label .optional { color: #8899aa; font-weight: 500; text-transform: none; font-size: 0.72rem; }
         .form-field input, .form-field select {
             padding: 10px 12px; border-radius: 10px;
             border: 1px solid #cbd5e1; background: white;
             font-size: 0.9rem; font-family: inherit; transition: 0.15s;
         }
         .form-field input:focus, .form-field select:focus {
-            outline: none; border-color: #991917;
-            box-shadow: 0 0 0 3px rgba(153,25,23,0.1);
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(153,25,23,0.12);
+            background: var(--surface-warm);
         }
         .form-field .hint { font-size: 0.68rem; color: #8899aa; margin-top: 3px; }
         .form-group-title {
@@ -323,17 +619,27 @@
         .detail-panel-backdrop.show { display: block; }
 
         .detail-panel {
-            position: fixed; background: white; z-index: 2001;
+            position: fixed;
+            background: var(--surface);
+            z-index: 2001;
             display: flex; flex-direction: column;
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: -8px 0 30px rgba(0,0,0,0.15);
+            box-shadow: -8px 0 30px rgba(91, 40, 27, 0.12);
         }
         .detail-panel-header {
             padding: 1.2rem 1.5rem; border-bottom: 1px solid #e2e8f0;
             display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;
         }
         .detail-panel-title { flex: 1; min-width: 0; }
-        .detail-panel-title h2 { color: #991917; font-size: 1.15rem; margin-bottom: 4px; word-break: break-word; }
+        .detail-panel-title h2 {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            color: var(--primary);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            word-break: break-word;
+            line-height: 1.2;
+        }
         .detail-panel-badges { display: flex; gap: 6px; flex-wrap: wrap; }
         .badge-danger { background: #dc3545; color: white; }
         .badge-warning { background: #ffc107; color: #2d2d2d; }
@@ -356,6 +662,10 @@
         .detail-action-btn.primary:hover { background: #7a1412; color: white; }
         .detail-action-btn.danger { color: #dc3545; }
         .detail-action-btn.danger:hover { background: #fee; border-color: #dc3545; color: #dc3545; }
+        .detail-action-btn.warning { color: #d97706; }
+        .detail-action-btn.warning:hover { background: #fef3c7; border-color: #d97706; color: #d97706; }
+        .detail-action-btn.success { color: #10b981; }
+        .detail-action-btn.success:hover { background: #d1fae5; border-color: #10b981; color: #10b981; }
         .detail-action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
         .detail-panel-body { flex: 1; overflow-y: auto; padding: 1.2rem 1.5rem; }
@@ -405,11 +715,18 @@
         /* ====== TOAST ====== */
         .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
         .toast {
-            background: #2d3748; color: white; padding: 13px 20px; border-radius: 12px;
-            font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-            transform: translateX(120%); transition: transform 0.3s ease;
-            max-width: 340px; display: flex; align-items: center; gap: 10px;
+            background: var(--text);
+            color: white;
+            padding: 13px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(91, 40, 27, 0.25);
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            max-width: 340px;
+            display: flex; align-items: center; gap: 10px;
             font-size: 0.9rem;
+            border-left: 4px solid var(--primary);
         }
         .toast.show { transform: translateX(0); }
         .toast.success { background: #1d6f42; }
@@ -428,7 +745,14 @@
         .upload-area.drag-over { background: #fff0f0; }
         .upload-area h2 { color: #991917; margin: 12px 0 6px; }
 
-        .footer-note { text-align: center; margin-top: 2rem; font-size: 0.78rem; color: #5b7a9a; }
+        .footer-note {
+            text-align: center;
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            border-top: 1px solid var(--stone);
+        }
 
         .letter-context {
             background: #fff9f5; border-left: 4px solid #991917;
@@ -457,9 +781,25 @@
         }
         .letter-field.multi { max-height: 320px; overflow-y: auto; }
 
-        @media (max-width: 900px) {
-            .kpi-principal-grid { grid-template-columns: repeat(2, 1fr); }
-        }
+@media (max-width: 900px) {
+    .kpi-card-principal.kpi-hero .kpi-number { font-size: 2.2rem; }
+    .kpi-card-principal.kpi-secondary .kpi-number { font-size: 1.6rem; }
+}
+
+@media (max-width: 600px) {
+    .kpi-principal-grid {
+        grid-template-columns: 1fr;
+    }
+    .kpi-card-principal.kpi-hero {
+        min-height: 110px;
+        padding: 1.2rem 1rem;
+    }
+    .kpi-card-principal.kpi-hero .kpi-number { font-size: 2rem; }
+    .kpi-card-principal.kpi-secondary {
+        min-height: 85px;
+    }
+    .kpi-card-principal.kpi-secondary .kpi-number { font-size: 1.4rem; }
+}
         @media (max-width: 700px) {
             .container { padding: 1rem; }
             .kpi-principal-grid { grid-template-columns: 1fr; gap: 0.8rem; }
@@ -475,7 +815,7 @@
 <div class="container">
     <header>
         <h1><i class="fas fa-map-marked-alt"></i> Observatoire des Hébergements</h1>
-        <div class="sub">Office de Tourisme Conques-Marcillac — Base de données partagée</div>
+        <div class="sub">Office de Tourisme Conques-Marcillac</div>
     </header>
 
     <div class="upload-card" id="uploadCard" style="display:none;">
@@ -491,12 +831,11 @@
         </div>
     </div>
 
-    <nav class="tabs" id="tabsNav" style="display:none;">
-        <button class="tab-btn active" data-tab="dashboard"><i class="fas fa-gauge-high"></i> Tableau de bord</button>
-        <button class="tab-btn" data-tab="database"><i class="fas fa-database"></i> Base de données</button>
-        <button class="tab-btn" data-tab="analysis"><i class="fas fa-chart-pie"></i> Analyse</button>
-        <button class="tab-btn" data-tab="export"><i class="fas fa-download"></i> Export</button>
-    </nav>
+<nav class="tabs" id="tabsNav" style="display:none;">
+    <button class="tab-btn active" data-tab="dashboard"><i class="fas fa-gauge-high"></i> Tableau de bord</button>
+    <button class="tab-btn" data-tab="database"><i class="fas fa-database"></i> Base de données <span class="tab-count" id="tabCountDatabase"></span></button>
+    <button class="tab-btn" data-tab="analysis"><i class="fas fa-chart-pie"></i> Analyse</button>
+</nav>
 
     <!-- Zone de filtres partagée (visible sur Dashboard / DB / Analyse) -->
     <div id="sharedFilterArea" style="display:none;">
@@ -515,6 +854,14 @@
         <div class="filters-panel" id="filtersPanel">
             <div class="filters-grid">
                 <div class="filter-group">
+                    <label>Statut</label>
+                    <select id="filterStatut">
+                        <option value="actif" selected>Actifs</option>
+                        <option value="inactif">Inactifs</option>
+                        <option value="tous">Tous</option>
+                    </select>
+                </div>
+                <div class="filter-group">
                     <label>Type</label>
                     <select id="filterType"></select>
                 </div>
@@ -523,23 +870,24 @@
                     <select id="filterClass"></select>
                 </div>
                 <div class="filter-group">
-                    <label>Ville</label>
-                    <input type="text" id="filterVille" list="villesList" placeholder="Toutes" autocomplete="off">
-                    <datalist id="villesList"></datalist>
-                </div>
+ 			<label>Ville</label>
+    			<select id="filterVille">
+        			<option value="">Toutes</option>
+    			</select>
+		</div>
                 <div class="filter-group">
                     <label>Capacité ≥</label>
                     <input type="number" id="capaciteMin" value="0" min="0" step="1">
                 </div>
                 <div class="filter-group">
                     <label>Validité classement</label>
-                    <select id="filterValidite">
-                        <option value="tous">Toutes</option>
-                        <option value="valide">Valide</option>
-                        <option value="alerte">Expiré ou bientôt</option>
-                        <option value="expire">Expiré</option>
-                        <option value="6mois">Expire < 6 mois</option>
-                    </select>
+<select id="filterValidite">
+    <option value="tous">Toutes</option>
+    <option value="valide">Valide</option>
+    <option value="expire">Expiré</option>
+    <option value="6mois">Expire < 6 mois</option>
+    <option value="alerte" style="display:none">À renouveler</option>
+</select>
                 </div>
             </div>
             <div class="filters-actions">
@@ -568,6 +916,12 @@
             <div class="map-wrap">
                 <div id="map"></div>
                 <button class="map-fullscreen-btn" id="mapFullscreenBtn" title="Plein écran"><i class="fas fa-expand"></i></button>
+                <div id="mapZoomHint" class="map-zoom-hint">
+                    <i class="fas fa-info-circle"></i> Ctrl (⌘ sur Mac) + molette pour zoomer
+                </div>
+            </div>            <div class="map-hint" id="mapHint">
+                <i class="fas fa-info-circle"></i>
+                <span>Carte figée. Maintenez <kbd style="background:#f1f5f9;padding:1px 6px;border-radius:4px;border:1px solid #cbd5e1;font-size:0.7rem;">Ctrl</kbd> (⌘ sur Mac) + molette pour zoomer.</span>
             </div>
         </div>
     </section>
@@ -609,13 +963,16 @@
                             <th data-sort="nbUnites">Unités <span class="sort-ind">↕</span></th>
                             <th data-sort="debutClassement">Début classement <span class="sort-ind">↕</span></th>
                             <th data-sort="finClassement">Fin classement <span class="sort-ind">↕</span></th>
+                            <th style="text-align:center;">Actions</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
-            </div>
+        </div>
 
-            <div class="pagination-bar" id="paginationBottom">
+        <div class="db-cards-mobile" id="dbCardsMobile"></div>
+
+        <div class="pagination-bar" id="paginationBottom">
                 <button id="pageFirst" title="Première">⏮</button>
                 <button id="pagePrev">◀ Précédent</button>
                 <span class="page-info" id="pageInfo">Page 1 / 1</span>
@@ -673,29 +1030,9 @@
         </div>
     </section>
 
-    <!-- TAB : EXPORT -->
-    <section class="tab-view" id="tab-export">
-        <div class="export-card">
-            <h3><i class="fas fa-file-export"></i> Exporter les données</h3>
-            <div class="export-buttons">
-                <button id="exportExcelBtn" class="btn-icon xls" style="margin:0;"><i class="fas fa-file-excel"></i> Excel multi-feuilles</button>
-                <button id="exportPdfBtn" class="btn-icon pdf" style="margin:0;"><i class="fas fa-file-pdf"></i> Générer PDF</button>
-            </div>
-            <p style="font-size: 0.85rem; color: #5b7a9a; margin-bottom: 1rem;">
-                <i class="fas fa-info-circle"></i> Sections incluses dans le PDF :
-            </p>
-            <div class="export-options">
-                <label><input type="checkbox" id="exportKPISynthese" checked> Page 1 : KPI + Synthèse</label>
-                <label><input type="checkbox" id="exportGraphiquesType" checked> Page 2 : Graphiques (types & classements)</label>
-                <label><input type="checkbox" id="exportGraphiquesCommunes" checked> Page 3 : Graphiques communes</label>
-                <label><input type="checkbox" id="exportTableau" checked> Page 4 : Tableau détaillé</label>
-            </div>
-        </div>
-    </section>
-
     <div class="footer-note">
         <span id="footerInfo">Aucune donnée chargée.</span><br>
-        Outil créé par Hugo FAYEL — Responsable qualification de l'offre
+        Outil créé, conçu et géré par Hugo FAYEL
     </div>
 </div>
 
@@ -714,7 +1051,7 @@
     <div class="detail-panel-actions">
         <button class="detail-action-btn primary" id="detailEditBtn"><i class="fas fa-pen"></i> Modifier</button>
         <button class="detail-action-btn" id="detailLetterBtn"><i class="fas fa-envelope"></i> Relancer</button>
-        <button class="detail-action-btn danger" id="detailDeleteBtn"><i class="fas fa-trash"></i> Supprimer</button>
+        <button class="detail-action-btn danger" id="detailToggleBtn"><i class="fas fa-eye-slash"></i> Désactiver</button>
     </div>
     <div class="detail-panel-body" id="detailBody"></div>
 </div>
@@ -737,8 +1074,7 @@
                     </div>
                     <div class="form-field">
                         <label for="fType">Type <span class="required">*</span></label>
-                        <input type="text" id="fType" list="typesList2">
-                        <datalist id="typesList2"></datalist>
+                        <select id="fType"></select>
                     </div>
                     <div class="form-field">
                         <label for="fVille">Ville <span class="required">*</span></label>
@@ -750,7 +1086,7 @@
                         <input type="text" id="fAdresse1">
                     </div>
                     <div class="form-field">
-                        <label for="fAdresse2">Complément d'adresse <span class="required">*</span></label>
+                        <label for="fAdresse2">Complément d'adresse <span class="optional">(optionnel)</span></label>
                         <input type="text" id="fAdresse2">
                     </div>
                     <div class="form-field">
@@ -781,7 +1117,7 @@
                         <input type="email" id="fMailGest">
                     </div>
                     <div class="form-field">
-                        <label for="fTelGest">Téléphone fixe <span class="required">*</span></label>
+                        <label for="fTelGest">Téléphone fixe <span class="optional">(optionnel)</span></label>
                         <input type="text" id="fTelGest">
                     </div>
                     <div class="form-field">
@@ -811,25 +1147,30 @@
                         <input type="number" id="fNbUnites" min="1" step="1">
                     </div>
                     <div class="form-field">
-                        <label for="fDebutClassement">Début classement <span class="required">*</span></label>
+                        <label for="fDebutClassement">Début classement <span class="optional">(optionnel)</span></label>
                         <input type="date" id="fDebutClassement">
                     </div>
                     <div class="form-field">
-                        <label for="fFinClassement">Fin classement <span class="required">*</span></label>
+                        <label for="fFinClassement">Fin classement <span class="optional">(optionnel)</span></label>
                         <input type="date" id="fFinClassement">
                     </div>
 
                     <div class="form-group-title">Géolocalisation</div>
 
-                    <div class="form-field">
-                        <label for="fLat">Latitude <span class="required">*</span></label>
-                        <input type="number" id="fLat" step="any" placeholder="44.xxxxx">
-                    </div>
-                    <div class="form-field">
-                        <label for="fLon">Longitude <span class="required">*</span></label>
-                        <input type="number" id="fLon" step="any" placeholder="2.xxxxx">
-                        <div class="hint">💡 Tapez l'adresse sur Google Maps pour obtenir les coordonnées.</div>
-                    </div>
+<div class="form-field">
+    <label for="fLat">Latitude <span class="required">*</span></label>
+    <input type="number" id="fLat" step="any" placeholder="44.xxxxx">
+</div>
+<div class="form-field">
+    <label for="fLon">Longitude <span class="required">*</span></label>
+    <input type="number" id="fLon" step="any" placeholder="2.xxxxx">
+</div>
+<div class="form-field full">
+    <button type="button" class="btn-icon small ghost" id="geocodeBtn" style="margin:0;width:auto;align-self:flex-start;">
+        <i class="fas fa-location-dot"></i> Géocoder automatiquement depuis l'adresse
+    </button>
+    <div class="hint">💡 Utilise l'API Adresse du gouvernement, résultat en 1 clic.</div>
+</div>
                 </div>
             </form>
         </div>
@@ -923,7 +1264,8 @@ let app, db, auth;
 let bootstrapped = false;
 let editingId = null;
 let viewingId = null;
-let deletingId = null;
+let deactivatingId = null;
+let formInitialState = null;
 let currentTab = 'dashboard';
 const communeGeoCache = new Map();
 
@@ -938,7 +1280,8 @@ const colMapping = {
     lat: "LATITUDE", lon: "LONGITUDE"
 };
 
-let currentType = "Tous", currentClass = "Tous", currentVille = "",
+const FALLBACK_TYPES = ["Hôtel","Camping","Chambre d'hôtes","Meublé de tourisme","Village vacances","Auberges collectives","Chambre à louer","Gîte d'étape","Hébergements insolites de charme","Aire naturelle de camping","A qualifier"];
+let currentStatut = "actif", currentType = "Tous", currentClass = "Tous", currentVille = "",
     currentCapaciteMin = 0, currentValidite = "tous", currentSearch = "";
 let currentSortKey = null, currentSortDir = "asc";
 let currentPage = 1, pageSize = 25;
@@ -1025,7 +1368,7 @@ function hideLoading() {
 function saveFilters() {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
-            type: currentType, class: currentClass, ville: currentVille,
+            statut: currentStatut, type: currentType, class: currentClass, ville: currentVille,
             capacite: currentCapaciteMin, validite: currentValidite,
             sortKey: currentSortKey, sortDir: currentSortDir,
             pageSize: pageSize, mapMode: currentMapMode, tab: currentTab
@@ -1037,18 +1380,29 @@ function restoreFilters() {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return;
         const s = JSON.parse(raw);
+        if (s.statut && ['actif','inactif','tous'].includes(s.statut)) {
+            currentStatut = s.statut;
+            document.getElementById("filterStatut").value = s.statut;
+        }
         if (s.type && document.querySelector(`#filterType option[value="${CSS.escape(s.type)}"]`)) {
             currentType = s.type; document.getElementById("filterType").value = s.type;
         }
         if (s.class && document.querySelector(`#filterClass option[value="${CSS.escape(s.class)}"]`)) {
             currentClass = s.class; document.getElementById("filterClass").value = s.class;
         }
-        if (s.ville) { currentVille = s.ville; document.getElementById("filterVille").value = s.ville; }
+        if (s.ville) {
+            const sel = document.getElementById("filterVille");
+            if (sel && Array.from(sel.options).some(o => o.value === s.ville)) {
+                currentVille = s.ville; sel.value = s.ville;
+            }
+        }
         if (typeof s.capacite === 'number' && s.capacite > 0) {
             currentCapaciteMin = s.capacite; document.getElementById("capaciteMin").value = s.capacite;
         }
-        if (s.validite) { currentValidite = s.validite; document.getElementById("filterValidite").value = s.validite; }
-        if (s.sortKey) { currentSortKey = s.sortKey; currentSortDir = s.sortDir || 'asc'; }
+        if (s.validite && ['tous','valide','expire','6mois','alerte'].includes(s.validite)) {
+            currentValidite = s.validite;
+            document.getElementById("filterValidite").value = s.validite;
+        }        if (s.sortKey) { currentSortKey = s.sortKey; currentSortDir = s.sortDir || 'asc'; }
         if (s.pageSize) {
             pageSize = s.pageSize;
             document.getElementById("pageSize").value = s.pageSize;
@@ -1058,7 +1412,7 @@ function restoreFilters() {
             currentMapMode = s.mapMode;
             document.querySelectorAll('#mapTabs button').forEach(b => b.classList.toggle('active', b.dataset.mode === s.mapMode));
         }
-        if (s.tab && ['dashboard','database','analysis','export'].includes(s.tab)) {
+        if (s.tab && ['dashboard','database','analysis'].includes(s.tab)) {
             currentTab = s.tab;
         }
     } catch(e) {}
@@ -1105,7 +1459,8 @@ function listenToFirestore() {
                 prenomGest: data.prenomGest || "",
                 mailGest: data.mailGest || "",
                 telGest: data.telGest || "",
-                portableGest: data.portableGest || ""
+                portableGest: data.portableGest || "",
+		actif: data.actif !== false
             };
         });
 
@@ -1147,7 +1502,7 @@ function bootstrapUI() {
     initLetterFeature();
     initHebergementModal();
     initDetailPanel();
-    initDeleteConfirm();
+    initDeactivateConfirm();
     initDbToolbar();
     restoreFilters();
     refreshFiltersOptions();
@@ -1164,7 +1519,7 @@ function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
     document.querySelectorAll('.tab-view').forEach(v => v.classList.toggle('active', v.id === 'tab-' + tab));
     // Cache la zone de filtres sur l'onglet Export
-    document.getElementById('sharedFilterArea').style.display = tab === 'export' ? 'none' : 'block';
+    document.getElementById('sharedFilterArea').style.display = 'block';
     saveFilters();
 
     if (tab === 'dashboard') {
@@ -1198,42 +1553,76 @@ function initDbToolbar() {
 }
 
 function refreshFiltersOptions() {
-    const types = [...new Set(rawData.map(d => d.type))].sort();
-    const villes = [...new Set(rawData.map(d => d.ville))].sort();
-    document.getElementById("villesList").innerHTML = villes.map(v => `<option value="${escapeHtml(v)}">`).join('');
+    // Type (select)
+    const types = [...new Set(rawData.map(d => d.type))].filter(Boolean).sort();
+    const typeSel = document.getElementById("filterType");
+    const curType = typeSel.value;
+    typeSel.innerHTML = '<option value="Tous">Tous</option>' +
+        types.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+    if (curType && types.includes(curType)) typeSel.value = curType;
+
+    // Ville (select avec compteurs)
+    const villes = [...new Set(rawData.map(d => d.ville))].filter(Boolean).sort();
+    const villeSel = document.getElementById("filterVille");
+    const curVille = villeSel.value;
+    villeSel.innerHTML = '<option value="">Toutes</option>' +
+        villes.map(v => {
+            const count = rawData.filter(d =>
+                d.ville === v &&
+                (currentStatut === "tous" || (currentStatut === "actif" && d.actif) || (currentStatut === "inactif" && !d.actif))
+            ).length;
+            return `<option value="${escapeHtml(v)}">${escapeHtml(v)} (${count})</option>`;
+        }).join('');
+    if (curVille && villes.includes(curVille)) villeSel.value = curVille;
+    // Datalist villes formulaire
     document.getElementById("villesList2").innerHTML = villes.map(v => `<option value="${escapeHtml(v)}">`).join('');
-    const typesDatalist = document.getElementById("typesList2");
-    if (typesDatalist) typesDatalist.innerHTML = types.map(t => `<option value="${escapeHtml(t)}">`).join('');
+
+    // Select Type du formulaire
+    refreshTypeSelectOptions();
+}
+
+function refreshTypeSelectOptions() {
+    const typesFromData = [...new Set(rawData.map(d => d.type))].filter(Boolean);
+    const allTypes = [...new Set([...FALLBACK_TYPES, ...typesFromData])].sort((a,b) => a.localeCompare(b, 'fr'));
+    const sel = document.getElementById('fType');
+    if (!sel) return;
+    const current = sel.value;
+    sel.innerHTML = '<option value="">— Choisir un type —</option>' +
+        allTypes.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+    if (current && allTypes.includes(current)) sel.value = current;
 }
 
 function initFilters() {
-    const types = [...new Set(rawData.map(d => d.type))].sort();
     const classes = [...new Set(rawData.map(d => d.classement))].sort((a,b) => {
         if (a === "Non classé") return 1;
         if (b === "Non classé") return -1;
         return (parseInt(a) || 0) - (parseInt(b) || 0);
     });
 
-    document.getElementById("filterType").innerHTML = '<option value="Tous">Tous</option>' + types.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
     let classOptions = '<option value="Tous">Tous</option><option value="__CLASSES__">★ Classés uniquement</option>';
     classOptions += classes.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
     document.getElementById("filterClass").innerHTML = classOptions;
 
+    // Remplir les selects Type et Ville
+    refreshFiltersOptions();
+
+    document.getElementById("filterStatut").addEventListener("change", (e) => { currentStatut = e.target.value; currentPage = 1; applyFilters(); });
     document.getElementById("filterType").addEventListener("change", (e) => { currentType = e.target.value; currentPage = 1; applyFilters(); });
     document.getElementById("filterClass").addEventListener("change", (e) => { currentClass = e.target.value; currentPage = 1; applyFilters(); });
-    document.getElementById("filterVille").addEventListener("input", debounce((e) => { currentVille = e.target.value.trim(); currentPage = 1; applyFilters(); }, 250));
+    document.getElementById("filterVille").addEventListener("change", (e) => { currentVille = e.target.value; currentPage = 1; applyFilters(); });
     document.getElementById("capaciteMin").addEventListener("input", debounce((e) => { currentCapaciteMin = parseInt(e.target.value) || 0; currentPage = 1; applyFilters(); }, 250));
     document.getElementById("filterValidite").addEventListener("change", (e) => { currentValidite = e.target.value; currentPage = 1; applyFilters(); });
 }
 
 function resetAllFilters() {
+    document.getElementById("filterStatut").value = "actif";
     document.getElementById("filterType").value = "Tous";
     document.getElementById("filterClass").value = "Tous";
     document.getElementById("filterVille").value = "";
     document.getElementById("capaciteMin").value = 0;
     document.getElementById("filterValidite").value = "tous";
     document.getElementById("dbSearchInput").value = "";
-    currentType = "Tous"; currentClass = "Tous"; currentVille = "";
+    currentStatut = "actif"; currentType = "Tous"; currentClass = "Tous"; currentVille = "";
     currentCapaciteMin = 0; currentValidite = "tous"; currentSearch = "";
     currentPage = 1;
     applyFilters();
@@ -1241,6 +1630,8 @@ function resetAllFilters() {
 
 function applyFilters() {
     filteredData = rawData.filter(d => {
+        if (currentStatut === "actif" && !d.actif) return false;
+        if (currentStatut === "inactif" && d.actif) return false;
         if (currentSearch) {
             const q = currentSearch.toLowerCase();
             const haystack = [d.nom, d.ville, d.nomGest, d.prenomGest, d.classement, d.type, d.codePostal].join(' ').toLowerCase();
@@ -1256,10 +1647,10 @@ function applyFilters() {
         if (d.capacite < currentCapaciteMin) return false;
         if (currentValidite !== "tous") {
             const stat = checkValidite(d);
-            if (currentValidite === "alerte" && stat !== "expire" && stat !== "expire_bientot") return false;
             if (currentValidite === "valide" && stat !== "valide") return false;
             if (currentValidite === "expire" && stat !== "expire") return false;
             if (currentValidite === "6mois" && stat !== "expire_bientot") return false;
+            if (currentValidite === "alerte" && stat !== "expire" && stat !== "expire_bientot") return false;
         }
         return true;
     });
@@ -1271,10 +1662,16 @@ function applyFilters() {
     document.getElementById("emptyState").style.display = (rawData.length > 0 && filteredData.length === 0) ? "flex" : "none";
     updateKPIHighlights();
     updateDbFilterCount();
+    updateTabCounters();
+}
+
+function updateTabCounters() {
+    const el = document.getElementById('tabCountDatabase');
+    if (el) el.textContent = filteredData.length;
 }
 
 function updateDbFilterCount() {
-    const active = [currentType !== "Tous", currentClass !== "Tous", !!currentVille, currentCapaciteMin > 0, currentValidite !== "tous"].filter(Boolean).length;
+    const active = [currentStatut !== "actif", currentType !== "Tous", currentClass !== "Tous", !!currentVille, currentCapaciteMin > 0, currentValidite !== "tous"].filter(Boolean).length;
     const countEl = document.getElementById("dbFilterCount");
     const btn = document.getElementById("toggleFiltersBtn");
     if (active > 0) {
@@ -1290,6 +1687,10 @@ function updateDbFilterCount() {
 function updateActiveFilterBadges() {
     const container = document.getElementById("activeFilters");
     const badges = [];
+    if (currentStatut !== "actif") {
+        const lbl = currentStatut === "inactif" ? "Inactifs" : "Tous";
+        badges.push({ label: `Statut : ${lbl}`, action: () => { currentStatut = "actif"; document.getElementById("filterStatut").value = "actif"; } });
+    }
     if (currentType !== "Tous") badges.push({ label: `Type : ${currentType}`, action: () => { currentType = "Tous"; document.getElementById("filterType").value = "Tous"; } });
     if (currentClass !== "Tous") {
         const lbl = currentClass === "__CLASSES__" ? "Classés uniquement" : currentClass;
@@ -1298,8 +1699,7 @@ function updateActiveFilterBadges() {
     if (currentVille) badges.push({ label: `Ville : ${currentVille}`, action: () => { currentVille = ""; document.getElementById("filterVille").value = ""; } });
     if (currentCapaciteMin > 0) badges.push({ label: `Capacité ≥ ${currentCapaciteMin}`, action: () => { currentCapaciteMin = 0; document.getElementById("capaciteMin").value = 0; } });
     if (currentValidite !== "tous") {
-        const labels = { valide: "Valide", alerte: "Expiré ou bientôt", expire: "Expiré", "6mois": "Expire < 6 mois" };
-        badges.push({ label: `Validité : ${labels[currentValidite]}`, action: () => { currentValidite = "tous"; document.getElementById("filterValidite").value = "tous"; } });
+        const labels = { valide: "Valide", expire: "Expiré", "6mois": "Expire < 6 mois", alerte: "À renouveler (< 6 mois ou expiré)" };        badges.push({ label: `Validité : ${labels[currentValidite]}`, action: () => { currentValidite = "tous"; document.getElementById("filterValidite").value = "tous"; } });
     }
     if (badges.length === 0) { container.innerHTML = ""; return; }
     container.innerHTML = badges.map((b, i) => `<span class="filter-badge" data-idx="${i}">${escapeHtml(b.label)} <span style="opacity:0.7;">✕</span></span>`).join('');
@@ -1317,7 +1717,7 @@ function updateKPIHighlights() {
     document.querySelectorAll('.kpi-card-principal').forEach(c => {
         const a = c.dataset.action;
         let active = false;
-        if (a === 'all' && currentType === "Tous" && currentClass === "Tous" && !currentVille && currentCapaciteMin === 0 && currentValidite === "tous" && !currentSearch) active = true;
+        if (a === 'all' && currentStatut === "actif" && currentType === "Tous" && currentClass === "Tous" && !currentVille && currentCapaciteMin === 0 && currentValidite === "tous" && !currentSearch) active = true;
         else if (a === 'classified' && currentClass === "__CLASSES__") active = true;
         else if (a === 'alert' && currentValidite === "alerte") active = true;
         c.classList.toggle('active', active);
@@ -1333,13 +1733,13 @@ function updateKPIs() {
     const capaciteTotale = filteredData.reduce((s,d)=>s+d.capacite,0);
     const nbClasses = filteredData.filter(d => d.classement !== "Non classé").length;
     const pctClasses = total ? ((nbClasses/total)*100).toFixed(1) : 0;
-    const echeance = filteredData.filter(d => ["expire","expire_bientot"].includes(checkValidite(d))).length;
+    const expiredCount = filteredData.filter(d => ["expire","expire_bientot"].includes(checkValidite(d))).length;
 
     document.getElementById("kpiPrincipaux").innerHTML = `
-        <div class="kpi-card-principal" data-action="all"><div class="kpi-number">${total}</div><div class="kpi-label"><i class="fas fa-hotel"></i> Hébergements</div></div>
-        <div class="kpi-card-principal" data-action="none"><div class="kpi-number">${capaciteTotale}</div><div class="kpi-label"><i class="fas fa-users"></i> Capacité (lits)</div></div>
-        <div class="kpi-card-principal" data-action="classified"><div class="kpi-number">${nbClasses} <span style="font-size:0.9rem;">(${pctClasses}%)</span></div><div class="kpi-label"><i class="fas fa-medal"></i> Établissements classés</div></div>
-        <div class="kpi-card-principal" data-action="alert"><div class="kpi-number">${echeance}</div><div class="kpi-label"><i class="fas fa-clock"></i> À renouveler</div></div>
+        <div class="kpi-card-principal kpi-hero" data-action="all"><div class="kpi-number">${total}</div><div class="kpi-label"><i class="fas fa-hotel"></i> Hébergements</div></div>
+        <div class="kpi-card-principal kpi-hero" data-action="none"><div class="kpi-number">${capaciteTotale}</div><div class="kpi-label"><i class="fas fa-users"></i> Capacité (lits)</div></div>
+        <div class="kpi-card-principal kpi-secondary" data-action="classified"><div class="kpi-number">${nbClasses} <span style="font-size:0.75rem;">(${pctClasses}%)</span></div><div class="kpi-label"><i class="fas fa-medal"></i> Classés</div></div>
+        <div class="kpi-card-principal kpi-secondary" data-action="alert"><div class="kpi-number">${expiredCount}</div><div class="kpi-label"><i class="fas fa-clock"></i> Expire < 6 mois </div></div>
     `;
 
     // Chips : basés sur rawData (toutes les catégories restent visibles même filtrées)
@@ -1353,10 +1753,19 @@ function updateKPIs() {
         if (ib !== -1) return 1;
         return a.localeCompare(b);
     });
-    const icons = {
-        "Hôtel":"fas fa-building","Camping":"fas fa-campground","Chambre d'hôtes":"fas fa-bed",
-        "Meublé de tourisme":"fas fa-home","Village vacances":"fas fa-umbrella-beach",
-        "Auberges collectives":"fas fa-users","Chambre à louer":"fas fa-door-open","Gîte d'étape":"fas fa-hiking"
+        const icons = {
+        "Hôtel":"fas fa-hotel",
+        "Camping":"fas fa-campground",
+        "Chambre d'hôtes":"fas fa-bed",
+        "Meublé de tourisme":"fas fa-house",
+        "Village vacances":"fas fa-umbrella-beach",
+        "Hébergements collectifs":"fas fa-people-roof",
+        "Auberges collectives":"fas fa-people-roof",
+        "Chambre à louer":"fas fa-door-open",
+        "Gîte d'étape":"fas fa-person-hiking",
+        "Aire naturelle de camping":"fas fa-tree",
+        "Hébergements insolites de charme":"fas fa-wand-magic-sparkles",
+        "A qualifier":"fas fa-question"
     };
     document.getElementById("typeChips").innerHTML = sortedTypes.map(t =>
         `<button class="type-chip" data-type="${escapeHtml(t)}"><i class="${icons[t] || 'fas fa-tag'}"></i> ${escapeHtml(t)} <span class="chip-count">${typeCounts[t]}</span></button>`
@@ -1377,7 +1786,6 @@ document.getElementById("kpiPrincipaux").addEventListener('click', (e) => {
         if (currentValidite === "alerte") { currentValidite = "tous"; document.getElementById("filterValidite").value = "tous"; }
         else { currentValidite = "alerte"; document.getElementById("filterValidite").value = "alerte"; }
         currentPage = 1; applyFilters();
-        // Reste sur l'onglet courant
     }
 });
 
@@ -1583,9 +1991,14 @@ function updateTable() {
         const nomTrunc = item.nom.length > 50 ? item.nom.substring(0,50) + "…" : item.nom;
         const debut = item.debutClassement ? item.debutClassement.toLocaleDateString('fr-FR') : '—';
         const fin = item.finClassement ? item.finClassement.toLocaleDateString('fr-FR') : '—';
+        const rowClass = item.actif ? '' : 'inactive';
+        const nomBadge = item.actif ? '' : ' <span class="badge badge-inactive">Inactif</span>';
+        const toggleIcon = item.actif ? 'fa-eye-slash' : 'fa-eye';
+        const toggleClass = item.actif ? 'danger' : 'success';
+        const toggleTitle = item.actif ? 'Désactiver' : 'Réactiver';
 
-        tbody.insertAdjacentHTML('beforeend', `<tr data-row-id="${item._id}">
-            <td title="${escapeHtml(item.nom)}">${escapeHtml(nomTrunc)}</td>
+        tbody.insertAdjacentHTML('beforeend', `<tr data-row-id="${item._id}" class="${rowClass}">
+            <td title="${escapeHtml(item.nom)}">${escapeHtml(nomTrunc)}${nomBadge}</td>
             <td>${escapeHtml(item.type)}</td>
             <td>${escapeHtml(item.ville)}</td>
             <td>${getClassBadge(item.classement)}</td>
@@ -1593,15 +2006,38 @@ function updateTable() {
             <td>${item.nbUnites}</td>
             <td>${debut}</td>
             <td>${fin}</td>
+            <td>
+                <div class="row-actions">
+                    <button class="row-action-btn" data-edit-id="${item._id}" title="Modifier"><i class="fas fa-pen"></i></button>
+                    <button class="row-action-btn ${toggleClass}" data-toggle-id="${item._id}" title="${toggleTitle}"><i class="fas ${toggleIcon}"></i></button>
+                </div>
+            </td>
         </tr>`);
     });
     if (!pageRows.length) {
-        tbody.insertAdjacentHTML('beforeend', '<tr><td colspan="8" style="text-align:center;color:#889;padding:30px;">Aucun résultat</td></tr>');
+        tbody.insertAdjacentHTML('beforeend', '<tr><td colspan="9" style="text-align:center;color:#889;padding:30px;">Aucun résultat</td></tr>');
     }
 
     tbody.querySelectorAll('tr[data-row-id]').forEach(tr => {
-        tr.addEventListener('click', () => openDetailPanel(tr.dataset.rowId));
+        tr.addEventListener('click', (e) => {
+            if (e.target.closest('.row-action-btn')) return;
+            openDetailPanel(tr.dataset.rowId);
+        });
     });
+    tbody.querySelectorAll('[data-edit-id]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openHebergementModal(btn.dataset.editId);
+        });
+    });
+    tbody.querySelectorAll('[data-toggle-id]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openDeactivateConfirm(btn.dataset.toggleId);
+        });
+    });
+
+    updateMobileCards(pageRows);
 
     const info = `Page ${currentPage} / ${totalPages}`;
     document.getElementById("pageInfo").textContent = info;
@@ -1614,15 +2050,65 @@ function updateTable() {
     ['pageLast','pageLastTop'].forEach(id => document.getElementById(id).disabled = currentPage === totalPages);
 }
 
+function updateMobileCards(pageRows) {
+    const container = document.getElementById('dbCardsMobile');
+    if (!container) return;
+    if (!pageRows.length) {
+        container.innerHTML = '<div style="text-align:center;color:#889;padding:30px;">Aucun résultat</div>';
+        return;
+    }
+    container.innerHTML = pageRows.map(item => {
+        const vc = checkValidite(item);
+        const vcLabel = vc === "expire" ? '✕ Expiré' : vc === "expire_bientot" ? '⚠ Bientôt' : vc === "valide" ? '● Valide' : '';
+        const vcColor = vc === "expire" ? '#dc3545' : vc === "expire_bientot" ? '#f59e0b' : vc === "valide" ? '#10b981' : '#cbd5e1';
+        const rowClass = item.actif ? '' : 'inactive';
+        const nomBadge = item.actif ? '' : ' <span class="badge badge-inactive">Inactif</span>';
+        const toggleIcon = item.actif ? 'fa-eye-slash' : 'fa-eye';
+        const toggleClass = item.actif ? 'danger' : 'success';
+        const toggleLabel = item.actif ? 'Désactiver' : 'Réactiver';
+
+        return `<div class="mobile-card ${rowClass}" data-mobile-id="${item._id}">
+            <div class="mobile-card-header">
+                <div class="mobile-card-title">${escapeHtml(item.nom)}${nomBadge}</div>
+                ${getClassBadge(item.classement)}
+            </div>
+            <div class="mobile-card-ville"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(item.ville)}</div>
+            <div class="mobile-card-meta">
+                <span>${escapeHtml(item.type)}</span>
+                <span><i class="fas fa-bed"></i> ${item.capacite} lits</span>
+                <span>${item.nbUnites} u.</span>
+                ${vcLabel ? `<span style="color:${vcColor};font-weight:700;">${vcLabel}</span>` : ''}
+            </div>
+            <div class="mobile-card-actions">
+                <button data-mobile-edit="${item._id}"><i class="fas fa-pen"></i> Modifier</button>
+                <button data-mobile-toggle="${item._id}" class="${toggleClass}"><i class="fas ${toggleIcon}"></i> ${toggleLabel}</button>
+            </div>
+        </div>`;
+    }).join('');
+
+    container.querySelectorAll('.mobile-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            if (e.target.closest('button')) return;
+            openDetailPanel(card.dataset.mobileId);
+        });
+    });
+    container.querySelectorAll('[data-mobile-edit]').forEach(btn => {
+        btn.addEventListener('click', (e) => { e.stopPropagation(); openHebergementModal(btn.dataset.mobileEdit); });
+    });
+    container.querySelectorAll('[data-mobile-toggle]').forEach(btn => {
+        btn.addEventListener('click', (e) => { e.stopPropagation(); openDeactivateConfirm(btn.dataset.mobileToggle); });
+    });
+}
+
 function initDetailPanel() {
     document.getElementById('detailClose').addEventListener('click', closeDetailPanel);
     document.getElementById('detailBackdrop').addEventListener('click', closeDetailPanel);
     document.getElementById('detailEditBtn').addEventListener('click', () => {
         if (viewingId) { const id = viewingId; closeDetailPanel(); openHebergementModal(id); }
     });
-    document.getElementById('detailDeleteBtn').addEventListener('click', () => {
-        if (viewingId) openDeleteConfirm(viewingId);
-    });
+    document.getElementById('detailToggleBtn').addEventListener('click', () => {
+    if (viewingId) openDeactivateConfirm(viewingId);
+});
     document.getElementById('detailLetterBtn').addEventListener('click', () => {
         if (viewingId) { const item = findItemById(viewingId); if (item) openLetterModal(item); }
     });
@@ -1653,6 +2139,16 @@ function openDetailPanel(id) {
         ? `<span class="badge badge-${classMatch[1]}">${'★'.repeat(parseInt(classMatch[1]))} ${classMatch[1]} étoile${parseInt(classMatch[1])>1?'s':''}</span>`
         : '<span class="badge badge-nc">Non classé</span>';
 
+    const toggleBtn = document.getElementById('detailToggleBtn');
+    if (item.actif) {
+        toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Désactiver';
+        toggleBtn.classList.remove('success');
+        toggleBtn.classList.add('warning');
+    } else {
+        toggleBtn.innerHTML = '<i class="fas fa-eye"></i> Réactiver';
+        toggleBtn.classList.remove('warning');
+        toggleBtn.classList.add('success');
+    }
     document.getElementById('detailBadges').innerHTML = `
         <span class="badge" style="background:#fff0f0;color:#991917;">${escapeHtml(item.type)}</span>
         ${classBadge}
@@ -1700,14 +2196,13 @@ function openDetailPanel(id) {
     sections.push({
         title: '<i class="fas fa-star"></i> Classement & capacité',
         rows: [
-            ['Classement', item.classement],
-            ['Capacité', item.capacite + ' lits'],
-            ['Unités', item.nbUnites],
+            ['Classement', item.classement || ''],
+            ['Capacité', item.capacite != null ? item.capacite + ' lits' : ''],
+            ['Unités', item.nbUnites != null ? item.nbUnites : ''],
             ['Début', item.debutClassement ? item.debutClassement.toLocaleDateString('fr-FR') : ''],
             ['Fin', item.finClassement ? item.finClassement.toLocaleDateString('fr-FR') : '']
         ]
     });
-
     sections.push({
         title: '<i class="fas fa-globe"></i> Géolocalisation',
         rows: [
@@ -1719,13 +2214,14 @@ function openDetailPanel(id) {
     const bodyHtml = sections.map(sec => `
         <div class="detail-section">
             <div class="detail-section-title">${sec.title}</div>
-            ${sec.rows.map(([label, val]) => `
+            ${sec.rows.map(([label, val]) => {
+                const isEmpty = (val === null || val === undefined || val === '');
+                return `
                 <div class="detail-row">
                     <div class="label">${label}</div>
-                    <div class="value ${!val ? 'empty' : ''}">${val ? escapeHtml(String(val)) : '—'}</div>
-                </div>
-            `).join('')}
-        </div>
+                    <div class="value ${isEmpty ? 'empty' : ''}">${isEmpty ? '—' : escapeHtml(String(val))}</div>
+                </div>`;
+            }).join('')}        </div>
     `).join('');
 
     document.getElementById('detailBody').innerHTML = bodyHtml;
@@ -1750,11 +2246,60 @@ function initHebergementModal() {
     });
     document.getElementById('saveHebergementBtn').addEventListener('click', saveHebergement);
     document.getElementById('addHebergementBtn').addEventListener('click', () => openHebergementModal(null));
+
+    // Auto-complétion CP depuis la ville
+    const fVille = document.getElementById('fVille');
+    if (fVille) {
+        fVille.addEventListener('blur', () => {
+            const ville = fVille.value.trim();
+            if (!ville) return;
+            const cpField = document.getElementById('fCodePostal');
+            if (cpField && cpField.value.trim()) return; // ne pas écraser
+            const match = rawData.find(d => d.ville && d.ville.toLowerCase() === ville.toLowerCase() && d.codePostal);
+            if (match) cpField.value = match.codePostal;
+        });
+    }
+
+    // Bouton géocodage
+    const geocodeBtn = document.getElementById('geocodeBtn');
+    if (geocodeBtn) geocodeBtn.addEventListener('click', geocodeAddress);
 }
 
-const REQUIRED_FIELDS_CREATE = ['fNom','fType','fVille','fAdresse1','fAdresse2','fCodePostal','fMail',
-                                 'fCiviliteGest','fNomGest','fPrenomGest','fMailGest','fTelGest','fPortableGest',
-                                 'fCapacite','fNbUnites','fDebutClassement','fFinClassement','fLat','fLon'];
+async function geocodeAddress() {
+    const f = (id) => document.getElementById(id);
+    const adresse = f('fAdresse1').value.trim();
+    const cp = f('fCodePostal').value.trim();
+    const ville = f('fVille').value.trim();
+    const q = [adresse, cp, ville].filter(Boolean).join(' ');
+    if (!q) { showToast("Renseignez au moins l'adresse ou la ville", "error"); return; }
+
+    const btn = f('geocodeBtn');
+    const oldHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Recherche…';
+
+    try {
+        const r = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(q)}&limit=1`);
+        const data = await r.json();
+        if (data.features && data.features.length > 0) {
+            const [lon, lat] = data.features[0].geometry.coordinates;
+            f('fLat').value = lat.toFixed(6);
+            f('fLon').value = lon.toFixed(6);
+            showToast("Coordonnées trouvées : " + data.features[0].properties.label, "success", 3500);
+        } else {
+            showToast("Adresse introuvable. Essayez avec plus de précision.", "error");
+        }
+    } catch (err) {
+        showToast("Erreur géocodage : " + err.message, "error");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = oldHtml;
+    }
+}
+
+const REQUIRED_FIELDS_CREATE = ['fNom','fType','fVille','fAdresse1','fCodePostal','fMail',
+                                 'fCiviliteGest','fNomGest','fPrenomGest','fMailGest','fPortableGest',
+                                 'fCapacite','fNbUnites','fLat','fLon'];
 
 function openHebergementModal(id) {
     editingId = id;
@@ -1793,6 +2338,8 @@ function openHebergementModal(id) {
         f('fLon').value = item.lon != null ? item.lon : '';
     } else {
         document.getElementById('hebergementForm').reset();
+        refreshTypeSelectOptions();
+        f('fType').value = '';
         f('fClassement').value = 'Non classé';
         f('fCapacite').value = '';
         f('fNbUnites').value = 1;
@@ -1800,13 +2347,41 @@ function openHebergementModal(id) {
 
     document.getElementById('hebergementModal').classList.add('show');
     document.body.style.overflow = 'hidden';
-    setTimeout(() => f('fNom').focus(), 200);
+
+    // Capture de l'état initial pour détecter les modifications
+    setTimeout(() => {
+        formInitialState = getFormState();
+        f('fNom').focus();
+    }, 200);
 }
 
-function closeHebergementModal() {
+const FORM_FIELDS = ['fNom','fType','fVille','fAdresse1','fAdresse2','fCodePostal','fMail',
+    'fCiviliteGest','fNomGest','fPrenomGest','fMailGest','fTelGest','fPortableGest',
+    'fClassement','fCapacite','fNbUnites','fDebutClassement','fFinClassement','fLat','fLon'];
+
+function getFormState() {
+    const state = {};
+    FORM_FIELDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) state[id] = el.value;
+    });
+    return state;
+}
+
+function isFormDirty() {
+    if (!formInitialState) return false;
+    const current = getFormState();
+    return Object.keys(formInitialState).some(k => current[k] !== formInitialState[k]);
+}
+
+function closeHebergementModal(force = false) {
+    if (!force && isFormDirty()) {
+        if (!confirm("Le formulaire contient des modifications non enregistrées.\n\nFermer sans sauvegarder ?")) return;
+    }
     document.getElementById('hebergementModal').classList.remove('show');
     document.body.style.overflow = '';
     editingId = null;
+    formInitialState = null;
 }
 
 async function saveHebergement() {
@@ -1817,13 +2392,12 @@ async function saveHebergement() {
     if (!editingId) {
         const missing = [];
         const labels = {
-            fNom: 'Nom', fType: 'Type', fVille: 'Ville', fAdresse1: 'Adresse',
-            fAdresse2: 'Complément', fCodePostal: 'Code postal', fMail: 'Email structure',
-            fCiviliteGest: 'Civilité', fNomGest: 'Nom gestionnaire', fPrenomGest: 'Prénom gestionnaire',
-            fMailGest: 'Email gestionnaire', fTelGest: 'Téléphone', fPortableGest: 'Portable',
-            fCapacite: 'Capacité', fNbUnites: 'Unités', fDebutClassement: 'Début classement',
-            fFinClassement: 'Fin classement', fLat: 'Latitude', fLon: 'Longitude'
-        };
+    fNom: 'Nom', fType: 'Type', fVille: 'Ville', fAdresse1: 'Adresse',
+    fCodePostal: 'Code postal', fMail: 'Email structure',
+    fCiviliteGest: 'Civilité', fNomGest: 'Nom gestionnaire', fPrenomGest: 'Prénom gestionnaire',
+    fMailGest: 'Email gestionnaire', fPortableGest: 'Portable',
+    fCapacite: 'Capacité', fNbUnites: 'Unités', fLat: 'Latitude', fLon: 'Longitude'
+};
         REQUIRED_FIELDS_CREATE.forEach(fid => {
             if (!f(fid).value.trim()) missing.push(labels[fid] || fid);
         });
@@ -1864,7 +2438,7 @@ async function saveHebergement() {
             await addDoc(collection(db, 'hebergements'), data);
             showToast("Hébergement ajouté", "success");
         }
-        closeHebergementModal();
+        closeHebergementModal(true); // true = pas de confirmation
     } catch (err) {
         console.error(err);
         showToast("Erreur : " + err.message, "error", 5000);
@@ -1872,21 +2446,26 @@ async function saveHebergement() {
 }
 
 /* ====== DELETE CONFIRM (simplifié) ====== */
-function initDeleteConfirm() {
+function initDeactivateConfirm() {
     document.getElementById('closeDeleteModal').addEventListener('click', closeDeleteModal);
     document.getElementById('cancelDeleteBtn').addEventListener('click', closeDeleteModal);
     document.getElementById('deleteConfirmModal').addEventListener('click', (e) => {
         if (e.target.id === 'deleteConfirmModal') closeDeleteModal();
     });
-    document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDeleteAction);
+    document.getElementById('confirmDeleteBtn').addEventListener('click', confirmToggleActive);
 }
 
-function openDeleteConfirm(id) {
+function openDeactivateConfirm(id) {
     const item = findItemById(id);
     if (!item) return;
-    deletingId = id;
+    deactivatingId = id;
+    const verb = item.actif ? 'désactiver' : 'réactiver';
     document.getElementById('deleteTarget').innerHTML =
         `<strong>${escapeHtml(item.nom)}</strong><br><span style="font-weight:400;color:#5b7a9a;">${escapeHtml(item.type)} — ${escapeHtml(item.ville)}</span>`;
+    document.querySelector('#deleteConfirmModal .modal-header h3').innerHTML =
+        `<i class="fas fa-eye-slash" style="color: #d97706;"></i> ${item.actif ? 'Désactiver' : 'Réactiver'} cet hébergement ?`;
+    document.getElementById('confirmDeleteBtn').innerHTML =
+        `<i class="fas ${item.actif ? 'fa-eye-slash' : 'fa-eye'}"></i> ${item.actif ? 'Désactiver' : 'Réactiver'}`;
     document.getElementById('deleteConfirmModal').classList.add('show');
     document.body.style.overflow = 'hidden';
 }
@@ -1895,15 +2474,16 @@ function closeDeleteModal() {
     document.getElementById('deleteConfirmModal').classList.remove('show');
     document.body.style.overflow = (document.getElementById('detailPanel').classList.contains('open') ||
                                      document.getElementById('hebergementModal').classList.contains('show')) ? 'hidden' : '';
-    deletingId = null;
+    deactivatingId = null;
 }
 
-async function confirmDeleteAction() {
-    if (!deletingId) return;
-    const idToDelete = deletingId;
+async function confirmToggleActive() {
+    if (!deactivatingId) return;
+    const item = findItemById(deactivatingId);
+    if (!item) return;
     try {
-        await deleteDoc(doc(db, 'hebergements', idToDelete));
-        showToast("Hébergement supprimé définitivement", "success");
+        await updateDoc(doc(db, 'hebergements', deactivatingId), { actif: !item.actif });
+        showToast(item.actif ? "Hébergement désactivé" : "Hébergement réactivé", "success");
         closeDeleteModal();
         closeDetailPanel();
     } catch (err) {
@@ -2085,10 +2665,53 @@ function initMapIfNeeded() {
     if (mapInitialized) return;
     const mapEl = document.getElementById('map');
     if (!mapEl || mapEl.offsetWidth === 0) return;
-    map = L.map('map').setView([44.5, 2.5], 9);
+    mapEl.addEventListener('wheel', (e) => {
+        if (!e.ctrlKey && !e.metaKey) {
+            const hint = document.getElementById('mapZoomHint');
+            if (hint) {
+                hint.classList.add('show');
+                clearTimeout(hint._timeout);
+                hint._timeout = setTimeout(() => hint.classList.remove('show'), 2000);
+            }
+        }
+    }, { passive: true });
+
+    map = L.map('map', {
+        scrollWheelZoom: false,   // désactive le zoom molette par défaut
+        dragging: true,           // déplacement libre à la souris
+        worldCopyJump: true
+    }).setView([44.5, 2.5], 9);
+
     L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap', subdomains: 'abc', maxZoom: 19
     }).addTo(map);
+
+    // Ctrl (Windows/Linux) ou Cmd (Mac) + molette => zoom
+    const hint = document.getElementById('mapHint');
+    map.on('mousedown', (e) => {
+        if (e.originalEvent.ctrlKey || e.originalEvent.metaKey) {
+            map.scrollWheelZoom.enable();
+            if (hint) hint.classList.add('ctrl-active');
+        }
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Control' || e.key === 'Meta') {
+            map.scrollWheelZoom.enable();
+            if (hint) hint.classList.add('ctrl-active');
+        }
+    });
+    document.addEventListener('keyup', (e) => {
+        if (e.key === 'Control' || e.key === 'Meta') {
+            map.scrollWheelZoom.disable();
+            if (hint) hint.classList.remove('ctrl-active');
+        }
+    });
+    // Sécurité : on désactive dès que la souris quitte la carte
+    mapEl.addEventListener('mouseleave', () => {
+        map.scrollWheelZoom.disable();
+        if (hint) hint.classList.remove('ctrl-active');
+    });
+
     mapInitialized = true;
 }
 function clearMapLayers() {
@@ -2257,149 +2880,6 @@ async function renderChoropleth() {
     addMapLegend(`<div><strong>Capacité par commune</strong></div><div class="legend-scale">${gradient}</div><div style="display:flex;justify-content:space-between;"><span>0</span><span>${maxCap} lits</span></div>`);
 }
 
-/* ====== EXPORT EXCEL ====== */
-function exportToExcel() {
-    const btn = document.getElementById("exportExcelBtn");
-    const oldText = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Génération…';
-    try {
-        const wb = XLSX.utils.book_new();
-        const typesMap = new Map();
-        filteredData.forEach(d => {
-            if (!typesMap.has(d.type)) typesMap.set(d.type, { count:0, cap:0 });
-            const t = typesMap.get(d.type);
-            t.count++; t.cap += d.capacite;
-        });
-        const totalCap = filteredData.reduce((s,d)=>s+d.capacite,0) || 1;
-        const totalStr = filteredData.length || 1;
-        const syntheseAOA = [["Type","Structures","Capacité (lits)","Moyenne/structure","% structures","% capacité"]];
-        for (const [type, s] of typesMap.entries()) {
-            syntheseAOA.push([type, s.count, s.cap, Number((s.cap/s.count).toFixed(1)), Number(((s.count/totalStr)*100).toFixed(1)), Number(((s.cap/totalCap)*100).toFixed(1))]);
-        }
-        syntheseAOA.push(["TOTAL", filteredData.length, totalCap, "", "100%", "100%"]);
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(syntheseAOA), "Synthèse");
-
-        const alertes = filteredData.filter(d => ["expire","expire_bientot"].includes(checkValidite(d))).sort((a,b) => (a.finClassement||0) - (b.finClassement||0));
-        const alertesAOA = [["Nom","Type","Ville","Classement","Fin classement","Statut","Capacité"]];
-        alertes.forEach(d => alertesAOA.push([d.nom, d.type, d.ville, d.classement, d.finClassement ? d.finClassement.toLocaleDateString("fr-FR") : "", checkValidite(d) === "expire" ? "EXPIRÉ" : "Expire < 6 mois", d.capacite]));
-        if (alertes.length === 0) alertesAOA.push(["(Aucune alerte)"]);
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(alertesAOA), "Alertes");
-
-        const detailAOA = [["Nom","Type","Ville","Classement","Capacité","Unités","Début classement","Fin classement","Latitude","Longitude"]];
-        sortData(filteredData).forEach(d => detailAOA.push([d.nom, d.type, d.ville, d.classement, d.capacite, d.nbUnites, d.debutClassement ? d.debutClassement.toLocaleDateString("fr-FR") : "", d.finClassement ? d.finClassement.toLocaleDateString("fr-FR") : "", d.lat ?? "", d.lon ?? ""]));
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(detailAOA), "Détail complet");
-
-        XLSX.writeFile(wb, `observatoire_hebergements_${new Date().toISOString().slice(0,10)}.xlsx`);
-        showToast("Excel exporté", "success");
-    } catch(e) {
-        console.error(e);
-        showToast("Erreur Excel : " + e.message, "error");
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = oldText;
-    }
-}
-
-/* ====== EXPORT PDF ====== */
-async function captureElementToCanvas(el) {
-    return await html2canvas(el, { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false, windowWidth: el.scrollWidth });
-}
-async function exportToPDF() {
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    const pageW = pdf.internal.pageSize.getWidth();
-    const pageH = pdf.internal.pageSize.getHeight();
-
-    pdf.setFillColor(153, 25, 23);
-    pdf.rect(0, 0, pageW, 60, 'F');
-    pdf.setTextColor(255, 255, 255);
-    pdf.setFontSize(22); pdf.setFont('helvetica', 'bold');
-    pdf.text("Observatoire des Hébergements", pageW/2, 30, { align: 'center' });
-    pdf.setFontSize(13); pdf.setFont('helvetica', 'normal');
-    pdf.text("Office de Tourisme Conques-Marcillac", pageW/2, 42, { align: 'center' });
-
-    pdf.setTextColor(30, 42, 58); pdf.setFontSize(11);
-    const now = new Date();
-    pdf.text(`Rapport généré le ${now.toLocaleDateString('fr-FR')} à ${now.toLocaleTimeString('fr-FR').slice(0,5)}`, pageW/2, 85, { align: 'center' });
-    pdf.text(`${filteredData.length} hébergements – Capacité totale : ${filteredData.reduce((s,d)=>s+d.capacite,0)} lits`, pageW/2, 95, { align: 'center' });
-
-    const btn = document.getElementById("exportPdfBtn");
-    const oldText = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Génération…';
-    btn.disabled = true;
-
-    try {
-        const sections = [];
-        if (document.getElementById("exportKPISynthese").checked) sections.push({ title: "KPI & Synthèse", els: ["#kpiPrincipaux", "#typeChips", "#tab-analysis .stats-summary"] });
-        if (document.getElementById("exportGraphiquesType").checked) sections.push({ title: "Graphiques par type & classement", els: ["#tab-analysis .charts-row:first-child"] });
-        if (document.getElementById("exportGraphiquesCommunes").checked) sections.push({ title: "Graphiques par commune", els: ["#tab-analysis .charts-row:nth-child(2)"] });
-        if (document.getElementById("exportTableau").checked) sections.push({ title: "Tableau détaillé", els: ["#tab-database .data-table"] });
-
-        const originalTab = currentTab;
-        switchTab('analysis');
-        await new Promise(r => setTimeout(r, 300));
-
-        for (const section of sections) {
-            pdf.addPage();
-            pdf.setFillColor(245, 245, 245);
-            pdf.rect(0, 0, pageW, 15, 'F');
-            pdf.setTextColor(153, 25, 23);
-            pdf.setFontSize(14); pdf.setFont('helvetica', 'bold');
-            pdf.text(section.title, 10, 10);
-
-            let first = true;
-            for (const sel of section.els) {
-                const el = document.querySelector(sel);
-                if (!el) continue;
-                const canvas = await captureElementToCanvas(el);
-                const imgW = pageW - 20;
-                const yStart = first ? 18 : 10;
-                if (!first) pdf.addPage();
-                const imgH = (canvas.height * imgW) / canvas.width;
-                if (imgH <= pageH - yStart - 8) {
-                    pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 10, yStart, imgW, imgH, undefined, 'FAST');
-                } else {
-                    const pxPerPage = ((pageH - yStart - 8) / imgW) * canvas.width;
-                    let yOff = 0, firstSlice = true;
-                    while (yOff < canvas.height) {
-                        if (!firstSlice) pdf.addPage();
-                        firstSlice = false;
-                        const sliceH = Math.min(pxPerPage, canvas.height - yOff);
-                        const sc = document.createElement('canvas');
-                        sc.width = canvas.width; sc.height = sliceH;
-                        const ctx = sc.getContext('2d');
-                        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, sc.width, sc.height);
-                        ctx.drawImage(canvas, 0, yOff, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
-                        const sHmm = (sliceH / canvas.width) * imgW;
-                        pdf.addImage(sc.toDataURL('image/jpeg', 0.92), 'JPEG', 10, yStart, imgW, sHmm, undefined, 'FAST');
-                        yOff += sliceH;
-                    }
-                }
-                first = false;
-            }
-        }
-
-        switchTab(originalTab);
-
-        const totalPages = pdf.getNumberOfPages();
-        for (let i = 1; i <= totalPages; i++) {
-            pdf.setPage(i);
-            pdf.setFontSize(8); pdf.setTextColor(120, 120, 120);
-            pdf.text(`Page ${i} / ${totalPages}`, pageW - 10, pageH - 5, { align: 'right' });
-            pdf.text("Office de Tourisme Conques-Marcillac", 10, pageH - 5);
-        }
-        pdf.save(`observatoire_hebergements_${new Date().toISOString().slice(0,10)}.pdf`);
-        showToast("PDF généré", "success");
-    } catch (e) {
-        console.error(e);
-        showToast("Erreur PDF : " + e.message, "error");
-    } finally {
-        btn.innerHTML = oldText;
-        btn.disabled = false;
-    }
-}
-
 function updateFooterInfo() {
     const el = document.getElementById("footerInfo");
     if (rawData.length === 0) { el.textContent = "Aucune donnée."; return; }
@@ -2425,9 +2905,6 @@ chooseBtn.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', (e) => {
     if (e.target.files.length) importFileToFirestore(e.target.files[0]);
 });
-
-document.getElementById("exportExcelBtn").addEventListener("click", exportToExcel);
-document.getElementById("exportPdfBtn").addEventListener("click", exportToPDF);
 
 /* ====== INIT ====== */
 showLoading("Connexion à Firebase…");
