@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Observatoire Hébergements - Office de Tourisme Conques-Marcillac</title>
+    <title>Observatoire Hébergement - Restauration — Office de Tourisme Conques-Marcillac</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23991917'/%3E%3Ctext x='32' y='44' font-size='36' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'%3EH%3C/text%3E%3C/svg%3E">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -17,30 +17,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Neutres chaudes (pierre calcaire) */
             --bg: #faf6f0;
             --surface: #ffffff;
             --surface-warm: #fdfaf6;
             --stone-light: #f2ebe3;
             --stone: #e8ddd0;
             --stone-dark: #d4c4b0;
-
-            /* Primaire bordeaux Conques */
             --primary: #991917;
             --primary-dark: #7a1412;
             --primary-light: #b52d2a;
-
-            /* Accents territoire */
             --ochre: #c9823f;
             --gold: #d4a015;
             --olive: #7d8a5a;
-
-            /* Textes */
             --text: #2b211a;
             --text-mid: #5a4d43;
             --text-dim: #8b7f73;
-
-            /* Ombres chaudes (teinte brune au lieu de noire) */
             --shadow-sm: 0 1px 3px rgba(91, 40, 27, 0.04);
             --shadow-md: 0 4px 12px rgba(91, 40, 27, 0.06);
             --shadow-lg: 0 8px 24px rgba(91, 40, 27, 0.10);
@@ -50,7 +41,6 @@
         body { background: var(--bg); padding: 0; color: var(--text); }
         .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
 
-        /* Fine barre de gradient en haut de page */
         body::before {
             content: '';
             display: block;
@@ -61,32 +51,18 @@
             z-index: 200;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            padding-top: 0.5rem;
-        }
+        header { text-align: center; margin-bottom: 1.5rem; padding-top: 0.5rem; }
         header h1 {
             font-family: 'Cormorant Garamond', Georgia, serif;
-            font-size: 2.2rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
+            font-size: 2.2rem; font-weight: 700; letter-spacing: -0.5px;
             color: var(--primary);
             display: flex; align-items: center; justify-content: center;
-            gap: 14px; flex-wrap: wrap;
-            margin-bottom: 4px;
+            gap: 14px; flex-wrap: wrap; margin-bottom: 4px;
         }
-        header h1 i {
-            font-size: 1.6rem;
-            color: var(--primary);
-        }
+        header h1 i { font-size: 1.6rem; color: var(--primary); }
         .sub {
-            color: var(--text-mid);
-            margin-top: 6px;
-            font-weight: 500;
-            font-size: 0.85rem;
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
+            color: var(--text-mid); margin-top: 6px; font-weight: 500;
+            font-size: 0.85rem; letter-spacing: 0.3px; text-transform: uppercase;
         }
 
         .tabs {
@@ -100,28 +76,23 @@
         .tab-btn {
             background: transparent; border: none; padding: 10px 20px;
             border-radius: 14px; font-weight: 700; font-size: 0.9rem;
-            color: var(--text-mid); cursor: pointer;
-            transition: all 0.2s;
+            color: var(--text-mid); cursor: pointer; transition: all 0.2s;
             display: flex; align-items: center; gap: 8px; white-space: nowrap;
             flex-shrink: 0;
         }
         .tab-btn:hover { background: var(--stone-light); color: var(--primary); }
         .tab-btn.active {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            box-shadow: 0 4px 12px rgba(153,25,23,0.25);
+            color: white; box-shadow: 0 4px 12px rgba(153,25,23,0.25);
         }
-.tab-count {
-    background: rgba(255,255,255,0.25); color: white;
-    padding: 1px 8px; border-radius: 20px;
-    font-size: 0.72rem; font-weight: 700;
-    min-width: 22px; text-align: center;
-    margin-left: 4px;
-}
-.tab-count:empty { display: none; }
-.tab-btn:not(.active) .tab-count {
-    background: #f1f5f9; color: #991917;
-}
+        .tab-count {
+            background: rgba(255,255,255,0.25); color: white;
+            padding: 1px 8px; border-radius: 20px;
+            font-size: 0.72rem; font-weight: 700;
+            min-width: 22px; text-align: center; margin-left: 4px;
+        }
+        .tab-count:empty { display: none; }
+        .tab-btn:not(.active) .tab-count { background: #f1f5f9; color: #991917; }
 
         .tab-view { display: none; }
         .tab-view.active { display: block; animation: fadeIn 0.2s; }
@@ -129,32 +100,48 @@
 
         .btn-icon {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            border: none;
-            padding: 10px 22px;
-            border-radius: 40px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
+            color: white; border: none; padding: 10px 22px; border-radius: 40px;
+            font-weight: 700; cursor: pointer; transition: all 0.2s;
             display: inline-flex; align-items: center; gap: 8px;
             box-shadow: 0 2px 8px rgba(153,25,23,0.20);
         }
-        .btn-icon:hover {
-            box-shadow: 0 4px 14px rgba(153,25,23,0.30);
-            transform: translateY(-1px);
-        }
+        .btn-icon:hover { box-shadow: 0 4px 14px rgba(153,25,23,0.30); transform: translateY(-1px); }
         .btn-icon:disabled { opacity: 0.6; cursor: wait; }
         .btn-icon.pdf { background: #2c6e9e; }
         .btn-icon.xls { background: #1d6f42; }
         .btn-icon.small { padding: 7px 16px; font-size: 0.85rem; }
         .btn-icon.ghost { background: transparent; color: #991917; border: 1px solid #991917; }
         .btn-icon.ghost:hover { background: #991917; color: white; }
+        .btn-icon.warn { color: #d97706; border: 1px solid #d97706; }
+        .btn-icon.warn:hover { background: #d97706; color: white; }
 
         button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible {
             outline: 2px solid #991917; outline-offset: 2px;
         }
 
-        /* ====== SHARED FILTER AREA ====== */
+        /* ====== CATEGORY SWITCHER ====== */
+        .categorie-switcher {
+            display: flex; gap: 6px; margin-bottom: 0.8rem;
+            background: var(--surface); border-radius: 14px; padding: 5px;
+            border: 1px solid var(--stone); box-shadow: var(--shadow-sm);
+        }
+        .categorie-btn {
+            flex: 1; background: transparent; border: none;
+            padding: 10px 16px; border-radius: 10px;
+            font-weight: 700; font-size: 0.9rem; color: var(--text-mid);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            gap: 8px; transition: 0.2s;
+        }
+        .categorie-btn:hover { background: var(--stone-light); color: var(--primary); }
+        .categorie-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white; box-shadow: 0 3px 10px rgba(153,25,23,0.20);
+        }
+        .categorie-btn[data-cat="restaurant"].active {
+            background: linear-gradient(135deg, var(--ochre), #a86b2f);
+            box-shadow: 0 3px 10px rgba(201,130,63,0.20);
+        }
+
         #sharedFilterArea { margin-bottom: 1rem; }
 
         .db-toolbar {
@@ -162,8 +149,7 @@
             background: white; border-radius: 20px; padding: 0.8rem 1rem; border: 1px solid #e9edf2;
         }
         .db-search {
-            flex: 1; min-width: 200px;
-            display: flex; align-items: center; gap: 8px;
+            flex: 1; min-width: 200px; display: flex; align-items: center; gap: 8px;
             background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 30px;
             padding: 0 14px; transition: 0.15s;
         }
@@ -171,16 +157,14 @@
         .db-search i { color: #8899aa; font-size: 0.9rem; }
         .db-search input {
             flex: 1; border: none; background: transparent;
-            padding: 10px 0; font-size: 0.9rem; font-family: inherit;
-            outline: none;
+            padding: 10px 0; font-size: 0.9rem; font-family: inherit; outline: none;
         }
         .db-filter-toggle {
             background: white; border: 1px solid #e2e8f0;
             padding: 8px 14px; border-radius: 30px;
             font-weight: 600; font-size: 0.85rem; color: #3a5a7a;
             cursor: pointer; transition: 0.15s;
-            display: inline-flex; align-items: center; gap: 6px;
-            position: relative;
+            display: inline-flex; align-items: center; gap: 6px; position: relative;
         }
         .db-filter-toggle:hover { border-color: #991917; color: #991917; }
         .db-filter-toggle.has-filters { background: #991917; color: white; border-color: #991917; }
@@ -194,8 +178,7 @@
 
         .filters-panel {
             background: white; border-radius: 20px; padding: 1rem 1.2rem;
-            margin-bottom: 0.6rem; border: 1px solid #e9edf2;
-            display: none;
+            margin-bottom: 0.6rem; border: 1px solid #e9edf2; display: none;
         }
         .filters-panel.open { display: block; animation: slideDown 0.2s; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
@@ -214,7 +197,7 @@
             outline: none; border-color: #991917;
             box-shadow: 0 0 0 3px rgba(153,25,23,0.08);
         }
-        .filters-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1rem; }
+        .filters-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1rem; flex-wrap: wrap; }
 
         .active-filters {
             display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
@@ -229,76 +212,39 @@
         }
         .filter-badge:hover { background: #7a1412; }
 
-        /* ====== KPI ====== */
-.kpi-principal-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    align-items: stretch;
-}
+        .kpi-principal-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 1rem; margin-bottom: 1.5rem; align-items: stretch;
+        }
         .kpi-card-principal {
-            background: var(--surface);
-            border-radius: 20px;
-            padding: 1.2rem;
-            border-left: 6px solid var(--primary);
-            box-shadow: var(--shadow-md);
-            text-align: center; cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            background: var(--surface); border-radius: 20px; padding: 1.2rem;
+            border-left: 6px solid var(--primary); box-shadow: var(--shadow-md);
+            text-align: center; cursor: pointer; transition: all 0.2s;
+            position: relative; display: flex; flex-direction: column; justify-content: center;
         }
-        .kpi-card-principal:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-        .kpi-card-principal.active {
-            box-shadow: 0 0 0 3px var(--primary), var(--shadow-lg);
-        }
-.kpi-card-principal .kpi-number {
-    font-weight: 800; color: #991917;
-    line-height: 1.1;
-    transition: font-size 0.15s;
-}
-.kpi-card-principal .kpi-label {
-    color: #3a5a7a; font-weight: 600;
-}
+        .kpi-card-principal:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .kpi-card-principal.active { box-shadow: 0 0 0 3px var(--primary), var(--shadow-lg); }
+        .kpi-card-principal[data-cat="restaurant"] { border-left-color: var(--ochre); }
+        .kpi-card-principal[data-cat="restaurant"] .kpi-number { color: var(--ochre); }
+        .kpi-card-principal[data-cat="restaurant"].active { box-shadow: 0 0 0 3px var(--ochre), var(--shadow-lg); }
+        .kpi-card-principal .kpi-number { font-weight: 800; color: #991917; line-height: 1.1; transition: font-size 0.15s; }
+        .kpi-card-principal .kpi-label { color: #3a5a7a; font-weight: 600; }
 
-/* === CARTES HERO (grandes, mises en avant) === */
         .kpi-card-principal.kpi-hero {
-            padding: 1.8rem 1.2rem;
-            min-height: 130px;
+            padding: 1.8rem 1.2rem; min-height: 130px;
             background: linear-gradient(180deg, var(--surface-warm) 0%, #fef3ec 100%);
             box-shadow: 0 6px 20px rgba(153,25,23,0.10);
         }
-.kpi-card-principal.kpi-hero .kpi-number {
-    font-size: 2.8rem;
-}
-.kpi-card-principal.kpi-hero .kpi-label {
-    font-size: 1rem;
-    margin-top: 12px;
-}
+        .kpi-card-principal.kpi-hero .kpi-number { font-size: 2.8rem; }
+        .kpi-card-principal.kpi-hero .kpi-label { font-size: 1rem; margin-top: 12px; }
 
-/* === CARTES SECONDARY (plus petites, discrètes) === */
         .kpi-card-principal.kpi-secondary {
-            padding: 0.9rem 0.8rem;
-            min-height: 85px;
-            background: var(--surface);
-            border: 1px solid var(--stone);
-            border-left: 6px solid var(--ochre);
-            box-shadow: var(--shadow-sm);
-            opacity: 1;
+            padding: 0.9rem 0.8rem; min-height: 85px;
+            background: var(--surface); border: 1px solid var(--stone);
+            border-left: 6px solid var(--ochre); box-shadow: var(--shadow-sm);
         }
-        .kpi-card-principal.kpi-secondary .kpi-number { color: var(--ochre); }
-.kpi-card-principal.kpi-secondary .kpi-number {
-    font-size: 1.9rem;
-}
-.kpi-card-principal.kpi-secondary .kpi-label {
-    font-size: 0.85rem;
-    margin-top: 6px;
-}
+        .kpi-card-principal.kpi-secondary .kpi-number { color: var(--ochre); font-size: 1.9rem; }
+        .kpi-card-principal.kpi-secondary .kpi-label { font-size: 0.85rem; margin-top: 6px; }
 
         .type-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
         .type-chip {
@@ -316,14 +262,9 @@
         }
         .type-chip.active .chip-count { background: rgba(255,255,255,0.25); }
 
-        /* ====== CARTE ====== */
         .map-card {
-            background: var(--surface);
-            border-radius: 20px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid var(--stone);
-            box-shadow: var(--shadow-sm);
+            background: var(--surface); border-radius: 20px; padding: 1rem;
+            margin-bottom: 1.5rem; border: 1px solid var(--stone); box-shadow: var(--shadow-sm);
         }
         .map-control { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.8rem; }
         .map-control h3 { color: #991917; font-size: 1.05rem; }
@@ -349,32 +290,26 @@
         .map-legend { background: rgba(255,255,255,0.96); padding: 8px 12px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.2); font-size: 0.78rem; line-height: 1.4; }
         .map-legend .legend-scale { display: flex; height: 10px; margin: 4px 0; border-radius: 2px; overflow: hidden; }
         .map-legend .legend-scale span { flex: 1; }
-	 .map-zoom-hint {
+        .map-zoom-hint {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: rgba(153,25,23,0.95); color: white;
             padding: 10px 18px; border-radius: 10px;
             font-size: 0.85rem; font-weight: 600;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.2s;
-            z-index: 400;
-            white-space: nowrap;
+            opacity: 0; pointer-events: none; transition: opacity 0.2s;
+            z-index: 400; white-space: nowrap;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         .map-zoom-hint.show { opacity: 1; }
-	        .map-hint {
+        .map-hint {
             font-size: 0.75rem; color: #5b7a9a; margin-top: 6px;
             display: flex; align-items: center; gap: 6px;
         }
         .map-hint.ctrl-active { color: #991917; font-weight: 600; }
 
-        /* ====== DATA TABLE ====== */
         .data-table {
-            background: var(--surface);
-            border-radius: 20px;
-            padding: 0.5rem 1rem 1rem;
-            border: 1px solid var(--stone);
-            box-shadow: var(--shadow-sm);
-            overflow: hidden;
+            background: var(--surface); border-radius: 20px;
+            padding: 0.5rem 1rem 1rem; border: 1px solid var(--stone);
+            box-shadow: var(--shadow-sm); overflow: hidden;
         }
         .db-header {
             display: flex; justify-content: space-between; align-items: center;
@@ -383,20 +318,11 @@
         .db-header h3 { color: #991917; font-size: 1.05rem; display: flex; align-items: center; gap: 8px; }
 
         #dataTable { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        #dataTable th, #dataTable td { text-align: left; padding: 11px 8px; border-bottom: 1px solid #e2e8f0; }
-        #dataTable th, #dataTable td {
-            text-align: left; padding: 11px 8px;
-            border-bottom: 1px solid var(--stone-light);
-        }
+        #dataTable th, #dataTable td { text-align: left; padding: 11px 8px; border-bottom: 1px solid var(--stone-light); }
         #dataTable th {
-            background: var(--stone-light);
-            color: var(--primary);
-            font-weight: 700;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            white-space: nowrap;
-            border-bottom: 2px solid var(--stone);
+            background: var(--stone-light); color: var(--primary); font-weight: 700;
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+            white-space: nowrap; border-bottom: 2px solid var(--stone);
         }
         #dataTable th[data-sort] { cursor: pointer; user-select: none; white-space: nowrap; }
         #dataTable th[data-sort]:hover { background: #e2e8f0; }
@@ -414,24 +340,26 @@
         .badge-3 { background: #f0d4b0; color: #6b4423; }
         .badge-4 { background: #e8c898; color: #6b4423; }
         .badge-5 { background: #e0b878; color: #4a2f1a; }
-	.badge-inactive { background: #e5e7eb; color: #4b5563; margin-left: 6px; font-size: 0.65rem; }
+        .badge-inactive { background: #e5e7eb; color: #4b5563; margin-left: 6px; font-size: 0.65rem; }
+        .badge-partner { background: #d1fae5; color: #065f46; }
+        .badge-no-partner { background: #f3f4f6; color: #6b7280; }
         #dataTable tbody tr.inactive { opacity: 0.55; }
         #dataTable tbody tr.inactive:hover { background: #f8f9fa; }
 
-        .row-actions {
-            display: flex; gap: 2px; justify-content: center;
-        }
+        .row-actions { display: flex; gap: 2px; justify-content: center; }
         .row-action-btn {
-            background: none; border: none;
-            width: 28px; height: 28px;
-            border-radius: 6px;
-            cursor: pointer; transition: 0.15s;
+            background: none; border: none; width: 28px; height: 28px;
+            border-radius: 6px; cursor: pointer; transition: 0.15s;
             display: flex; align-items: center; justify-content: center;
             color: #5b7a9a; font-size: 0.8rem;
         }
         .row-action-btn:hover { background: #f1f5f9; color: #991917; }
         .row-action-btn.danger:hover { background: #fef3c7; color: #d97706; }
         .row-action-btn.success:hover { background: #d1fae5; color: #10b981; }
+        .row-action-btn.partner-on { color: #10b981; }
+        .row-action-btn.partner-off { color: #cbd5e1; }
+        .row-action-btn.partner-off:hover { background: #d1fae5; color: #10b981; }
+        .row-action-btn.partner-on:hover { background: #fee; color: #dc3545; }
 
         .pagination-bar { display: flex; align-items: center; justify-content: center; gap: 0.8rem; padding: 1rem 0; flex-wrap: wrap; }
         .pagination-bar button {
@@ -446,73 +374,55 @@
 
         .db-cards-mobile { display: none; }
 
-@media (max-width: 768px) {
-    .db-cards-mobile { display: block; margin-top: 0.5rem; }
-    .data-table table { display: none; }
-    .data-table #paginationTop,
-    .data-table #paginationBottom { display: none; }
-    .db-cards-mobile .mobile-card {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 14px;
-        padding: 14px;
-        margin-bottom: 10px;
-        cursor: pointer;
-        transition: 0.15s;
-        border-left: 4px solid #991917;
-    }
-    .db-cards-mobile .mobile-card:active { background: #fff9f5; }
-    .db-cards-mobile .mobile-card.inactive { opacity: 0.55; border-left-color: #cbd5e1; }
-    .db-cards-mobile .mobile-card-header {
-        display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;
-        margin-bottom: 6px;
-    }
-    .db-cards-mobile .mobile-card-title {
-        font-weight: 700; color: #1e2a3a; font-size: 0.95rem; line-height: 1.3;
-    }
-    .db-cards-mobile .mobile-card-ville {
-        color: #5b7a9a; font-size: 0.82rem; margin-bottom: 4px;
-    }
-    .db-cards-mobile .mobile-card-meta {
-        display: flex; flex-wrap: wrap; gap: 8px;
-        font-size: 0.75rem; color: #5b7a9a;
-        margin-bottom: 6px;
-    }
-    .db-cards-mobile .mobile-card-actions {
-        display: flex; gap: 6px; margin-top: 8px;
-        padding-top: 8px; border-top: 1px solid #f1f5f9;
-    }
-    .db-cards-mobile .mobile-card-actions button {
-        flex: 1;
-        background: white; border: 1px solid #e2e8f0;
-        padding: 6px; border-radius: 8px;
-        font-size: 0.78rem; font-weight: 600;
-        cursor: pointer; color: #3a5a7a;
-        display: flex; align-items: center; justify-content: center; gap: 4px;
-    }
-    .db-cards-mobile .mobile-card-actions button.danger { color: #d97706; }
-    .db-cards-mobile .mobile-card-actions button.success { color: #10b981; }
-}
+        @media (max-width: 768px) {
+            .db-cards-mobile { display: block; margin-top: 0.5rem; }
+            .data-table table { display: none; }
+            .data-table #paginationTop,
+            .data-table #paginationBottom { display: none; }
+            .db-cards-mobile .mobile-card {
+                background: white; border: 1px solid #e2e8f0;
+                border-radius: 14px; padding: 14px; margin-bottom: 10px;
+                cursor: pointer; transition: 0.15s; border-left: 4px solid #991917;
+            }
+            .db-cards-mobile .mobile-card[data-cat="restaurant"] { border-left-color: var(--ochre); }
+            .db-cards-mobile .mobile-card:active { background: #fff9f5; }
+            .db-cards-mobile .mobile-card.inactive { opacity: 0.55; border-left-color: #cbd5e1; }
+            .db-cards-mobile .mobile-card-header {
+                display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px;
+            }
+            .db-cards-mobile .mobile-card-title { font-weight: 700; color: #1e2a3a; font-size: 0.95rem; line-height: 1.3; }
+            .db-cards-mobile .mobile-card-ville { color: #5b7a9a; font-size: 0.82rem; margin-bottom: 4px; }
+            .db-cards-mobile .mobile-card-meta {
+                display: flex; flex-wrap: wrap; gap: 8px;
+                font-size: 0.75rem; color: #5b7a9a; margin-bottom: 6px;
+            }
+            .db-cards-mobile .mobile-card-actions {
+                display: flex; gap: 6px; margin-top: 8px;
+                padding-top: 8px; border-top: 1px solid #f1f5f9;
+            }
+            .db-cards-mobile .mobile-card-actions button {
+                flex: 1; background: white; border: 1px solid #e2e8f0;
+                padding: 6px; border-radius: 8px; font-size: 0.78rem; font-weight: 600;
+                cursor: pointer; color: #3a5a7a;
+                display: flex; align-items: center; justify-content: center; gap: 4px;
+            }
+            .db-cards-mobile .mobile-card-actions button.danger { color: #d97706; }
+            .db-cards-mobile .mobile-card-actions button.success { color: #10b981; }
+        }
         .empty-state {
             display: none; flex-direction: column; align-items: center; justify-content: center;
             padding: 3rem 2rem; text-align: center;
-            background: var(--surface-warm);
-            border-radius: 20px;
-            border: 2px dashed var(--stone-dark);
-            margin-top: 1rem;
+            background: var(--surface-warm); border-radius: 20px;
+            border: 2px dashed var(--stone-dark); margin-top: 1rem;
         }
         .empty-state i { font-size: 2.5rem; color: #cbd5e1; margin-bottom: 1rem; }
         .empty-state h3 { color: #3a5a7a; margin-bottom: 0.5rem; }
         .empty-state p { color: #8899aa; margin-bottom: 1.5rem; font-size: 0.9rem; }
 
-        /* ====== ANALYSIS ====== */
         .charts-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem; }
         .chart-card {
-            background: var(--surface);
-            border-radius: 20px;
-            padding: 1rem;
-            border: 1px solid var(--stone);
-            box-shadow: var(--shadow-sm);
+            background: var(--surface); border-radius: 20px; padding: 1rem;
+            border: 1px solid var(--stone); box-shadow: var(--shadow-sm);
         }
         .chart-card h3 { margin-bottom: 0.8rem; font-size: 1.05rem; color: #991917; }
         .chart-card > canvas { max-height: 320px; width: 100%; }
@@ -520,26 +430,14 @@
         .chart-wrap canvas { display: block; width: 100% !important; height: 100% !important; max-height: none !important; }
 
         .stats-summary {
-            background: var(--surface);
-            border-radius: 20px;
-            padding: 1rem;
-            border: 1px solid var(--stone);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 1.2rem;
+            background: var(--surface); border-radius: 20px; padding: 1rem;
+            border: 1px solid var(--stone); box-shadow: var(--shadow-sm); margin-bottom: 1.2rem;
         }
         .stats-summary h3 { margin-bottom: 0.8rem; color: #991917; font-size: 1.05rem; }
         .stats-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         .stats-table th, .stats-table td { padding: 10px 8px; text-align: center; border-bottom: 1px solid #e2e8f0; }
         .stats-table th { background: #f1f5f9; color: #991917; font-size: 0.8rem; }
 
-        .export-card { background: white; border-radius: 20px; padding: 1.5rem; border: 1px solid #e9edf2; }
-        .export-card h3 { color: #991917; margin-bottom: 1rem; }
-        .export-buttons { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
-        .export-options { display: flex; flex-direction: column; gap: 0.6rem; }
-        .export-options label { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.9rem; }
-        .export-options input[type="checkbox"] { width: 18px; height: 18px; accent-color: #991917; }
-
-        /* ====== MODAL ====== */
         .modal-overlay {
             display: none; position: fixed; inset: 0;
             background: rgba(0,0,0,0.5); z-index: 3000;
@@ -548,8 +446,7 @@
         }
         .modal-overlay.show { display: flex; }
         .modal-content {
-            background: var(--surface);
-            border-radius: 20px;
+            background: var(--surface); border-radius: 20px;
             max-width: 720px; width: 100%; max-height: 90vh;
             display: flex; flex-direction: column;
             box-shadow: 0 20px 50px rgba(91, 40, 27, 0.20);
@@ -569,12 +466,6 @@
         .modal-btn.primary:disabled { background: #e2e8f0; color: #8899aa; cursor: not-allowed; }
         .modal-btn.secondary { background: #f1f5f9; color: #3a5a7a; border: 1px solid #cbd5e1; }
         .modal-btn.secondary:hover { background: #e2e8f0; }
-        .modal-btn.primary.dirty::after {
-            content: ' ●';
-            color: #fbbf24;
-            font-size: 0.7rem;
-            margin-left: 2px;
-        }
         .modal-btn.danger { background: #dc3545; color: white; }
         .modal-btn.danger:hover { background: #b91c1c; }
         .modal-btn.warning { background: #f59e0b; color: white; }
@@ -587,30 +478,43 @@
         .form-field.full { grid-column: 1 / -1; }
         .form-field label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: #5b7a9a; font-weight: 700; margin-bottom: 5px; }
         .form-field label .required { color: #991917; }
-	.form-field label .optional { color: #8899aa; font-weight: 500; text-transform: none; font-size: 0.72rem; }
+        .form-field label .optional { color: #8899aa; font-weight: 500; text-transform: none; font-size: 0.72rem; }
         .form-field input, .form-field select {
             padding: 10px 12px; border-radius: 10px;
             border: 1px solid #cbd5e1; background: white;
             font-size: 0.9rem; font-family: inherit; transition: 0.15s;
         }
         .form-field input:focus, .form-field select:focus {
-            outline: none;
-            border-color: var(--primary);
+            outline: none; border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(153,25,23,0.12);
             background: var(--surface-warm);
         }
         .form-field .hint { font-size: 0.68rem; color: #8899aa; margin-top: 3px; }
         .form-group-title {
-            grid-column: 1 / -1;
-            font-size: 0.75rem; font-weight: 700;
+            grid-column: 1 / -1; font-size: 0.75rem; font-weight: 700;
             text-transform: uppercase; letter-spacing: 0.06em;
             color: #991917; padding-top: 0.7rem;
-            border-top: 1px solid #e2e8f0;
-            margin-top: 0.3rem;
+            border-top: 1px solid #e2e8f0; margin-top: 0.3rem;
         }
         .form-group-title:first-child { padding-top: 0; border-top: none; margin-top: 0; }
 
-        /* ====== DETAIL PANEL ====== */
+        .cat-radios { display: flex; gap: 8px; }
+        .cat-radios label {
+            flex: 1; display: flex; align-items: center; gap: 8px;
+            padding: 10px 14px; border-radius: 10px;
+            border: 2px solid #e2e8f0; cursor: pointer;
+            font-weight: 700; font-size: 0.85rem; color: #3a5a7a;
+            transition: 0.15s;
+        }
+        .cat-radios label:hover { border-color: #991917; }
+        .cat-radios input[type="radio"] { accent-color: #991917; }
+        .cat-radios label.checked {
+            border-color: #991917; background: #fff0f0; color: #991917;
+        }
+        .cat-radios label[data-cat="restaurant"].checked {
+            border-color: var(--ochre); background: #fef3ec; color: var(--ochre);
+        }
+
         .detail-panel-backdrop {
             display: none; position: fixed; inset: 0;
             background: rgba(0,0,0,0.4); z-index: 2000;
@@ -619,9 +523,7 @@
         .detail-panel-backdrop.show { display: block; }
 
         .detail-panel {
-            position: fixed;
-            background: var(--surface);
-            z-index: 2001;
+            position: fixed; background: var(--surface); z-index: 2001;
             display: flex; flex-direction: column;
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             box-shadow: -8px 0 30px rgba(91, 40, 27, 0.12);
@@ -633,12 +535,8 @@
         .detail-panel-title { flex: 1; min-width: 0; }
         .detail-panel-title h2 {
             font-family: 'Cormorant Garamond', Georgia, serif;
-            color: var(--primary);
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-            word-break: break-word;
-            line-height: 1.2;
+            color: var(--primary); font-size: 1.4rem; font-weight: 700;
+            margin-bottom: 6px; word-break: break-word; line-height: 1.2;
         }
         .detail-panel-badges { display: flex; gap: 6px; flex-wrap: wrap; }
         .badge-danger { background: #dc3545; color: white; }
@@ -649,11 +547,9 @@
             display: flex; gap: 0.5rem; flex-wrap: wrap;
         }
         .detail-action-btn {
-            flex: 1; min-width: 100px;
-            padding: 9px 12px; border-radius: 30px;
-            font-weight: 700; font-size: 0.8rem;
-            cursor: pointer; border: 1px solid #e2e8f0;
-            background: white; color: #3a5a7a;
+            flex: 1; min-width: 100px; padding: 9px 12px; border-radius: 30px;
+            font-weight: 700; font-size: 0.8rem; cursor: pointer;
+            border: 1px solid #e2e8f0; background: white; color: #3a5a7a;
             display: flex; align-items: center; justify-content: center; gap: 6px;
             transition: 0.15s;
         }
@@ -666,6 +562,8 @@
         .detail-action-btn.warning:hover { background: #fef3c7; border-color: #d97706; color: #d97706; }
         .detail-action-btn.success { color: #10b981; }
         .detail-action-btn.success:hover { background: #d1fae5; border-color: #10b981; color: #10b981; }
+        .detail-action-btn.partner { color: #10b981; }
+        .detail-action-btn.partner:hover { background: #d1fae5; border-color: #10b981; color: #10b981; }
         .detail-action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
         .detail-panel-body { flex: 1; overflow-y: auto; padding: 1.2rem 1.5rem; }
@@ -699,7 +597,6 @@
             .detail-row { grid-template-columns: 90px 1fr; }
         }
 
-        /* ====== DELETE CONFIRM ====== */
         .delete-target {
             background: #fef2f2; border-left: 4px solid #dc3545;
             padding: 12px 16px; border-radius: 8px;
@@ -708,25 +605,16 @@
         .delete-warning {
             background: #fef3c7; border-left: 4px solid #f59e0b;
             padding: 10px 14px; border-radius: 8px;
-            font-size: 0.85rem;
-            color: #78350f; line-height: 1.5;
+            font-size: 0.85rem; color: #78350f; line-height: 1.5;
         }
 
-        /* ====== TOAST ====== */
         .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
         .toast {
-            background: var(--text);
-            color: white;
-            padding: 13px 20px;
-            border-radius: 12px;
-            font-weight: 600;
-            box-shadow: 0 8px 24px rgba(91, 40, 27, 0.25);
-            transform: translateX(120%);
-            transition: transform 0.3s ease;
-            max-width: 340px;
-            display: flex; align-items: center; gap: 10px;
-            font-size: 0.9rem;
-            border-left: 4px solid var(--primary);
+            background: var(--text); color: white; padding: 13px 20px; border-radius: 12px;
+            font-weight: 600; box-shadow: 0 8px 24px rgba(91, 40, 27, 0.25);
+            transform: translateX(120%); transition: transform 0.3s ease;
+            max-width: 340px; display: flex; align-items: center; gap: 10px;
+            font-size: 0.9rem; border-left: 4px solid var(--primary);
         }
         .toast.show { transform: translateX(0); }
         .toast.success { background: #1d6f42; }
@@ -746,12 +634,8 @@
         .upload-area h2 { color: #991917; margin: 12px 0 6px; }
 
         .footer-note {
-            text-align: center;
-            margin-top: 2.5rem;
-            padding-top: 1.5rem;
-            font-size: 0.78rem;
-            color: var(--text-dim);
-            border-top: 1px solid var(--stone);
+            text-align: center; margin-top: 2.5rem; padding-top: 1.5rem;
+            font-size: 0.78rem; color: var(--text-dim); border-top: 1px solid var(--stone);
         }
 
         .letter-context {
@@ -781,25 +665,18 @@
         }
         .letter-field.multi { max-height: 320px; overflow-y: auto; }
 
-@media (max-width: 900px) {
-    .kpi-card-principal.kpi-hero .kpi-number { font-size: 2.2rem; }
-    .kpi-card-principal.kpi-secondary .kpi-number { font-size: 1.6rem; }
-}
+        @media (max-width: 900px) {
+            .kpi-card-principal.kpi-hero .kpi-number { font-size: 2.2rem; }
+            .kpi-card-principal.kpi-secondary .kpi-number { font-size: 1.6rem; }
+        }
 
-@media (max-width: 600px) {
-    .kpi-principal-grid {
-        grid-template-columns: 1fr;
-    }
-    .kpi-card-principal.kpi-hero {
-        min-height: 110px;
-        padding: 1.2rem 1rem;
-    }
-    .kpi-card-principal.kpi-hero .kpi-number { font-size: 2rem; }
-    .kpi-card-principal.kpi-secondary {
-        min-height: 85px;
-    }
-    .kpi-card-principal.kpi-secondary .kpi-number { font-size: 1.4rem; }
-}
+        @media (max-width: 600px) {
+            .kpi-principal-grid { grid-template-columns: 1fr; }
+            .kpi-card-principal.kpi-hero { min-height: 110px; padding: 1.2rem 1rem; }
+            .kpi-card-principal.kpi-hero .kpi-number { font-size: 2rem; }
+            .kpi-card-principal.kpi-secondary { min-height: 85px; }
+            .kpi-card-principal.kpi-secondary .kpi-number { font-size: 1.4rem; }
+        }
         @media (max-width: 700px) {
             .container { padding: 1rem; }
             .kpi-principal-grid { grid-template-columns: 1fr; gap: 0.8rem; }
@@ -814,7 +691,7 @@
 <body>
 <div class="container">
     <header>
-        <h1><i class="fas fa-map-marked-alt"></i> Observatoire des Hébergements</h1>
+        <h1><i class="fas fa-map-marked-alt"></i> Observatoire Hébergement - Restauration</h1>
         <div class="sub">Office de Tourisme Conques-Marcillac</div>
     </header>
 
@@ -837,8 +714,13 @@
     <button class="tab-btn" data-tab="analysis"><i class="fas fa-chart-pie"></i> Analyse</button>
 </nav>
 
-    <!-- Zone de filtres partagée (visible sur Dashboard / DB / Analyse) -->
     <div id="sharedFilterArea" style="display:none;">
+        <!-- Sélecteur de catégorie -->
+        <div class="categorie-switcher" id="categorieSwitcher">
+            <button class="categorie-btn active" data-cat="hebergement"><i class="fas fa-hotel"></i> Hébergements</button>
+            <button class="categorie-btn" data-cat="restaurant"><i class="fas fa-utensils"></i> Restaurants</button>
+        </div>
+
         <div class="db-toolbar">
             <div class="db-search">
                 <i class="fas fa-magnifying-glass"></i>
@@ -865,32 +747,51 @@
                     <label>Type</label>
                     <select id="filterType"></select>
                 </div>
-                <div class="filter-group">
+                <div class="filter-group" id="filterClassGroup">
                     <label>Classement</label>
                     <select id="filterClass"></select>
                 </div>
                 <div class="filter-group">
- 			<label>Ville</label>
-    			<select id="filterVille">
-        			<option value="">Toutes</option>
-    			</select>
-		</div>
-                <div class="filter-group">
-                    <label>Capacité ≥</label>
+                    <label>Ville</label>
+                    <select id="filterVille"><option value="">Toutes</option></select>
+                </div>
+                <div class="filter-group" id="filterCapaciteGroup">
+                    <label id="capaciteMinLabel">Capacité ≥</label>
                     <input type="number" id="capaciteMin" value="0" min="0" step="1">
                 </div>
-                <div class="filter-group">
+                <div class="filter-group" id="filterValiditeGroup">
                     <label>Validité classement</label>
-<select id="filterValidite">
-    <option value="tous">Toutes</option>
-    <option value="valide">Valide</option>
-    <option value="expire">Expiré</option>
-    <option value="6mois">Expire < 6 mois</option>
-    <option value="alerte" style="display:none">À renouveler</option>
-</select>
+                    <select id="filterValidite">
+                        <option value="tous">Toutes</option>
+                        <option value="valide">Valide</option>
+                        <option value="expire">Expiré</option>
+                        <option value="6mois">Expire < 6 mois</option>
+                        <option value="alerte" style="display:none">À renouveler</option>
+                    </select>
                 </div>
+                <div class="filter-group">
+                    <label>Partenariat</label>
+                    <select id="filterPartenaire">
+                        <option value="tous">Tous</option>
+                        <option value="oui">Partenaires</option>
+                        <option value="non">Non partenaires</option>
+                    </select>
+                </div>
+
+		                <div class="filter-group">
+                    <label>Accessibilité</label>
+                    <select id="filterAccessible">
+                        <option value="tous">Toutes</option>
+                        <option value="oui">Accessibles (tous)</option>
+                        <option value="non">Non accessibles</option>
+                        <option value="labelth">Avec label T&H</option>
+                        <option value="sans_label">Accessibles sans label</option>
+                    </select>
+                </div>
+
             </div>
             <div class="filters-actions">
+                <button class="btn-icon small ghost" id="manageTypesBtn" style="margin:0;"><i class="fas fa-tags"></i> Gérer les types</button>
                 <button class="btn-icon small ghost" id="resetFiltersBtn" style="margin:0;"><i class="fas fa-rotate-left"></i> Réinitialiser</button>
                 <button class="btn-icon small" id="closeFiltersBtn" style="margin:0;"><i class="fas fa-check"></i> Appliquer</button>
             </div>
@@ -919,7 +820,8 @@
                 <div id="mapZoomHint" class="map-zoom-hint">
                     <i class="fas fa-info-circle"></i> Ctrl (⌘ sur Mac) + molette pour zoomer
                 </div>
-            </div>            <div class="map-hint" id="mapHint">
+            </div>
+            <div class="map-hint" id="mapHint">
                 <i class="fas fa-info-circle"></i>
                 <span>Carte figée. Maintenez <kbd style="background:#f1f5f9;padding:1px 6px;border-radius:4px;border:1px solid #cbd5e1;font-size:0.7rem;">Ctrl</kbd> (⌘ sur Mac) + molette pour zoomer.</span>
             </div>
@@ -928,13 +830,14 @@
 
     <!-- TAB : DATABASE -->
     <section class="tab-view" id="tab-database">
-        <div style="display:flex; justify-content:flex-end; margin-bottom: 0.8rem;">
-            <button class="btn-icon" id="addHebergementBtn" style="margin:0;"><i class="fas fa-plus"></i> Ajouter un hébergement</button>
+        <div style="display:flex; justify-content:flex-end; gap: 8px; margin-bottom: 0.8rem; flex-wrap: wrap;">
+            <button class="btn-icon small warn" id="resetPartnersBtn" style="margin:0;" title="Remettre à zéro tous les partenariats (nouvelle année)"><i class="fas fa-rotate-left"></i> Réinitialiser les partenariats</button>
+            <button class="btn-icon" id="addHebergementBtn" style="margin:0;"><i class="fas fa-plus"></i> Ajouter</button>
         </div>
 
         <div class="data-table">
             <div class="db-header">
-                <h3><i class="fas fa-list"></i> Hébergements <span id="tableCount" style="font-weight:400;font-size:0.85rem;color:#5b7a9a;"></span></h3>
+                <h3><i class="fas fa-list"></i> <span id="tableTitleLabel">Hébergements</span> <span id="tableCount" style="font-weight:400;font-size:0.85rem;color:#5b7a9a;"></span></h3>
             </div>
 
             <div class="pagination-bar" id="paginationTop">
@@ -953,26 +856,14 @@
 
             <div style="overflow-x: auto;">
                 <table id="dataTable">
-                    <thead>
-                        <tr>
-                            <th data-sort="nom">Nom <span class="sort-ind">↕</span></th>
-                            <th data-sort="type">Type <span class="sort-ind">↕</span></th>
-                            <th data-sort="ville">Ville <span class="sort-ind">↕</span></th>
-                            <th data-sort="classement">Classement <span class="sort-ind">↕</span></th>
-                            <th data-sort="capacite">Capacité <span class="sort-ind">↕</span></th>
-                            <th data-sort="nbUnites">Unités <span class="sort-ind">↕</span></th>
-                            <th data-sort="debutClassement">Début classement <span class="sort-ind">↕</span></th>
-                            <th data-sort="finClassement">Fin classement <span class="sort-ind">↕</span></th>
-                            <th style="text-align:center;">Actions</th>
-                        </tr>
-                    </thead>
+                    <thead id="dataTableHead"></thead>
                     <tbody></tbody>
                 </table>
-        </div>
+            </div>
 
-        <div class="db-cards-mobile" id="dbCardsMobile"></div>
+            <div class="db-cards-mobile" id="dbCardsMobile"></div>
 
-        <div class="pagination-bar" id="paginationBottom">
+            <div class="pagination-bar" id="paginationBottom">
                 <button id="pageFirst" title="Première">⏮</button>
                 <button id="pagePrev">◀ Précédent</button>
                 <span class="page-info" id="pageInfo">Page 1 / 1</span>
@@ -990,42 +881,67 @@
         <div class="empty-state" id="emptyState">
             <i class="fas fa-magnifying-glass"></i>
             <h3>Aucun résultat</h3>
-            <p>Aucun hébergement ne correspond à votre recherche.</p>
+            <p>Aucun établissement ne correspond à votre recherche.</p>
             <button class="btn-icon" id="emptyResetBtn"><i class="fas fa-rotate-left"></i> Réinitialiser</button>
         </div>
     </section>
 
     <!-- TAB : ANALYSIS -->
     <section class="tab-view" id="tab-analysis">
-        <div class="charts-row">
-            <div class="chart-card"><h3><i class="fas fa-building"></i> Répartition par type</h3><canvas id="typeChart"></canvas></div>
-            <div class="chart-card"><h3><i class="fas fa-star"></i> Classement</h3><canvas id="classChart"></canvas></div>
-        </div>
-
-        <div class="charts-row">
-            <div class="chart-card">
-                <h3><i class="fas fa-chart-simple"></i> Capacité totale par commune</h3>
-                <div class="chart-wrap"><canvas id="capaciteCommuneChart"></canvas></div>
+        <!-- Vue hébergements -->
+        <div id="analysisHebergement">
+            <div class="charts-row">
+                <div class="chart-card"><h3><i class="fas fa-building"></i> Répartition par type</h3><canvas id="typeChart"></canvas></div>
+                <div class="chart-card"><h3><i class="fas fa-star"></i> Classement</h3><canvas id="classChart"></canvas></div>
             </div>
-            <div class="chart-card">
-                <h3><i class="fas fa-hotel"></i> Nombre de structures par commune</h3>
-                <div class="chart-wrap"><canvas id="nbStructuresCommuneChart"></canvas></div>
+            <div class="charts-row">
+                <div class="chart-card">
+                    <h3><i class="fas fa-chart-simple"></i> Capacité totale par commune</h3>
+                    <div class="chart-wrap"><canvas id="capaciteCommuneChart"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <h3><i class="fas fa-hotel"></i> Nombre de structures par commune</h3>
+                    <div class="chart-wrap"><canvas id="nbStructuresCommuneChart"></canvas></div>
+                </div>
+            </div>
+            <div class="stats-summary">
+                <h3><i class="fas fa-table"></i> Synthèse par type d'hébergement</h3>
+                <table class="stats-table" id="summaryTable">
+                    <thead><tr><th>Type</th><th>Structures</th><th>Capacité (lits)</th><th>Moyenne/structure</th><th>% structures</th><th>% capacité</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div class="stats-summary">
+                <h3><i class="fas fa-wheelchair"></i> Accessibilité des hébergements</h3>
+                <table class="stats-table" id="accessHebTable">
+                    <thead><tr><th>Catégorie</th><th>Structures</th><th>% du total</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div class="charts-row" id="hotelChambresRow" style="display: none;">
+                <div class="chart-card">
+                    <h3><i class="fas fa-bed"></i> Chambres d'hôtels par commune</h3>
+                    <div class="chart-wrap"><canvas id="chambresHotelChart"></canvas></div>
+                </div>
             </div>
         </div>
 
-        <!-- Synthèse avant chambres -->
-        <div class="stats-summary">
-            <h3><i class="fas fa-table"></i> Synthèse par type d'hébergement</h3>
-            <table class="stats-table" id="summaryTable">
-                <thead><tr><th>Type</th><th>Structures</th><th>Capacité (lits)</th><th>Moyenne/structure</th><th>% structures</th><th>% capacité</th></tr></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-
-        <div class="charts-row" id="hotelChambresRow" style="display: none;">
-            <div class="chart-card">
-                <h3><i class="fas fa-bed"></i> Chambres d'hôtels par commune</h3>
-                <div class="chart-wrap"><canvas id="chambresHotelChart"></canvas></div>
+        <!-- Vue restaurants -->
+        <div id="analysisRestaurant" style="display:none;">
+            <div class="charts-row">
+                <div class="chart-card">
+                    <h3><i class="fas fa-utensils"></i> Nombre de restaurants par commune</h3>
+                    <div class="chart-wrap"><canvas id="restaurantsCommuneChart"></canvas></div>
+                </div>
+            </div>
+            <div class="stats-summary">
+                <h3><i class="fas fa-wheelchair"></i> Accessibilité des restaurants</h3>
+                <table class="stats-table" id="accessRestTable">
+                    <thead><tr><th>Catégorie</th><th>Structures</th><th>% du total</th></tr></thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
     </section>
@@ -1050,6 +966,7 @@
     </div>
     <div class="detail-panel-actions">
         <button class="detail-action-btn primary" id="detailEditBtn"><i class="fas fa-pen"></i> Modifier</button>
+        <button class="detail-action-btn partner" id="detailPartnerBtn"><i class="fas fa-handshake"></i> Partenaire</button>
         <button class="detail-action-btn" id="detailLetterBtn"><i class="fas fa-envelope"></i> Relancer</button>
         <button class="detail-action-btn danger" id="detailToggleBtn"><i class="fas fa-eye-slash"></i> Désactiver</button>
     </div>
@@ -1060,20 +977,35 @@
 <div class="modal-overlay" id="hebergementModal">
     <div class="modal-content" style="max-width: 900px;">
         <div class="modal-header">
-            <h3 id="hebergementModalTitle"><i class="fas fa-edit"></i> Modifier l'hébergement</h3>
+            <h3 id="hebergementModalTitle"><i class="fas fa-edit"></i> Modifier</h3>
             <button class="modal-close" id="closeHebergementModal">×</button>
         </div>
         <div class="modal-body">
             <form id="hebergementForm" onsubmit="return false;">
                 <div class="form-grid">
-                    <div class="form-group-title">Identité de l'hébergement</div>
+                    <div class="form-group-title">Catégorie</div>
+                    <div class="form-field full">
+                        <div class="cat-radios" id="catRadios">
+                            <label data-cat="hebergement" class="checked">
+                                <input type="radio" name="fCategorie" value="hebergement" checked>
+                                <i class="fas fa-hotel"></i> Hébergement
+                            </label>
+                            <label data-cat="restaurant">
+                                <input type="radio" name="fCategorie" value="restaurant">
+                                <i class="fas fa-utensils"></i> Restaurant
+                            </label>
+                        </div>
+                    </div>
 
+                    <div class="form-group-title">Identité</div>
                     <div class="form-field full">
                         <label for="fNom">Nom commercial <span class="required">*</span></label>
                         <input type="text" id="fNom">
                     </div>
                     <div class="form-field">
-                        <label for="fType">Type <span class="required">*</span></label>
+                        <label for="fType">Type <span class="required">*</span>
+                            <button type="button" id="quickAddTypeBtn" style="background:none;border:none;color:#991917;cursor:pointer;font-size:0.72rem;font-weight:600;text-transform:none;letter-spacing:0;" title="Ajouter un nouveau type">＋ Ajouter</button>
+                        </label>
                         <select id="fType"></select>
                     </div>
                     <div class="form-field">
@@ -1099,7 +1031,6 @@
                     </div>
 
                     <div class="form-group-title">Gestionnaire</div>
-
                     <div class="form-field">
                         <label for="fCiviliteGest">Civilité <span class="required">*</span></label>
                         <input type="text" id="fCiviliteGest">
@@ -1125,9 +1056,9 @@
                         <input type="text" id="fPortableGest">
                     </div>
 
-                    <div class="form-group-title">Classement & capacité</div>
+                    <div class="form-group-title" id="classementSectionTitle">Classement & capacité</div>
 
-                    <div class="form-field">
+                    <div class="form-field" id="fieldClassement">
                         <label for="fClassement">Classement <span class="required">*</span></label>
                         <select id="fClassement">
                             <option value="Non classé">Non classé</option>
@@ -1138,39 +1069,65 @@
                             <option value="5*">5 étoiles</option>
                         </select>
                     </div>
-                    <div class="form-field">
+                    <div class="form-field" id="fieldCapacite">
                         <label for="fCapacite">Capacité (lits) <span class="required">*</span></label>
                         <input type="number" id="fCapacite" min="0" step="1">
                     </div>
-                    <div class="form-field">
+                    <div class="form-field" id="fieldNbUnites">
                         <label for="fNbUnites">Nombre d'unités <span class="required">*</span></label>
                         <input type="number" id="fNbUnites" min="1" step="1">
                     </div>
-                    <div class="form-field">
+                    <div class="form-field" id="fieldDebutClassement">
                         <label for="fDebutClassement">Début classement <span class="optional">(optionnel)</span></label>
                         <input type="date" id="fDebutClassement">
                     </div>
-                    <div class="form-field">
+                    <div class="form-field" id="fieldFinClassement">
                         <label for="fFinClassement">Fin classement <span class="optional">(optionnel)</span></label>
                         <input type="date" id="fFinClassement">
                     </div>
+                    <div class="form-field" id="fieldCouverts" style="display:none;">
+                        <label for="fCouverts">Nombre de couverts <span class="required">*</span></label>
+                        <input type="number" id="fCouverts" min="0" step="1">
+                    </div>
+
+                    <div class="form-group-title">Partenariat</div>
+                    <div class="form-field full">
+                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:0.9rem;color:#1e2a3a;">
+                            <input type="checkbox" id="fPartenaire" style="width:18px;height:18px;accent-color:#991917;">
+                            <span>Cet établissement est <strong>partenaire</strong> de l'Office de Tourisme</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group-title">Accessibilité</div>
+                    <div class="form-field full">
+                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:0.9rem;color:#1e2a3a;">
+                            <input type="checkbox" id="fAccessible" style="width:18px;height:18px;accent-color:#991917;">
+                            <span>La structure est <strong>accessible</strong> (PMR)</span>
+                        </label>
+                    </div>
+                    <div class="form-field full">
+                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:0.9rem;color:#1e2a3a;">
+                            <input type="checkbox" id="fLabelTH" style="width:18px;height:18px;accent-color:#991917;">
+                            <span>La structure dispose du <strong>label Tourisme & Handicap</strong></span>
+                        </label>
+                        <div class="hint">💡 Cocher cette case coche automatiquement « accessible ».</div>
+                    </div>
 
                     <div class="form-group-title">Géolocalisation</div>
-
-<div class="form-field">
-    <label for="fLat">Latitude <span class="required">*</span></label>
-    <input type="number" id="fLat" step="any" placeholder="44.xxxxx">
-</div>
-<div class="form-field">
-    <label for="fLon">Longitude <span class="required">*</span></label>
-    <input type="number" id="fLon" step="any" placeholder="2.xxxxx">
-</div>
-<div class="form-field full">
-    <button type="button" class="btn-icon small ghost" id="geocodeBtn" style="margin:0;width:auto;align-self:flex-start;">
-        <i class="fas fa-location-dot"></i> Géocoder automatiquement depuis l'adresse
-    </button>
-    <div class="hint">💡 Utilise l'API Adresse du gouvernement, résultat en 1 clic.</div>
-</div>
+                    <div class="form-field">
+                        <label for="fLat">Latitude <span class="required">*</span></label>
+                        <input type="number" id="fLat" step="any" placeholder="44.xxxxx">
+                    </div>
+                    <div class="form-field">
+                        <label for="fLon">Longitude <span class="required">*</span></label>
+                        <input type="number" id="fLon" step="any" placeholder="2.xxxxx">
+                    </div>
+                    <div class="form-field full">
+                        <button type="button" class="btn-icon small ghost" id="geocodeBtn" style="margin:0;width:auto;align-self:flex-start;">
+                            <i class="fas fa-location-dot"></i> Géocoder automatiquement depuis l'adresse
+                        </button>
+                        <div class="hint">💡 Utilise l'API Adresse du gouvernement, résultat en 1 clic.</div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -1181,26 +1138,24 @@
     </div>
 </div>
 
-<!-- MODAL DELETE (simplifié) -->
+<!-- MODAL DEACTIVATE -->
 <div class="modal-overlay" id="deleteConfirmModal" style="z-index: 3500;">
     <div class="modal-content" style="max-width: 480px;">
         <div class="modal-header">
-            <h3><i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i> Confirmer la suppression</h3>
+            <h3><i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i> Confirmation</h3>
             <button class="modal-close" id="closeDeleteModal">×</button>
         </div>
         <div class="modal-body">
-            <p style="margin-bottom: 0.5rem;">Vous êtes sur le point de supprimer cet hébergement :</p>
+            <p style="margin-bottom: 0.5rem;">Vous êtes sur le point de modifier :</p>
             <div class="delete-target" id="deleteTarget"></div>
             <div class="delete-warning">
-                <strong>⚠️ Action irréversible</strong><br>
-                Cette suppression sera immédiatement visible par tous les utilisateurs et ne peut pas être annulée.
+                <strong>⚠️ Action visible par tous</strong><br>
+                Ce changement sera immédiatement visible par tous les utilisateurs.
             </div>
         </div>
         <div class="modal-footer">
             <button class="modal-btn secondary" id="cancelDeleteBtn">Annuler</button>
-            <button class="modal-btn danger" id="confirmDeleteBtn">
-                <i class="fas fa-trash"></i> Supprimer définitivement
-            </button>
+            <button class="modal-btn danger" id="confirmDeleteBtn"><i class="fas fa-check"></i> Confirmer</button>
         </div>
     </div>
 </div>
@@ -1236,6 +1191,40 @@
     </div>
 </div>
 
+<!-- MODAL TYPES MANAGEMENT -->
+<div class="modal-overlay" id="typeManageModal" style="z-index: 3300;">
+    <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-header">
+            <h3><i class="fas fa-tags"></i> Gérer les types</h3>
+            <button class="modal-close" id="closeTypeManageModal">×</button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size:0.85rem;color:#5b7a9a;margin-bottom:1rem;">
+                Ajoutez ou supprimez des types. Cette liste est partagée avec tous les utilisateurs. Supprimer un type ne supprime pas les établissements existants qui l'utilisent.
+            </p>
+            <div style="margin-bottom: 1.2rem;">
+                <label style="display:block;font-size:0.72rem;font-weight:700;color:#5b7a9a;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Types d'hébergement</label>
+                <div style="display:flex;gap:6px;margin-bottom:8px;">
+                    <input type="text" id="newTypeHeb" placeholder="Ex: Hébergements insolites" style="flex:1;padding:9px 12px;border-radius:10px;border:1px solid #cbd5e1;font-size:0.88rem;">
+                    <button class="btn-icon small" id="addTypeHebBtn" style="margin:0;"><i class="fas fa-plus"></i></button>
+                </div>
+                <div id="listTypesHeb" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+            </div>
+            <div>
+                <label style="display:block;font-size:0.72rem;font-weight:700;color:#5b7a9a;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Types de restaurant</label>
+                <div style="display:flex;gap:6px;margin-bottom:8px;">
+                    <input type="text" id="newTypeRest" placeholder="Ex: Bistrot" style="flex:1;padding:9px 12px;border-radius:10px;border:1px solid #cbd5e1;font-size:0.88rem;">
+                    <button class="btn-icon small" id="addTypeRestBtn" style="margin:0;"><i class="fas fa-plus"></i></button>
+                </div>
+                <div id="listTypesRest" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn secondary" id="closeTypeManageBtn">Fermer</button>
+        </div>
+    </div>
+</div>
+
 <div class="loading-overlay" id="loadingOverlay">
     <div class="spinner"><i class="fas fa-spinner fa-spin"></i></div>
     <div id="loadingText">Chargement…</div>
@@ -1254,7 +1243,7 @@ const firebaseConfig = {
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
     getFirestore, collection, doc, onSnapshot,
-    addDoc, updateDoc, deleteDoc, writeBatch
+    addDoc, updateDoc, deleteDoc, writeBatch, setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
@@ -1269,26 +1258,46 @@ let formInitialState = null;
 let currentTab = 'dashboard';
 const communeGeoCache = new Map();
 
+/* === CATÉGORIES & TYPES === */
+const FALLBACK_TYPES_HEBERGEMENT = [
+    "Hôtel", "Camping", "Chambre d'hôtes", "Meublé de tourisme",
+    "Village vacances", "Auberges collectives", "Chambre à louer",
+    "Gîte d'étape", "Hébergements insolites", "Aire naturelle de camping",
+    "A qualifier"
+];
+const FALLBACK_TYPES_RESTAURANT = [
+    "Restaurant traditionnel", "Restaurant gastronomique", "Brasserie",
+    "Bistrot", "Crêperie", "Pizzeria", "Bar à tapas",
+    "Restaurant de spécialités", "Food truck", "A qualifier"
+];
+let typesConfig = {
+    hebergement: [...FALLBACK_TYPES_HEBERGEMENT],
+    restaurant: [...FALLBACK_TYPES_RESTAURANT]
+};
+
 const colMapping = {
     nom: "NOM COMMERCIAL", adresse1: "ADRESSE1", adresse2: "ADRESSE2",
     codePostal: "CODE POSTAL", ville: "VILLE", mail: "MAIL",
     civiliteGest: "CIVILITE GEST", nomGest: "NOM GEST", prenomGest: "PRENOM GEST",
     mailGest: "MAIL GEST", telGest: "TEL GEST", portableGest: "PORTABLE GEST",
     type: "CARACTERISTIQUE", classement: "CLASSEMENT LEGAL",
-    capacite: "CAPACITE", nbUnites: "NOMBRE UNITES",
+    capacite: "CAPACITE", couverts: "COUVERTS", nbUnites: "NOMBRE UNITES",
     debutClassement: "DEBUT CLASSEMENT", finClassement: "FIN CLASSEMENT",
-    lat: "LATITUDE", lon: "LONGITUDE"
+    lat: "LATITUDE", lon: "LONGITUDE",
+    categorie: "CATEGORIE", partenaire: "PARTENAIRE",
+    accessible: "ACCESSIBLE", labelTH: "LABEL TH"
 };
 
-const FALLBACK_TYPES = ["Hôtel","Camping","Chambre d'hôtes","Meublé de tourisme","Village vacances","Auberges collectives","Chambre à louer","Gîte d'étape","Hébergements insolites de charme","Aire naturelle de camping","A qualifier"];
+let currentCategorie = "hebergement";
 let currentStatut = "actif", currentType = "Tous", currentClass = "Tous", currentVille = "",
-    currentCapaciteMin = 0, currentValidite = "tous", currentSearch = "";
+    currentCapaciteMin = 0, currentValidite = "tous", currentSearch = "",
+    currentPartenaire = "tous", currentAccessible = "tous";
 let currentSortKey = null, currentSortDir = "asc";
 let currentPage = 1, pageSize = 25;
 let currentMapMode = "etablissements";
 let mapInitialized = false;
 
-const STORAGE_KEY = 'observatoire_filters_v4';
+const STORAGE_KEY = 'observatoire_filters_v5';
 
 function escapeHtml(str) {
     return String(str ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
@@ -1339,7 +1348,11 @@ function getTypeLabel(type) {
         "Hôtel": "hôtel", "Camping": "camping", "Chambre d'hôtes": "chambre d'hôtes",
         "Meublé de tourisme": "meublé de tourisme", "Village vacances": "village de vacances",
         "Auberges collectives": "auberge collective", "Chambre à louer": "chambre à louer",
-        "Gîte d'étape": "gîte d'étape"
+        "Gîte d'étape": "gîte d'étape", "Hébergements insolites": "hébergement insolite",
+        "Restaurant traditionnel": "restaurant", "Restaurant gastronomique": "restaurant gastronomique",
+        "Brasserie": "brasserie", "Bistrot": "bistrot", "Crêperie": "crêperie",
+        "Pizzeria": "pizzeria", "Bar à tapas": "bar à tapas",
+        "Restaurant de spécialités": "restaurant de spécialités"
     };
     return map[type] || (type || '').toLowerCase();
 }
@@ -1368,8 +1381,10 @@ function hideLoading() {
 function saveFilters() {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
-            statut: currentStatut, type: currentType, class: currentClass, ville: currentVille,
-            capacite: currentCapaciteMin, validite: currentValidite,
+            categorie: currentCategorie, statut: currentStatut, type: currentType,
+            class: currentClass, ville: currentVille, capacite: currentCapaciteMin,
+            validite: currentValidite, partenaire: currentPartenaire,
+            accessible: currentAccessible,
             sortKey: currentSortKey, sortDir: currentSortDir,
             pageSize: pageSize, mapMode: currentMapMode, tab: currentTab
         }));
@@ -1380,29 +1395,29 @@ function restoreFilters() {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return;
         const s = JSON.parse(raw);
+        if (s.categorie && ['hebergement','restaurant'].includes(s.categorie)) {
+            currentCategorie = s.categorie;
+        }
         if (s.statut && ['actif','inactif','tous'].includes(s.statut)) {
             currentStatut = s.statut;
             document.getElementById("filterStatut").value = s.statut;
         }
-        if (s.type && document.querySelector(`#filterType option[value="${CSS.escape(s.type)}"]`)) {
-            currentType = s.type; document.getElementById("filterType").value = s.type;
+        if (s.validite && ['tous','valide','expire','6mois','alerte'].includes(s.validite)) {
+            currentValidite = s.validite;
+            document.getElementById("filterValidite").value = s.validite;
         }
-        if (s.class && document.querySelector(`#filterClass option[value="${CSS.escape(s.class)}"]`)) {
-            currentClass = s.class; document.getElementById("filterClass").value = s.class;
+        if (s.partenaire && ['tous','oui','non'].includes(s.partenaire)) {
+            currentPartenaire = s.partenaire;
+            document.getElementById("filterPartenaire").value = s.partenaire;
         }
-        if (s.ville) {
-            const sel = document.getElementById("filterVille");
-            if (sel && Array.from(sel.options).some(o => o.value === s.ville)) {
-                currentVille = s.ville; sel.value = s.ville;
-            }
+        if (s.accessible && ['tous','oui','non','labelth','sans_label'].includes(s.accessible)) {
+            currentAccessible = s.accessible;
+            document.getElementById("filterAccessible").value = s.accessible;
         }
         if (typeof s.capacite === 'number' && s.capacite > 0) {
             currentCapaciteMin = s.capacite; document.getElementById("capaciteMin").value = s.capacite;
         }
-        if (s.validite && ['tous','valide','expire','6mois','alerte'].includes(s.validite)) {
-            currentValidite = s.validite;
-            document.getElementById("filterValidite").value = s.validite;
-        }        if (s.sortKey) { currentSortKey = s.sortKey; currentSortDir = s.sortDir || 'asc'; }
+        if (s.sortKey) { currentSortKey = s.sortKey; currentSortDir = s.sortDir || 'asc'; }
         if (s.pageSize) {
             pageSize = s.pageSize;
             document.getElementById("pageSize").value = s.pageSize;
@@ -1424,11 +1439,41 @@ async function initFirebase() {
         db = getFirestore(app);
         auth = getAuth(app);
         await signInAnonymously(auth);
+        listenToTypesConfig();
         listenToFirestore();
     } catch (err) {
         console.error(err);
         hideLoading();
         showToast("Erreur Firebase : " + err.message, "error", 6000);
+    }
+}
+
+/* === TYPES CONFIG (partagée) === */
+function listenToTypesConfig() {
+    try {
+        onSnapshot(doc(db, 'config', 'types'), (snap) => {
+            if (snap.exists()) {
+                const data = snap.data();
+                if (Array.isArray(data.hebergement) && data.hebergement.length) typesConfig.hebergement = data.hebergement;
+                if (Array.isArray(data.restaurant) && data.restaurant.length) typesConfig.restaurant = data.restaurant;
+            }
+            // Rafraîchir UI si déjà bootstrappé
+            if (bootstrapped) {
+                refreshFiltersOptions();
+                refreshTypeManageLists();
+            }
+        }, (err) => console.warn('types config listen error', err));
+    } catch(e) { console.warn(e); }
+}
+async function saveTypesConfig() {
+    try {
+        await setDoc(doc(db, 'config', 'types'), {
+            hebergement: typesConfig.hebergement,
+            restaurant: typesConfig.restaurant
+        });
+    } catch (err) {
+        console.error(err);
+        showToast("Erreur sauvegarde types : " + err.message, "error");
     }
 }
 
@@ -1440,11 +1485,13 @@ function listenToFirestore() {
             const data = d.data();
             return {
                 _id: d.id,
+                categorie: data.categorie || 'hebergement',
                 nom: data.nom || "Sans nom",
                 type: data.type || "Autre",
                 ville: data.ville || "Inconnue",
                 classement: data.classement || "Non classé",
                 capacite: Number(data.capacite) || 0,
+                couverts: Number(data.couverts) || 0,
                 nbUnites: Number(data.nbUnites) || 1,
                 debutClassement: parseFrenchDate(data.debutClassement),
                 finClassement: parseFrenchDate(data.finClassement),
@@ -1460,7 +1507,10 @@ function listenToFirestore() {
                 mailGest: data.mailGest || "",
                 telGest: data.telGest || "",
                 portableGest: data.portableGest || "",
-		actif: data.actif !== false
+                partenaire: data.partenaire === true,
+                accessible: data.accessible === true,
+                labelTH: data.labelTH === true,
+                actif: data.actif !== false
             };
         });
 
@@ -1480,6 +1530,7 @@ function listenToFirestore() {
                 bootstrapped = true;
             } else {
                 refreshFiltersOptions();
+                refreshTypeManageLists();
             }
             switchTab(currentTab);
             applyFilters();
@@ -1499,12 +1550,49 @@ function bootstrapUI() {
     initMapTabs();
     initMapFullscreen();
     initTabs();
+    initCategorieSwitcher();
     initLetterFeature();
     initHebergementModal();
     initDetailPanel();
     initDeactivateConfirm();
     initDbToolbar();
+    initTypeManage();
     restoreFilters();
+    refreshFiltersOptions();
+    refreshTypeManageLists();
+    updateCategorieUI();
+}
+
+function initCategorieSwitcher() {
+    document.querySelectorAll('#categorieSwitcher .categorie-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (currentCategorie === btn.dataset.cat) return;
+            currentCategorie = btn.dataset.cat;
+            // Reset du type si non applicable
+            currentType = "Tous";
+            currentPage = 1;
+            updateCategorieUI();
+            applyFilters();
+            saveFilters();
+        });
+    });
+}
+
+function updateCategorieUI() {
+    document.querySelectorAll('#categorieSwitcher .categorie-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.cat === currentCategorie);
+    });
+    const isRest = currentCategorie === 'restaurant';
+    // Masquer/afficher les filtres non pertinents
+    document.getElementById('filterClassGroup').style.display = isRest ? 'none' : '';
+    document.getElementById('filterValiditeGroup').style.display = isRest ? 'none' : '';
+    document.getElementById('capaciteMinLabel').textContent = isRest ? 'Couverts ≥' : 'Capacité ≥';
+    // Titre de table
+    document.getElementById('tableTitleLabel').textContent = isRest ? 'Restaurants' : 'Hébergements';
+    // Sections d'analyse
+    document.getElementById('analysisHebergement').style.display = isRest ? 'none' : '';
+    document.getElementById('analysisRestaurant').style.display = isRest ? '' : 'none';
+    // Recharger options de types
     refreshFiltersOptions();
 }
 
@@ -1518,7 +1606,6 @@ function switchTab(tab) {
     currentTab = tab;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
     document.querySelectorAll('.tab-view').forEach(v => v.classList.toggle('active', v.id === 'tab-' + tab));
-    // Cache la zone de filtres sur l'onglet Export
     document.getElementById('sharedFilterArea').style.display = 'block';
     saveFilters();
 
@@ -1543,75 +1630,84 @@ function initDbToolbar() {
     document.getElementById('toggleFiltersBtn').addEventListener('click', () => {
         document.getElementById('filtersPanel').classList.toggle('open');
     });
-
     document.getElementById('closeFiltersBtn').addEventListener('click', () => {
         document.getElementById('filtersPanel').classList.remove('open');
     });
-
     document.getElementById('resetFiltersBtn').addEventListener('click', resetAllFilters);
     document.getElementById('emptyResetBtn').addEventListener('click', resetAllFilters);
 }
 
 function refreshFiltersOptions() {
-    // Type (select)
-    const types = [...new Set(rawData.map(d => d.type))].filter(Boolean).sort();
+    // Types selon la catégorie active
+    const dataTypes = [...new Set(rawData.filter(d => d.categorie === currentCategorie).map(d => d.type))].filter(Boolean);
+    const configTypes = typesConfig[currentCategorie] || [];
+    const allTypes = [...new Set([...configTypes, ...dataTypes])].sort((a,b) => a.localeCompare(b, 'fr'));
+
     const typeSel = document.getElementById("filterType");
     const curType = typeSel.value;
     typeSel.innerHTML = '<option value="Tous">Tous</option>' +
-        types.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
-    if (curType && types.includes(curType)) typeSel.value = curType;
+        allTypes.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+    if (curType && allTypes.includes(curType)) typeSel.value = curType;
+    else if (curType && curType !== "Tous") { currentType = "Tous"; typeSel.value = "Tous"; }
 
-    // Ville (select avec compteurs)
-    const villes = [...new Set(rawData.map(d => d.ville))].filter(Boolean).sort();
+    // Classement (seulement hébergements)
+    const classes = [...new Set(rawData.filter(d => d.categorie === 'hebergement').map(d => d.classement))].sort((a,b) => {
+        if (a === "Non classé") return 1;
+        if (b === "Non classé") return -1;
+        return (parseInt(a) || 0) - (parseInt(b) || 0);
+    });
+    let classOptions = '<option value="Tous">Tous</option><option value="__CLASSES__">★ Classés uniquement</option>';
+    classOptions += classes.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    document.getElementById("filterClass").innerHTML = classOptions;
+
+    // Villes (avec compteurs de la catégorie active)
+    const villes = [...new Set(rawData.filter(d => d.categorie === currentCategorie).map(d => d.ville))].filter(Boolean).sort();
     const villeSel = document.getElementById("filterVille");
     const curVille = villeSel.value;
     villeSel.innerHTML = '<option value="">Toutes</option>' +
         villes.map(v => {
             const count = rawData.filter(d =>
-                d.ville === v &&
+                d.categorie === currentCategorie && d.ville === v &&
                 (currentStatut === "tous" || (currentStatut === "actif" && d.actif) || (currentStatut === "inactif" && !d.actif))
             ).length;
             return `<option value="${escapeHtml(v)}">${escapeHtml(v)} (${count})</option>`;
         }).join('');
     if (curVille && villes.includes(curVille)) villeSel.value = curVille;
-    // Datalist villes formulaire
-    document.getElementById("villesList2").innerHTML = villes.map(v => `<option value="${escapeHtml(v)}">`).join('');
+    else if (curVille) { currentVille = ""; }
 
-    // Select Type du formulaire
+    // Datalist villes formulaire (toutes catégories)
+    const allVilles = [...new Set(rawData.map(d => d.ville))].filter(Boolean).sort();
+    document.getElementById("villesList2").innerHTML = allVilles.map(v => `<option value="${escapeHtml(v)}">`).join('');
+
     refreshTypeSelectOptions();
 }
 
 function refreshTypeSelectOptions() {
-    const typesFromData = [...new Set(rawData.map(d => d.type))].filter(Boolean);
-    const allTypes = [...new Set([...FALLBACK_TYPES, ...typesFromData])].sort((a,b) => a.localeCompare(b, 'fr'));
     const sel = document.getElementById('fType');
     if (!sel) return;
+    const cat = currentEditingCategorie();
+    const dataTypes = [...new Set(rawData.filter(d => d.categorie === cat).map(d => d.type))].filter(Boolean);
+    const allTypes = [...new Set([...(typesConfig[cat] || []), ...dataTypes])].sort((a,b) => a.localeCompare(b, 'fr'));
     const current = sel.value;
     sel.innerHTML = '<option value="">— Choisir un type —</option>' +
         allTypes.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
     if (current && allTypes.includes(current)) sel.value = current;
 }
 
+function currentEditingCategorie() {
+    const r = document.querySelector('input[name="fCategorie"]:checked');
+    return r ? r.value : 'hebergement';
+}
+
 function initFilters() {
-    const classes = [...new Set(rawData.map(d => d.classement))].sort((a,b) => {
-        if (a === "Non classé") return 1;
-        if (b === "Non classé") return -1;
-        return (parseInt(a) || 0) - (parseInt(b) || 0);
-    });
-
-    let classOptions = '<option value="Tous">Tous</option><option value="__CLASSES__">★ Classés uniquement</option>';
-    classOptions += classes.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-    document.getElementById("filterClass").innerHTML = classOptions;
-
-    // Remplir les selects Type et Ville
-    refreshFiltersOptions();
-
     document.getElementById("filterStatut").addEventListener("change", (e) => { currentStatut = e.target.value; currentPage = 1; applyFilters(); });
     document.getElementById("filterType").addEventListener("change", (e) => { currentType = e.target.value; currentPage = 1; applyFilters(); });
     document.getElementById("filterClass").addEventListener("change", (e) => { currentClass = e.target.value; currentPage = 1; applyFilters(); });
     document.getElementById("filterVille").addEventListener("change", (e) => { currentVille = e.target.value; currentPage = 1; applyFilters(); });
     document.getElementById("capaciteMin").addEventListener("input", debounce((e) => { currentCapaciteMin = parseInt(e.target.value) || 0; currentPage = 1; applyFilters(); }, 250));
     document.getElementById("filterValidite").addEventListener("change", (e) => { currentValidite = e.target.value; currentPage = 1; applyFilters(); });
+    document.getElementById("filterPartenaire").addEventListener("change", (e) => { currentPartenaire = e.target.value; currentPage = 1; applyFilters(); });
+    document.getElementById("filterAccessible").addEventListener("change", (e) => { currentAccessible = e.target.value; currentPage = 1; applyFilters(); });
 }
 
 function resetAllFilters() {
@@ -1621,15 +1717,18 @@ function resetAllFilters() {
     document.getElementById("filterVille").value = "";
     document.getElementById("capaciteMin").value = 0;
     document.getElementById("filterValidite").value = "tous";
+    document.getElementById("filterPartenaire").value = "tous";
+    document.getElementById("filterAccessible").value = "tous";
     document.getElementById("dbSearchInput").value = "";
     currentStatut = "actif"; currentType = "Tous"; currentClass = "Tous"; currentVille = "";
-    currentCapaciteMin = 0; currentValidite = "tous"; currentSearch = "";
+    currentCapaciteMin = 0; currentValidite = "tous"; currentSearch = ""; currentPartenaire = "tous"; currentAccessible = "tous";
     currentPage = 1;
     applyFilters();
 }
 
 function applyFilters() {
     filteredData = rawData.filter(d => {
+        if (d.categorie !== currentCategorie) return false;
         if (currentStatut === "actif" && !d.actif) return false;
         if (currentStatut === "inactif" && d.actif) return false;
         if (currentSearch) {
@@ -1638,22 +1737,30 @@ function applyFilters() {
             if (!haystack.includes(q)) return false;
         }
         if (currentType !== "Tous" && d.type !== currentType) return false;
-        if (currentClass === "__CLASSES__") { if (d.classement === "Non classé") return false; }
-        else if (currentClass !== "Tous" && d.classement !== currentClass) return false;
+        if (currentCategorie === 'hebergement') {
+            if (currentClass === "__CLASSES__") { if (d.classement === "Non classé") return false; }
+            else if (currentClass !== "Tous" && d.classement !== currentClass) return false;
+            if (currentValidite !== "tous") {
+                const stat = checkValidite(d);
+                if (currentValidite === "valide" && stat !== "valide") return false;
+                if (currentValidite === "expire" && stat !== "expire") return false;
+                if (currentValidite === "6mois" && stat !== "expire_bientot") return false;
+                if (currentValidite === "alerte" && stat !== "expire" && stat !== "expire_bientot") return false;
+            }
+        }
         if (currentVille) {
             const v = (d.ville || "").toLowerCase();
             if (!v.includes(currentVille.toLowerCase())) return false;
         }
-        if (d.capacite < currentCapaciteMin) return false;
-        if (currentValidite !== "tous") {
-            const stat = checkValidite(d);
-            if (currentValidite === "valide" && stat !== "valide") return false;
-            if (currentValidite === "expire" && stat !== "expire") return false;
-            if (currentValidite === "6mois" && stat !== "expire_bientot") return false;
-            if (currentValidite === "alerte" && stat !== "expire" && stat !== "expire_bientot") return false;
-        }
-        return true;
-    });
+        const amount = currentCategorie === 'restaurant' ? (d.couverts || 0) : d.capacite;
+        if (amount < currentCapaciteMin) return false;
+        if (currentPartenaire === "oui" && !d.partenaire) return false;
+        if (currentPartenaire === "non" && d.partenaire) return false;
+        if (currentAccessible === "oui" && !d.accessible) return false;
+        if (currentAccessible === "non" && d.accessible) return false;
+        if (currentAccessible === "labelth" && !d.labelTH) return false;
+        if (currentAccessible === "sans_label" && (!d.accessible || d.labelTH)) return false;
+        return true;    });
     saveFilters();
     updateDashboard();
     updateMap();
@@ -1671,7 +1778,16 @@ function updateTabCounters() {
 }
 
 function updateDbFilterCount() {
-    const active = [currentStatut !== "actif", currentType !== "Tous", currentClass !== "Tous", !!currentVille, currentCapaciteMin > 0, currentValidite !== "tous"].filter(Boolean).length;
+    const active = [
+        currentStatut !== "actif",
+        currentType !== "Tous",
+        currentCategorie === 'hebergement' && currentClass !== "Tous",
+        !!currentVille,
+        currentCapaciteMin > 0,
+        currentCategorie === 'hebergement' && currentValidite !== "tous",
+        currentPartenaire !== "tous",
+        currentAccessible !== "tous"
+    ].filter(Boolean).length;
     const countEl = document.getElementById("dbFilterCount");
     const btn = document.getElementById("toggleFiltersBtn");
     if (active > 0) {
@@ -1692,14 +1808,26 @@ function updateActiveFilterBadges() {
         badges.push({ label: `Statut : ${lbl}`, action: () => { currentStatut = "actif"; document.getElementById("filterStatut").value = "actif"; } });
     }
     if (currentType !== "Tous") badges.push({ label: `Type : ${currentType}`, action: () => { currentType = "Tous"; document.getElementById("filterType").value = "Tous"; } });
-    if (currentClass !== "Tous") {
+    if (currentCategorie === 'hebergement' && currentClass !== "Tous") {
         const lbl = currentClass === "__CLASSES__" ? "Classés uniquement" : currentClass;
         badges.push({ label: `Classement : ${lbl}`, action: () => { currentClass = "Tous"; document.getElementById("filterClass").value = "Tous"; } });
     }
     if (currentVille) badges.push({ label: `Ville : ${currentVille}`, action: () => { currentVille = ""; document.getElementById("filterVille").value = ""; } });
-    if (currentCapaciteMin > 0) badges.push({ label: `Capacité ≥ ${currentCapaciteMin}`, action: () => { currentCapaciteMin = 0; document.getElementById("capaciteMin").value = 0; } });
-    if (currentValidite !== "tous") {
-        const labels = { valide: "Valide", expire: "Expiré", "6mois": "Expire < 6 mois", alerte: "À renouveler (< 6 mois ou expiré)" };        badges.push({ label: `Validité : ${labels[currentValidite]}`, action: () => { currentValidite = "tous"; document.getElementById("filterValidite").value = "tous"; } });
+    if (currentCapaciteMin > 0) badges.push({ label: `${currentCategorie === 'restaurant' ? 'Couverts' : 'Capacité'} ≥ ${currentCapaciteMin}`, action: () => { currentCapaciteMin = 0; document.getElementById("capaciteMin").value = 0; } });
+    if (currentCategorie === 'hebergement' && currentValidite !== "tous") {
+        const labels = { valide: "Valide", expire: "Expiré", "6mois": "Expire < 6 mois", alerte: "À renouveler" };
+        badges.push({ label: `Validité : ${labels[currentValidite]}`, action: () => { currentValidite = "tous"; document.getElementById("filterValidite").value = "tous"; } });
+    }
+    if (currentPartenaire !== "tous") {
+        const lbl = currentPartenaire === "oui" ? "Partenaires" : "Non partenaires";
+        badges.push({ label: `Partenariat : ${lbl}`, action: () => { currentPartenaire = "tous"; document.getElementById("filterPartenaire").value = "tous"; } });
+	}
+    if (currentAccessible !== "tous") {
+        const accLabels = {
+            oui: "Accessibles", non: "Non accessibles",
+            labelth: "Label T&H", sans_label: "Accessibles sans label"
+        };
+        badges.push({ label: `Accessibilité : ${accLabels[currentAccessible]}`, action: () => { currentAccessible = "tous"; document.getElementById("filterAccessible").value = "tous"; } });
     }
     if (badges.length === 0) { container.innerHTML = ""; return; }
     container.innerHTML = badges.map((b, i) => `<span class="filter-badge" data-idx="${i}">${escapeHtml(b.label)} <span style="opacity:0.7;">✕</span></span>`).join('');
@@ -1717,9 +1845,18 @@ function updateKPIHighlights() {
     document.querySelectorAll('.kpi-card-principal').forEach(c => {
         const a = c.dataset.action;
         let active = false;
-        if (a === 'all' && currentStatut === "actif" && currentType === "Tous" && currentClass === "Tous" && !currentVille && currentCapaciteMin === 0 && currentValidite === "tous" && !currentSearch) active = true;
-        else if (a === 'classified' && currentClass === "__CLASSES__") active = true;
-        else if (a === 'alert' && currentValidite === "alerte") active = true;
+        if (currentCategorie === 'hebergement') {
+            if (a === 'all' && currentStatut === "actif" && currentType === "Tous" && currentClass === "Tous" && !currentVille && currentCapaciteMin === 0 && currentValidite === "tous" && !currentSearch && currentPartenaire === "tous") active = true;
+            else if (a === 'classified' && currentClass === "__CLASSES__") active = true;
+            else if (a === 'alert' && currentValidite === "alerte") active = true;
+            else if (a === 'accessible' && currentAccessible === "oui") active = true;
+        } else {
+            if (a === 'all' && currentStatut === "actif" && currentType === "Tous" && !currentVille && currentCapaciteMin === 0 && !currentSearch && currentPartenaire === "tous") active = true;
+            else if (a === 'partenaires' && currentPartenaire === "oui") active = true;
+            else if (a === 'non-partenaires' && currentPartenaire === "non") active = true;
+            else if (a === 'accessible' && currentAccessible === "oui") active = true;
+            else if (a === 'labelth' && currentAccessible === "labelth") active = true;
+        }
         c.classList.toggle('active', active);
     });
     document.querySelectorAll('.type-chip').forEach(c => {
@@ -1729,23 +1866,78 @@ function updateKPIHighlights() {
 }
 
 function updateKPIs() {
-    const total = filteredData.length;
-    const capaciteTotale = filteredData.reduce((s,d)=>s+d.capacite,0);
-    const nbClasses = filteredData.filter(d => d.classement !== "Non classé").length;
-    const pctClasses = total ? ((nbClasses/total)*100).toFixed(1) : 0;
-    const expiredCount = filteredData.filter(d => ["expire","expire_bientot"].includes(checkValidite(d))).length;
+    const isRest = currentCategorie === 'restaurant';
+    const grid = document.getElementById("kpiPrincipaux");
 
-    document.getElementById("kpiPrincipaux").innerHTML = `
-        <div class="kpi-card-principal kpi-hero" data-action="all"><div class="kpi-number">${total}</div><div class="kpi-label"><i class="fas fa-hotel"></i> Hébergements</div></div>
-        <div class="kpi-card-principal kpi-hero" data-action="none"><div class="kpi-number">${capaciteTotale}</div><div class="kpi-label"><i class="fas fa-users"></i> Capacité (lits)</div></div>
-        <div class="kpi-card-principal kpi-secondary" data-action="classified"><div class="kpi-number">${nbClasses} <span style="font-size:0.75rem;">(${pctClasses}%)</span></div><div class="kpi-label"><i class="fas fa-medal"></i> Classés</div></div>
-        <div class="kpi-card-principal kpi-secondary" data-action="alert"><div class="kpi-number">${expiredCount}</div><div class="kpi-label"><i class="fas fa-clock"></i> Expire < 6 mois </div></div>
-    `;
+    if (isRest) {
+        const total = filteredData.length;
+        const couverts = filteredData.reduce((s,d)=>s+(d.couverts||0),0);
+        const partenaires = filteredData.filter(d => d.partenaire).length;
+        const nonPartenaires = total - partenaires;
+        const accessibleCount = filteredData.filter(d => d.accessible).length;
+        const labelTHCount = filteredData.filter(d => d.labelTH).length;
+        grid.innerHTML = `
+            <div class="kpi-card-principal kpi-hero" data-cat="restaurant" data-action="all">
+                <div class="kpi-number">${total}</div>
+                <div class="kpi-label"><i class="fas fa-utensils"></i> Restaurants</div>
+            </div>
+            <div class="kpi-card-principal kpi-hero" data-cat="restaurant" data-action="none">
+                <div class="kpi-number">${couverts}</div>
+                <div class="kpi-label"><i class="fas fa-chair"></i> Couverts</div>
+            </div>
+            <div class="kpi-card-principal kpi-secondary" data-cat="restaurant" data-action="partenaires">
+                <div class="kpi-number">${partenaires}</div>
+                <div class="kpi-label"><i class="fas fa-handshake"></i> Partenaires</div>
+            </div>
+            <div class="kpi-card-principal kpi-secondary" data-cat="restaurant" data-action="non-partenaires">
+                <div class="kpi-number">${nonPartenaires}</div>
+                <div class="kpi-label"><i class="fas fa-user"></i> Non partenaires</div>
+            </div>
+            <div class="kpi-card-principal kpi-secondary" data-cat="restaurant" data-action="accessible" style="border-left-color:#2c6e9e;">
+                <div class="kpi-number" style="color:#2c6e9e;">${accessibleCount}</div>
+                <div class="kpi-label"><i class="fas fa-wheelchair"></i> Accessibles</div>
+            </div>
+            <div class="kpi-card-principal kpi-secondary" data-cat="restaurant" data-action="labelth" style="border-left-color:#d4a015;">
+                <div class="kpi-number" style="color:#d4a015;">${labelTHCount}</div>
+                <div class="kpi-label"><i class="fas fa-certificate"></i> Label T&H</div>
+            </div>
+        `;
+    } else {
+        const total = filteredData.length;
+        const capaciteTotale = filteredData.reduce((s,d)=>s+d.capacite,0);
+        const nbClasses = filteredData.filter(d => d.classement !== "Non classé").length;
+        const pctClasses = total ? ((nbClasses/total)*100).toFixed(1) : 0;
+        const expiredCount = filteredData.filter(d => ["expire","expire_bientot"].includes(checkValidite(d))).length;
+        const accessibleCount = filteredData.filter(d => d.accessible).length;
 
-    // Chips : basés sur rawData (toutes les catégories restent visibles même filtrées)
+        grid.innerHTML = `
+            <div class="kpi-card-principal kpi-hero" data-action="all">
+                <div class="kpi-number">${total}</div>
+                <div class="kpi-label"><i class="fas fa-hotel"></i> Hébergements</div>
+            </div>
+            <div class="kpi-card-principal kpi-hero" data-action="none">
+                <div class="kpi-number">${capaciteTotale}</div>
+                <div class="kpi-label"><i class="fas fa-users"></i> Capacité (lits)</div>
+            </div>
+            <div class="kpi-card-principal kpi-secondary" data-action="classified">
+                <div class="kpi-number">${nbClasses} <span style="font-size:0.75rem;">(${pctClasses}%)</span></div>
+                <div class="kpi-label"><i class="fas fa-medal"></i> Classés</div>
+            </div>
+            <div class="kpi-card-principal kpi-secondary" data-action="alert">
+                <div class="kpi-number">${expiredCount}</div>
+                <div class="kpi-label"><i class="fas fa-clock"></i> Expire < 6 mois</div>
+            </div>
+            <div class="kpi-card-principal kpi-secondary" data-action="accessible" style="border-left-color:#2c6e9e;">
+                <div class="kpi-number" style="color:#2c6e9e;">${accessibleCount}</div>
+                <div class="kpi-label"><i class="fas fa-wheelchair"></i> Accessibles</div>
+            </div>
+        `;
+    }
+
+    // Chips : basés sur rawData de la catégorie active
     const typeCounts = {};
-    rawData.forEach(d => { typeCounts[d.type] = (typeCounts[d.type] || 0) + 1; });
-    const order = ["Hôtel","Camping","Chambre d'hôtes","Meublé de tourisme","Village vacances","Auberges collectives","Chambre à louer","Gîte d'étape"];
+    rawData.filter(d => d.categorie === currentCategorie).forEach(d => { typeCounts[d.type] = (typeCounts[d.type] || 0) + 1; });
+    const order = currentCategorie === 'restaurant' ? typesConfig.restaurant : typesConfig.hebergement;
     const sortedTypes = Object.keys(typeCounts).sort((a,b) => {
         const ia = order.indexOf(a), ib = order.indexOf(b);
         if (ia !== -1 && ib !== -1) return ia - ib;
@@ -1753,19 +1945,17 @@ function updateKPIs() {
         if (ib !== -1) return 1;
         return a.localeCompare(b);
     });
-        const icons = {
-        "Hôtel":"fas fa-hotel",
-        "Camping":"fas fa-campground",
-        "Chambre d'hôtes":"fas fa-bed",
-        "Meublé de tourisme":"fas fa-house",
-        "Village vacances":"fas fa-umbrella-beach",
-        "Hébergements collectifs":"fas fa-people-roof",
-        "Auberges collectives":"fas fa-people-roof",
-        "Chambre à louer":"fas fa-door-open",
-        "Gîte d'étape":"fas fa-person-hiking",
-        "Aire naturelle de camping":"fas fa-tree",
-        "Hébergements insolites de charme":"fas fa-wand-magic-sparkles",
-        "A qualifier":"fas fa-question"
+    const icons = {
+        "Hôtel":"fas fa-hotel","Camping":"fas fa-campground","Chambre d'hôtes":"fas fa-bed",
+        "Meublé de tourisme":"fas fa-house","Village vacances":"fas fa-umbrella-beach",
+        "Hébergements collectifs":"fas fa-people-roof","Auberges collectives":"fas fa-people-roof",
+        "Chambre à louer":"fas fa-door-open","Gîte d'étape":"fas fa-person-hiking",
+        "Aire naturelle de camping":"fas fa-tree","Hébergements insolites":"fas fa-wand-magic-sparkles",
+        "A qualifier":"fas fa-question",
+        "Restaurant traditionnel":"fas fa-utensils","Restaurant gastronomique":"fas fa-wine-glass",
+        "Brasserie":"fas fa-beer-mug-empty","Bistrot":"fas fa-martini-glass",
+        "Crêperie":"fas fa-cookie","Pizzeria":"fas fa-pizza-slice","Bar à tapas":"fas fa-champagne-glasses",
+        "Restaurant de spécialités":"fas fa-bowl-food","Food truck":"fas fa-truck"
     };
     document.getElementById("typeChips").innerHTML = sortedTypes.map(t =>
         `<button class="type-chip" data-type="${escapeHtml(t)}"><i class="${icons[t] || 'fas fa-tag'}"></i> ${escapeHtml(t)} <span class="chip-count">${typeCounts[t]}</span></button>`
@@ -1781,14 +1971,28 @@ document.getElementById("kpiPrincipaux").addEventListener('click', (e) => {
         if (currentClass === "__CLASSES__") { currentClass = "Tous"; document.getElementById("filterClass").value = "Tous"; }
         else { currentClass = "__CLASSES__"; document.getElementById("filterClass").value = "__CLASSES__"; }
         currentPage = 1; applyFilters();
-        // Reste sur l'onglet courant
     } else if (action === 'alert') {
         if (currentValidite === "alerte") { currentValidite = "tous"; document.getElementById("filterValidite").value = "tous"; }
         else { currentValidite = "alerte"; document.getElementById("filterValidite").value = "alerte"; }
         currentPage = 1; applyFilters();
+    } else if (action === 'partenaires') {
+        if (currentPartenaire === "oui") { currentPartenaire = "tous"; document.getElementById("filterPartenaire").value = "tous"; }
+        else { currentPartenaire = "oui"; document.getElementById("filterPartenaire").value = "oui"; }
+        currentPage = 1; applyFilters();
+    } else if (action === 'non-partenaires') {
+        if (currentPartenaire === "non") { currentPartenaire = "tous"; document.getElementById("filterPartenaire").value = "tous"; }
+        else { currentPartenaire = "non"; document.getElementById("filterPartenaire").value = "non"; }
+        currentPage = 1; applyFilters();
+    } else if (action === 'accessible') {
+        if (currentAccessible === "oui") { currentAccessible = "tous"; document.getElementById("filterAccessible").value = "tous"; }
+        else { currentAccessible = "oui"; document.getElementById("filterAccessible").value = "oui"; }
+        currentPage = 1; applyFilters();
+    } else if (action === 'labelth') {
+        if (currentAccessible === "labelth") { currentAccessible = "tous"; document.getElementById("filterAccessible").value = "tous"; }
+        else { currentAccessible = "labelth"; document.getElementById("filterAccessible").value = "labelth"; }
+        currentPage = 1; applyFilters();
     }
 });
-
 document.getElementById("typeChips").addEventListener('click', (e) => {
     const chip = e.target.closest('.type-chip');
     if (!chip) return;
@@ -1798,7 +2002,6 @@ document.getElementById("typeChips").addEventListener('click', (e) => {
     else { currentType = type; document.getElementById("filterType").value = type; }
     currentPage = 1;
     applyFilters();
-    // Reste sur l'onglet courant
 });
 
 function updateSummaryTable() {
@@ -1823,6 +2026,14 @@ function setChartHeight(canvas, nbBars) {
 }
 
 function updateCharts() {
+    if (currentCategorie === 'restaurant') {
+        updateRestaurantCharts();
+    } else {
+        updateHebergementCharts();
+    }
+}
+
+function updateHebergementCharts() {
     const typeCount = {};
     filteredData.forEach(d => { typeCount[d.type] = (typeCount[d.type] || 0) + 1; });
     if (charts.typeChart) charts.typeChart.destroy();
@@ -1898,23 +2109,73 @@ function updateCharts() {
     }
 }
 
+function updateRestaurantCharts() {
+    const villeNb = {};
+    filteredData.forEach(d => { villeNb[d.ville] = (villeNb[d.ville] || 0) + 1; });
+    const sortedNb = Object.entries(villeNb).sort((a,b) => b[1] - a[1]);
+    const canvas = document.getElementById("restaurantsCommuneChart");
+    if (charts.restaurantsCommuneChart) charts.restaurantsCommuneChart.destroy();
+    setChartHeight(canvas, sortedNb.length);
+    charts.restaurantsCommuneChart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: sortedNb.map(v => v[0]),
+            datasets: [{
+                label: "Restaurants",
+                data: sortedNb.map(v => v[1]),
+                backgroundColor: '#c9823f',
+                borderRadius: 6
+            }]
+        },
+        options: {
+            indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { ticks: { autoSkip: false, font: { size: 11 } }, grid: { display: false } }, x: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+    });
+}
+
 function updateDashboard() {
     updateKPIs();
-    updateSummaryTable();
+    if (currentCategorie !== 'restaurant') updateSummaryTable();
     updateCharts();
     updateTable();
+    updateAccessibilityStats();
+}
+
+function updateAccessibilityStats() {
+    const isRest = currentCategorie === 'restaurant';
+    const total = filteredData.length || 1;
+    const notAcc = filteredData.filter(d => !d.accessible).length;
+    const accNoTH = filteredData.filter(d => d.accessible && !d.labelTH).length;
+    const accTH = filteredData.filter(d => d.labelTH).length;
+
+    const rows = `
+        <tr><td style="text-align:left"><i class="fas fa-times" style="color:#dc3545;"></i> Non accessibles</td><td>${notAcc}</td><td>${((notAcc/total)*100).toFixed(1)}%</td></tr>
+        <tr><td style="text-align:left"><i class="fas fa-check" style="color:#2c6e9e;"></i> Accessibles sans label T&H</td><td>${accNoTH}</td><td>${((accNoTH/total)*100).toFixed(1)}%</td></tr>
+        <tr><td style="text-align:left"><i class="fas fa-certificate" style="color:#d4a015;"></i> Accessibles avec label T&H</td><td>${accTH}</td><td>${((accTH/total)*100).toFixed(1)}%</td></tr>
+        <tr style="background:#f8fafc;font-weight:700;"><td style="text-align:left">Total</td><td>${filteredData.length}</td><td>100%</td></tr>
+    `;
+    if (isRest) {
+        const t = document.querySelector("#accessRestTable tbody");
+        if (t) t.innerHTML = rows;
+    } else {
+        const t = document.querySelector("#accessHebTable tbody");
+        if (t) t.innerHTML = rows;
+    }
 }
 
 function initSortHandlers() {
-    document.querySelectorAll('#dataTable th[data-sort]').forEach(th => {
-        th.addEventListener('click', () => {
-            const key = th.dataset.sort;
-            if (currentSortKey === key) currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
-            else { currentSortKey = key; currentSortDir = 'asc'; }
-            currentPage = 1;
-            updateTable();
-            saveFilters();
-        });
+    // Géré dynamiquement dans buildTableHead/updateTable (event delegation sur thead)
+    document.getElementById('dataTableHead').addEventListener('click', (e) => {
+        const th = e.target.closest('th[data-sort]');
+        if (!th) return;
+        const key = th.dataset.sort;
+        if (currentSortKey === key) currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+        else { currentSortKey = key; currentSortDir = 'asc'; }
+        currentPage = 1;
+        updateTable();
+        saveFilters();
     });
 }
 
@@ -1926,6 +2187,9 @@ function sortData(data) {
         if (currentSortKey === 'classement') {
             const rank = (v) => v === 'Non classé' ? 99 : (parseInt(v) || 0);
             return (rank(va) - rank(vb)) * dir;
+        }
+        if (currentSortKey === 'partenaire') {
+            return ((va?1:0) - (vb?1:0)) * dir;
         }
         if (va instanceof Date && vb instanceof Date) return (va - vb) * dir;
         if (va instanceof Date && !vb) return 1;
@@ -1968,8 +2232,47 @@ function getClassBadge(classement) {
     return `<span class="badge">${escapeHtml(classement)}</span>`;
 }
 
+function getPartnerBadge(partenaire) {
+    return partenaire
+        ? '<span class="badge badge-partner"><i class="fas fa-handshake"></i> Oui</span>'
+        : '<span class="badge badge-no-partner">—</span>';
+}
+
+function buildTableHead() {
+    const head = document.getElementById('dataTableHead');
+    if (currentCategorie === 'restaurant') {
+        head.innerHTML = `
+            <tr>
+                <th data-sort="nom">Nom <span class="sort-ind">↕</span></th>
+                <th data-sort="type">Type <span class="sort-ind">↕</span></th>
+                <th data-sort="ville">Ville <span class="sort-ind">↕</span></th>
+                <th data-sort="couverts">Couverts <span class="sort-ind">↕</span></th>
+                <th data-sort="partenaire">Partenaire <span class="sort-ind">↕</span></th>
+                <th data-sort="accessible">Access. <span class="sort-ind">↕</span></th>
+                <th data-sort="labelTH">T&H <span class="sort-ind">↕</span></th>
+                <th style="text-align:center;">Actions</th>
+            </tr>`;
+    } else {
+        head.innerHTML = `
+            <tr>
+                <th data-sort="nom">Nom <span class="sort-ind">↕</span></th>
+                <th data-sort="type">Type <span class="sort-ind">↕</span></th>
+                <th data-sort="ville">Ville <span class="sort-ind">↕</span></th>
+                <th data-sort="classement">Classement <span class="sort-ind">↕</span></th>
+                <th data-sort="capacite">Capacité <span class="sort-ind">↕</span></th>
+                <th data-sort="nbUnites">Unités <span class="sort-ind">↕</span></th>
+                <th data-sort="debutClassement">Début <span class="sort-ind">↕</span></th>
+                <th data-sort="finClassement">Fin <span class="sort-ind">↕</span></th>
+                <th data-sort="partenaire">Part. <span class="sort-ind">↕</span></th>
+                <th data-sort="accessible">Access. <span class="sort-ind">↕</span></th>
+                <th data-sort="labelTH">T&H <span class="sort-ind">↕</span></th>
+                <th style="text-align:center;">Actions</th>
+            </tr>`;
+    }}
+
 function updateTable() {
-    document.querySelectorAll('#dataTable th[data-sort]').forEach(th => {
+    buildTableHead();
+    document.querySelectorAll('#dataTableHead th[data-sort]').forEach(th => {
         th.classList.remove('sorted-asc','sorted-desc');
         const ind = th.querySelector('.sort-ind');
         if (ind) ind.textContent = '↕';
@@ -1979,6 +2282,7 @@ function updateTable() {
         }
     });
 
+    const isRest = currentCategorie === 'restaurant';
     const sorted = sortData(filteredData);
     const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
     if (currentPage > totalPages) currentPage = totalPages;
@@ -1987,35 +2291,49 @@ function updateTable() {
 
     const tbody = document.querySelector("#dataTable tbody");
     tbody.innerHTML = "";
+
     pageRows.forEach(item => {
         const nomTrunc = item.nom.length > 50 ? item.nom.substring(0,50) + "…" : item.nom;
-        const debut = item.debutClassement ? item.debutClassement.toLocaleDateString('fr-FR') : '—';
-        const fin = item.finClassement ? item.finClassement.toLocaleDateString('fr-FR') : '—';
         const rowClass = item.actif ? '' : 'inactive';
         const nomBadge = item.actif ? '' : ' <span class="badge badge-inactive">Inactif</span>';
         const toggleIcon = item.actif ? 'fa-eye-slash' : 'fa-eye';
         const toggleClass = item.actif ? 'danger' : 'success';
         const toggleTitle = item.actif ? 'Désactiver' : 'Réactiver';
+        const partnerIcon = item.partenaire ? 'fa-handshake' : 'fa-handshake-slash';
+        const partnerClass = item.partenaire ? 'partner-on' : 'partner-off';
+        const partnerTitle = item.partenaire ? 'Retirer le partenariat' : 'Marquer comme partenaire';
 
-        tbody.insertAdjacentHTML('beforeend', `<tr data-row-id="${item._id}" class="${rowClass}">
-            <td title="${escapeHtml(item.nom)}">${escapeHtml(nomTrunc)}${nomBadge}</td>
-            <td>${escapeHtml(item.type)}</td>
-            <td>${escapeHtml(item.ville)}</td>
-            <td>${getClassBadge(item.classement)}</td>
-            <td>${item.capacite}</td>
-            <td>${item.nbUnites}</td>
-            <td>${debut}</td>
-            <td>${fin}</td>
-            <td>
-                <div class="row-actions">
-                    <button class="row-action-btn" data-edit-id="${item._id}" title="Modifier"><i class="fas fa-pen"></i></button>
-                    <button class="row-action-btn ${toggleClass}" data-toggle-id="${item._id}" title="${toggleTitle}"><i class="fas ${toggleIcon}"></i></button>
-                </div>
-            </td>
-        </tr>`);
+        let row = `<tr data-row-id="${item._id}" class="${rowClass}">`;
+        row += `<td title="${escapeHtml(item.nom)}">${escapeHtml(nomTrunc)}${nomBadge}</td>`;
+        row += `<td>${escapeHtml(item.type)}</td>`;
+        row += `<td>${escapeHtml(item.ville)}</td>`;
+        if (isRest) {
+            row += `<td>${item.couverts || 0}</td>`;
+        } else {
+            const debut = item.debutClassement ? item.debutClassement.toLocaleDateString('fr-FR') : '—';
+            const fin = item.finClassement ? item.finClassement.toLocaleDateString('fr-FR') : '—';
+            row += `<td>${getClassBadge(item.classement)}</td>`;
+            row += `<td>${item.capacite}</td>`;
+            row += `<td>${item.nbUnites}</td>`;
+            row += `<td>${debut}</td>`;
+            row += `<td>${fin}</td>`;
+        }
+        row += `<td>${getPartnerBadge(item.partenaire)}</td>`;
+        const accIcon = item.accessible ? '<i class="fas fa-check" style="color:#10b981;font-weight:700;"></i>' : '<i class="fas fa-times" style="color:#cbd5e1;"></i>';
+        const thIcon = item.labelTH ? '<i class="fas fa-certificate" style="color:#d4a015;font-weight:700;"></i>' : '<span style="color:#cbd5e1;">—</span>';
+        row += `<td style="text-align:center;">${accIcon}</td>`;
+        row += `<td style="text-align:center;">${thIcon}</td>`;
+        row += `<td>
+            <div class="row-actions">
+                <button class="row-action-btn ${partnerClass}" data-partner-id="${item._id}" title="${partnerTitle}"><i class="fas ${partnerIcon}"></i></button>
+                <button class="row-action-btn" data-edit-id="${item._id}" title="Modifier"><i class="fas fa-pen"></i></button>
+                <button class="row-action-btn ${toggleClass}" data-toggle-id="${item._id}" title="${toggleTitle}"><i class="fas ${toggleIcon}"></i></button>
+            </div>
+        </td></tr>`;
+        tbody.insertAdjacentHTML('beforeend', row);
     });
     if (!pageRows.length) {
-        tbody.insertAdjacentHTML('beforeend', '<tr><td colspan="9" style="text-align:center;color:#889;padding:30px;">Aucun résultat</td></tr>');
+        tbody.insertAdjacentHTML('beforeend', `<tr><td colspan="${isRest?8:12}" style="text-align:center;color:#889;padding:30px;">Aucun résultat</td></tr>`);
     }
 
     tbody.querySelectorAll('tr[data-row-id]').forEach(tr => {
@@ -2025,15 +2343,15 @@ function updateTable() {
         });
     });
     tbody.querySelectorAll('[data-edit-id]').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            openHebergementModal(btn.dataset.editId);
-        });
+        btn.addEventListener('click', (e) => { e.stopPropagation(); openHebergementModal(btn.dataset.editId); });
     });
     tbody.querySelectorAll('[data-toggle-id]').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', (e) => { e.stopPropagation(); openDeactivateConfirm(btn.dataset.toggleId); });
+    });
+    tbody.querySelectorAll('[data-partner-id]').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
             e.stopPropagation();
-            openDeactivateConfirm(btn.dataset.toggleId);
+            await togglePartenaire(btn.dataset.partnerId);
         });
     });
 
@@ -2042,7 +2360,8 @@ function updateTable() {
     const info = `Page ${currentPage} / ${totalPages}`;
     document.getElementById("pageInfo").textContent = info;
     document.getElementById("pageInfoTop").textContent = info;
-    document.getElementById("tableCount").textContent = `(${sorted.length} fiche${sorted.length>1?'s':''})`;
+    const label = isRest ? 'fiche' : 'fiche';
+    document.getElementById("tableCount").textContent = `(${sorted.length} ${label}${sorted.length>1?'s':''})`;
 
     ['pageFirst','pageFirstTop'].forEach(id => document.getElementById(id).disabled = currentPage === 1);
     ['pagePrev','pagePrevTop'].forEach(id => document.getElementById(id).disabled = currentPage === 1);
@@ -2050,35 +2369,56 @@ function updateTable() {
     ['pageLast','pageLastTop'].forEach(id => document.getElementById(id).disabled = currentPage === totalPages);
 }
 
+async function togglePartenaire(id) {
+    const item = findItemById(id);
+    if (!item) return;
+    try {
+        await updateDoc(doc(db, 'hebergements', id), { partenaire: !item.partenaire });
+        showToast(item.partenaire ? "Partenariat retiré" : "Marqué comme partenaire", "success");
+    } catch (err) {
+        console.error(err);
+        showToast("Erreur : " + err.message, "error");
+    }
+}
+
 function updateMobileCards(pageRows) {
     const container = document.getElementById('dbCardsMobile');
     if (!container) return;
+    const isRest = currentCategorie === 'restaurant';
     if (!pageRows.length) {
         container.innerHTML = '<div style="text-align:center;color:#889;padding:30px;">Aucun résultat</div>';
         return;
     }
     container.innerHTML = pageRows.map(item => {
-        const vc = checkValidite(item);
-        const vcLabel = vc === "expire" ? '✕ Expiré' : vc === "expire_bientot" ? '⚠ Bientôt' : vc === "valide" ? '● Valide' : '';
-        const vcColor = vc === "expire" ? '#dc3545' : vc === "expire_bientot" ? '#f59e0b' : vc === "valide" ? '#10b981' : '#cbd5e1';
         const rowClass = item.actif ? '' : 'inactive';
         const nomBadge = item.actif ? '' : ' <span class="badge badge-inactive">Inactif</span>';
         const toggleIcon = item.actif ? 'fa-eye-slash' : 'fa-eye';
         const toggleClass = item.actif ? 'danger' : 'success';
         const toggleLabel = item.actif ? 'Désactiver' : 'Réactiver';
+        const partnerIcon = item.partenaire ? 'fa-handshake' : 'fa-handshake-slash';
+        const partnerLabel = item.partenaire ? 'Partenaire' : 'Non part.';
 
-        return `<div class="mobile-card ${rowClass}" data-mobile-id="${item._id}">
+        let meta = `<span>${escapeHtml(item.type)}</span>`;
+        if (isRest) {
+            meta += `<span><i class="fas fa-chair"></i> ${item.couverts || 0} couverts</span>`;
+        } else {
+            const vc = checkValidite(item);
+            const vcLabel = vc === "expire" ? '✕ Expiré' : vc === "expire_bientot" ? '⚠ Bientôt' : vc === "valide" ? '● Valide' : '';
+            const vcColor = vc === "expire" ? '#dc3545' : vc === "expire_bientot" ? '#f59e0b' : vc === "valide" ? '#10b981' : '#cbd5e1';
+            meta += `<span><i class="fas fa-bed"></i> ${item.capacite} lits</span>`;
+            if (vcLabel) meta += `<span style="color:${vcColor};font-weight:700;">${vcLabel}</span>`;
+        }
+        meta += `<span style="color:${item.partenaire?'#10b981':'#889'}"><i class="fas ${partnerIcon}"></i> ${partnerLabel}</span>`;
+        if (item.accessible) meta += `<span style="color:#2c6e9e;"><i class="fas fa-wheelchair"></i></span>`;
+        if (item.labelTH) meta += `<span style="color:#d4a015;"><i class="fas fa-certificate"></i> T&H</span>`;
+
+        return `<div class="mobile-card ${rowClass}" data-mobile-id="${item._id}" data-cat="${item.categorie}">
             <div class="mobile-card-header">
                 <div class="mobile-card-title">${escapeHtml(item.nom)}${nomBadge}</div>
-                ${getClassBadge(item.classement)}
+                ${isRest ? '' : getClassBadge(item.classement)}
             </div>
             <div class="mobile-card-ville"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(item.ville)}</div>
-            <div class="mobile-card-meta">
-                <span>${escapeHtml(item.type)}</span>
-                <span><i class="fas fa-bed"></i> ${item.capacite} lits</span>
-                <span>${item.nbUnites} u.</span>
-                ${vcLabel ? `<span style="color:${vcColor};font-weight:700;">${vcLabel}</span>` : ''}
-            </div>
+            <div class="mobile-card-meta">${meta}</div>
             <div class="mobile-card-actions">
                 <button data-mobile-edit="${item._id}"><i class="fas fa-pen"></i> Modifier</button>
                 <button data-mobile-toggle="${item._id}" class="${toggleClass}"><i class="fas ${toggleIcon}"></i> ${toggleLabel}</button>
@@ -2107,8 +2447,15 @@ function initDetailPanel() {
         if (viewingId) { const id = viewingId; closeDetailPanel(); openHebergementModal(id); }
     });
     document.getElementById('detailToggleBtn').addEventListener('click', () => {
-    if (viewingId) openDeactivateConfirm(viewingId);
-});
+        if (viewingId) openDeactivateConfirm(viewingId);
+    });
+    document.getElementById('detailPartnerBtn').addEventListener('click', async () => {
+        if (viewingId) {
+            await togglePartenaire(viewingId);
+            const item = findItemById(viewingId);
+            if (item) openDetailPanel(viewingId); // refresh
+        }
+    });
     document.getElementById('detailLetterBtn').addEventListener('click', () => {
         if (viewingId) { const item = findItemById(viewingId); if (item) openLetterModal(item); }
     });
@@ -2117,6 +2464,7 @@ function initDetailPanel() {
             if (document.getElementById('deleteConfirmModal').classList.contains('show')) return;
             if (document.getElementById('hebergementModal').classList.contains('show')) return;
             if (document.getElementById('letterModal').classList.contains('show')) return;
+            if (document.getElementById('typeManageModal').classList.contains('show')) return;
             if (document.getElementById('detailPanel').classList.contains('open')) closeDetailPanel();
         }
     });
@@ -2128,6 +2476,7 @@ function openDetailPanel(id) {
     const item = findItemById(id);
     if (!item) return;
     viewingId = id;
+    const isRest = item.categorie === 'restaurant';
 
     document.getElementById('detailName').textContent = item.nom;
 
@@ -2139,6 +2488,14 @@ function openDetailPanel(id) {
         ? `<span class="badge badge-${classMatch[1]}">${'★'.repeat(parseInt(classMatch[1]))} ${classMatch[1]} étoile${parseInt(classMatch[1])>1?'s':''}</span>`
         : '<span class="badge badge-nc">Non classé</span>';
 
+    const partnerBadge = item.partenaire
+        ? '<span class="badge badge-partner"><i class="fas fa-handshake"></i> Partenaire</span>'
+        : '<span class="badge badge-no-partner">Non partenaire</span>';
+
+    const catBadge = isRest
+        ? '<span class="badge" style="background:#fef3ec;color:#c9823f;"><i class="fas fa-utensils"></i> Restaurant</span>'
+        : '<span class="badge" style="background:#fff0f0;color:#991917;"><i class="fas fa-hotel"></i> Hébergement</span>';
+
     const toggleBtn = document.getElementById('detailToggleBtn');
     if (item.actif) {
         toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Désactiver';
@@ -2149,19 +2506,31 @@ function openDetailPanel(id) {
         toggleBtn.classList.remove('warning');
         toggleBtn.classList.add('success');
     }
+
+    const partnerBtn = document.getElementById('detailPartnerBtn');
+    if (item.partenaire) {
+        partnerBtn.innerHTML = '<i class="fas fa-handshake-slash"></i> Retirer partenaire';
+        partnerBtn.style.color = '#dc3545';
+    } else {
+        partnerBtn.innerHTML = '<i class="fas fa-handshake"></i> Marquer partenaire';
+        partnerBtn.style.color = '#10b981';
+    }
+
     document.getElementById('detailBadges').innerHTML = `
-        <span class="badge" style="background:#fff0f0;color:#991917;">${escapeHtml(item.type)}</span>
-        ${classBadge}
-        <span class="badge ${vcClass}">${vcLabel}</span>
+        ${catBadge}
+        <span class="badge" style="background:#f1f5f9;color:#3a5a7a;">${escapeHtml(item.type)}</span>
+        ${isRest ? '' : classBadge}
+        ${isRest ? '' : `<span class="badge ${vcClass}">${vcLabel}</span>`}
+        ${partnerBadge}
     `;
 
     const letterBtn = document.getElementById('detailLetterBtn');
-    if (vc === "expire" || vc === "expire_bientot") {
+    if (!isRest && (vc === "expire" || vc === "expire_bientot")) {
         letterBtn.disabled = false;
         letterBtn.title = "Générer le courrier de relance";
     } else {
         letterBtn.disabled = true;
-        letterBtn.title = "Classement valide - pas de relance nécessaire";
+        letterBtn.title = isRest ? "Non applicable aux restaurants" : "Classement valide - pas de relance nécessaire";
     }
 
     const sections = [];
@@ -2193,14 +2562,29 @@ function openDetailPanel(id) {
         rows: [['Email', item.mail]]
     });
 
+    if (isRest) {
+        sections.push({
+            title: '<i class="fas fa-utensils"></i> Restauration',
+            rows: [['Couverts', item.couverts ? item.couverts + ' couverts' : '']]
+        });
+    } else {
+        sections.push({
+            title: '<i class="fas fa-star"></i> Classement & capacité',
+            rows: [
+                ['Classement', item.classement || ''],
+                ['Capacité', item.capacite != null ? item.capacite + ' lits' : ''],
+                ['Unités', item.nbUnites != null ? item.nbUnites : ''],
+                ['Début', item.debutClassement ? item.debutClassement.toLocaleDateString('fr-FR') : ''],
+                ['Fin', item.finClassement ? item.finClassement.toLocaleDateString('fr-FR') : '']
+            ]
+        });
+    }
+
     sections.push({
-        title: '<i class="fas fa-star"></i> Classement & capacité',
+        title: '<i class="fas fa-wheelchair"></i> Accessibilité',
         rows: [
-            ['Classement', item.classement || ''],
-            ['Capacité', item.capacite != null ? item.capacite + ' lits' : ''],
-            ['Unités', item.nbUnites != null ? item.nbUnites : ''],
-            ['Début', item.debutClassement ? item.debutClassement.toLocaleDateString('fr-FR') : ''],
-            ['Fin', item.finClassement ? item.finClassement.toLocaleDateString('fr-FR') : '']
+            ['Accessible', item.accessible ? 'Oui' : 'Non'],
+            ['Label T&H', item.labelTH ? 'Oui' : 'Non']
         ]
     });
     sections.push({
@@ -2221,7 +2605,8 @@ function openDetailPanel(id) {
                     <div class="label">${label}</div>
                     <div class="value ${isEmpty ? 'empty' : ''}">${isEmpty ? '—' : escapeHtml(String(val))}</div>
                 </div>`;
-            }).join('')}        </div>
+            }).join('')}
+        </div>
     `).join('');
 
     document.getElementById('detailBody').innerHTML = bodyHtml;
@@ -2247,6 +2632,15 @@ function initHebergementModal() {
     document.getElementById('saveHebergementBtn').addEventListener('click', saveHebergement);
     document.getElementById('addHebergementBtn').addEventListener('click', () => openHebergementModal(null));
 
+    // Radios de catégorie
+    document.querySelectorAll('input[name="fCategorie"]').forEach(r => {
+        r.addEventListener('change', () => {
+            updateCatRadiosUI();
+            updateFormFieldsByCategorie();
+            refreshTypeSelectOptions();
+        });
+    });
+
     // Auto-complétion CP depuis la ville
     const fVille = document.getElementById('fVille');
     if (fVille) {
@@ -2254,15 +2648,46 @@ function initHebergementModal() {
             const ville = fVille.value.trim();
             if (!ville) return;
             const cpField = document.getElementById('fCodePostal');
-            if (cpField && cpField.value.trim()) return; // ne pas écraser
+            if (cpField && cpField.value.trim()) return;
             const match = rawData.find(d => d.ville && d.ville.toLowerCase() === ville.toLowerCase() && d.codePostal);
             if (match) cpField.value = match.codePostal;
         });
     }
 
-    // Bouton géocodage
+    // Géocodage
     const geocodeBtn = document.getElementById('geocodeBtn');
     if (geocodeBtn) geocodeBtn.addEventListener('click', geocodeAddress);
+
+    // Ajout rapide de type
+    document.getElementById('quickAddTypeBtn').addEventListener('click', () => {
+        openTypeManageModal();
+    });
+
+    // Auto-cocher "accessible" si label T&H coché
+    const lblTH = document.getElementById('fLabelTH');
+    if (lblTH) {
+        lblTH.addEventListener('change', (e) => {
+            if (e.target.checked) document.getElementById('fAccessible').checked = true;
+        });
+    }
+}
+
+function updateCatRadiosUI() {
+    const cat = currentEditingCategorie();
+    document.querySelectorAll('.cat-radios label').forEach(l => {
+        l.classList.toggle('checked', l.dataset.cat === cat);
+    });
+}
+
+function updateFormFieldsByCategorie() {
+    const isRest = currentEditingCategorie() === 'restaurant';
+    document.getElementById('fieldClassement').style.display = isRest ? 'none' : '';
+    document.getElementById('fieldCapacite').style.display = isRest ? 'none' : '';
+    document.getElementById('fieldNbUnites').style.display = isRest ? 'none' : '';
+    document.getElementById('fieldDebutClassement').style.display = isRest ? 'none' : '';
+    document.getElementById('fieldFinClassement').style.display = isRest ? 'none' : '';
+    document.getElementById('fieldCouverts').style.display = isRest ? '' : 'none';
+    document.getElementById('classementSectionTitle').textContent = isRest ? 'Capacité' : 'Classement & capacité';
 }
 
 async function geocodeAddress() {
@@ -2297,25 +2722,29 @@ async function geocodeAddress() {
     }
 }
 
-const REQUIRED_FIELDS_CREATE = ['fNom','fType','fVille','fAdresse1','fCodePostal','fMail',
-                                 'fCiviliteGest','fNomGest','fPrenomGest','fMailGest','fPortableGest',
-                                 'fCapacite','fNbUnites','fLat','fLon'];
+const REQUIRED_FIELDS_COMMON = ['fNom','fType','fVille','fAdresse1','fCodePostal','fMail',
+                                'fCiviliteGest','fNomGest','fPrenomGest','fMailGest','fPortableGest',
+                                'fLat','fLon'];
 
 function openHebergementModal(id) {
     editingId = id;
     const isEdit = !!id;
     document.getElementById('hebergementModalTitle').innerHTML =
-        isEdit ? '<i class="fas fa-edit"></i> Modifier l\'hébergement' : '<i class="fas fa-plus"></i> Nouvel hébergement';
-
-    REQUIRED_FIELDS_CREATE.forEach(fid => {
-        const el = document.getElementById(fid);
-        if (el) el.required = !isEdit;
-    });
+        isEdit ? '<i class="fas fa-edit"></i> Modifier' : '<i class="fas fa-plus"></i> Nouvel établissement';
 
     const f = (fid) => document.getElementById(fid);
+
     if (isEdit) {
         const item = findItemById(id);
         if (!item) return;
+        // Catégorie
+        document.querySelectorAll('input[name="fCategorie"]').forEach(r => {
+            r.checked = r.value === item.categorie;
+        });
+        updateCatRadiosUI();
+        updateFormFieldsByCategorie();
+        refreshTypeSelectOptions();
+
         f('fNom').value = item.nom || '';
         f('fType').value = item.type || '';
         f('fVille').value = item.ville || '';
@@ -2332,23 +2761,36 @@ function openHebergementModal(id) {
         f('fClassement').value = item.classement || 'Non classé';
         f('fCapacite').value = item.capacite || 0;
         f('fNbUnites').value = item.nbUnites || 1;
+        f('fCouverts').value = item.couverts || 0;
         f('fDebutClassement').value = item.debutClassement ? dateToISO(item.debutClassement) : '';
         f('fFinClassement').value = item.finClassement ? dateToISO(item.finClassement) : '';
         f('fLat').value = item.lat != null ? item.lat : '';
         f('fLon').value = item.lon != null ? item.lon : '';
+        f('fPartenaire').checked = !!item.partenaire;
+        f('fAccessible').checked = !!item.accessible;
+        f('fLabelTH').checked = !!item.labelTH;
     } else {
         document.getElementById('hebergementForm').reset();
+        // Catégorie par défaut = currentCategorie
+        document.querySelectorAll('input[name="fCategorie"]').forEach(r => {
+            r.checked = r.value === currentCategorie;
+        });
+        updateCatRadiosUI();
+        updateFormFieldsByCategorie();
         refreshTypeSelectOptions();
         f('fType').value = '';
         f('fClassement').value = 'Non classé';
         f('fCapacite').value = '';
         f('fNbUnites').value = 1;
+        f('fCouverts').value = '';
+        f('fPartenaire').checked = false;
+        f('fAccessible').checked = false;
+        f('fLabelTH').checked = false;
     }
 
     document.getElementById('hebergementModal').classList.add('show');
     document.body.style.overflow = 'hidden';
 
-    // Capture de l'état initial pour détecter les modifications
     setTimeout(() => {
         formInitialState = getFormState();
         f('fNom').focus();
@@ -2357,14 +2799,17 @@ function openHebergementModal(id) {
 
 const FORM_FIELDS = ['fNom','fType','fVille','fAdresse1','fAdresse2','fCodePostal','fMail',
     'fCiviliteGest','fNomGest','fPrenomGest','fMailGest','fTelGest','fPortableGest',
-    'fClassement','fCapacite','fNbUnites','fDebutClassement','fFinClassement','fLat','fLon'];
+    'fClassement','fCapacite','fNbUnites','fCouverts','fDebutClassement','fFinClassement','fLat','fLon','fPartenaire','fAccessible','fLabelTH'];
 
 function getFormState() {
     const state = {};
     FORM_FIELDS.forEach(id => {
         const el = document.getElementById(id);
-        if (el) state[id] = el.value;
+        if (!el) return;
+        state[id] = el.type === 'checkbox' ? el.checked : el.value;
     });
+    const r = document.querySelector('input[name="fCategorie"]:checked');
+    state.__categorie = r ? r.value : 'hebergement';
     return state;
 }
 
@@ -2389,18 +2834,28 @@ async function saveHebergement() {
     const nom = f('fNom').value.trim();
     if (!nom) { showToast("Le nom commercial est obligatoire", "error"); return; }
 
+    const categorie = currentEditingCategorie();
+    const isRest = categorie === 'restaurant';
+
     if (!editingId) {
         const missing = [];
         const labels = {
-    fNom: 'Nom', fType: 'Type', fVille: 'Ville', fAdresse1: 'Adresse',
-    fCodePostal: 'Code postal', fMail: 'Email structure',
-    fCiviliteGest: 'Civilité', fNomGest: 'Nom gestionnaire', fPrenomGest: 'Prénom gestionnaire',
-    fMailGest: 'Email gestionnaire', fPortableGest: 'Portable',
-    fCapacite: 'Capacité', fNbUnites: 'Unités', fLat: 'Latitude', fLon: 'Longitude'
-};
-        REQUIRED_FIELDS_CREATE.forEach(fid => {
+            fNom: 'Nom', fType: 'Type', fVille: 'Ville', fAdresse1: 'Adresse',
+            fCodePostal: 'Code postal', fMail: 'Email structure',
+            fCiviliteGest: 'Civilité', fNomGest: 'Nom gestionnaire', fPrenomGest: 'Prénom gestionnaire',
+            fMailGest: 'Email gestionnaire', fPortableGest: 'Portable',
+            fCapacite: 'Capacité', fCouverts: 'Couverts', fNbUnites: 'Unités',
+            fLat: 'Latitude', fLon: 'Longitude'
+        };
+        REQUIRED_FIELDS_COMMON.forEach(fid => {
             if (!f(fid).value.trim()) missing.push(labels[fid] || fid);
         });
+        if (isRest) {
+            if (!f('fCouverts').value.trim()) missing.push(labels.fCouverts);
+        } else {
+            if (!f('fCapacite').value.trim()) missing.push(labels.fCapacite);
+            if (!f('fNbUnites').value.trim()) missing.push(labels.fNbUnites);
+        }
         if (missing.length > 0) {
             showToast("Champs obligatoires manquants : " + missing.join(', '), "error", 5000);
             return;
@@ -2408,6 +2863,7 @@ async function saveHebergement() {
     }
 
     const data = {
+        categorie,
         nom,
         type: f('fType').value.trim() || "Autre",
         ville: f('fVille').value.trim() || "Inconnue",
@@ -2421,31 +2877,43 @@ async function saveHebergement() {
         mailGest: f('fMailGest').value.trim(),
         telGest: f('fTelGest').value.trim(),
         portableGest: f('fPortableGest').value.trim(),
-        classement: f('fClassement').value || 'Non classé',
-        capacite: Number(f('fCapacite').value) || 0,
-        nbUnites: Number(f('fNbUnites').value) || 1,
-        debutClassement: f('fDebutClassement').value || null,
-        finClassement: f('fFinClassement').value || null,
         lat: f('fLat').value ? Number(f('fLat').value) : null,
-        lon: f('fLon').value ? Number(f('fLon').value) : null
+        lon: f('fLon').value ? Number(f('fLon').value) : null,
+        partenaire: f('fPartenaire').checked,
+        accessible: f('fAccessible').checked || f('fLabelTH').checked,
+        labelTH: f('fLabelTH').checked
     };
+    if (isRest) {
+        data.couverts = Number(f('fCouverts').value) || 0;
+        data.classement = "Non classé";
+        data.capacite = 0;
+        data.nbUnites = 1;
+        data.debutClassement = null;
+        data.finClassement = null;
+    } else {
+        data.classement = f('fClassement').value || 'Non classé';
+        data.capacite = Number(f('fCapacite').value) || 0;
+        data.nbUnites = Number(f('fNbUnites').value) || 1;
+        data.debutClassement = f('fDebutClassement').value || null;
+        data.finClassement = f('fFinClassement').value || null;
+        data.couverts = 0;
+    }
 
     try {
         if (editingId) {
             await updateDoc(doc(db, 'hebergements', editingId), data);
-            showToast("Hébergement modifié", "success");
+            showToast("Fiche modifiée", "success");
         } else {
             await addDoc(collection(db, 'hebergements'), data);
-            showToast("Hébergement ajouté", "success");
+            showToast("Fiche ajoutée", "success");
         }
-        closeHebergementModal(true); // true = pas de confirmation
+        closeHebergementModal(true);
     } catch (err) {
         console.error(err);
         showToast("Erreur : " + err.message, "error", 5000);
     }
 }
 
-/* ====== DELETE CONFIRM (simplifié) ====== */
 function initDeactivateConfirm() {
     document.getElementById('closeDeleteModal').addEventListener('click', closeDeleteModal);
     document.getElementById('cancelDeleteBtn').addEventListener('click', closeDeleteModal);
@@ -2463,7 +2931,7 @@ function openDeactivateConfirm(id) {
     document.getElementById('deleteTarget').innerHTML =
         `<strong>${escapeHtml(item.nom)}</strong><br><span style="font-weight:400;color:#5b7a9a;">${escapeHtml(item.type)} — ${escapeHtml(item.ville)}</span>`;
     document.querySelector('#deleteConfirmModal .modal-header h3').innerHTML =
-        `<i class="fas fa-eye-slash" style="color: #d97706;"></i> ${item.actif ? 'Désactiver' : 'Réactiver'} cet hébergement ?`;
+        `<i class="fas fa-eye-slash" style="color: #d97706;"></i> ${item.actif ? 'Désactiver' : 'Réactiver'} ?`;
     document.getElementById('confirmDeleteBtn').innerHTML =
         `<i class="fas ${item.actif ? 'fa-eye-slash' : 'fa-eye'}"></i> ${item.actif ? 'Désactiver' : 'Réactiver'}`;
     document.getElementById('deleteConfirmModal').classList.add('show');
@@ -2483,7 +2951,7 @@ async function confirmToggleActive() {
     if (!item) return;
     try {
         await updateDoc(doc(db, 'hebergements', deactivatingId), { actif: !item.actif });
-        showToast(item.actif ? "Hébergement désactivé" : "Hébergement réactivé", "success");
+        showToast(item.actif ? "Fiche désactivée" : "Fiche réactivée", "success");
         closeDeleteModal();
         closeDetailPanel();
     } catch (err) {
@@ -2492,7 +2960,122 @@ async function confirmToggleActive() {
     }
 }
 
-/* ====== COURRIER ====== */
+/* === RESET PARTENAIRES === */
+let _resetPartnersBound = false;
+
+function initResetPartners() {
+    const btn = document.getElementById('resetPartnersBtn');
+    if (!btn) {
+        console.warn('[resetPartners] Bouton #resetPartnersBtn introuvable');
+        return;
+    }
+    if (_resetPartnersBound) return;
+    _resetPartnersBound = true;
+    btn.addEventListener('click', () => {
+        console.log('[resetPartners] Clic détecté — partenaires en mémoire :',
+            rawData.filter(d => d.partenaire).length);
+        resetAllPartners();
+    });
+    console.log('[resetPartners] ✓ Listener attaché');
+}
+
+async function resetAllPartners() {
+    if (!db) {
+        showToast("Connexion à la base en cours, veuillez patienter…", "info", 3000);
+        return;
+    }
+    const partenaires = rawData.filter(d => d.partenaire);
+    if (partenaires.length === 0) {
+        showToast("Aucun partenaire à réinitialiser dans la base", "info", 4000);
+        return;
+    }
+    if (!confirm(`Réinitialiser TOUS les partenariats ?\n\n${partenaires.length} établissement(s) partenaire(s) vont être retirés.\n\nCette action est irréversible et sera visible par tous les utilisateurs.`)) return;
+
+    showLoading(`Réinitialisation de ${partenaires.length} partenariat(s)…`);
+    try {
+        const batchSize = 400;
+        let batch = writeBatch(db);
+        let count = 0;
+        for (const item of partenaires) {
+            batch.update(doc(db, 'hebergements', item._id), { partenaire: false });
+            count++;
+            if (count % batchSize === 0) { await batch.commit(); batch = writeBatch(db); }
+        }
+        if (count % batchSize !== 0) await batch.commit();
+        hideLoading();
+        showToast(`${count} partenariat(s) réinitialisé(s)`, "success", 4000);
+    } catch (err) {
+        console.error('[resetPartners] Erreur Firestore :', err);
+        hideLoading();
+        showToast("Erreur : " + err.message, "error", 5000);
+    }
+}
+
+/* === GESTION DES TYPES === */
+function initTypeManage() {
+    document.getElementById('manageTypesBtn').addEventListener('click', openTypeManageModal);
+    document.getElementById('closeTypeManageModal').addEventListener('click', closeTypeManageModal);
+    document.getElementById('closeTypeManageBtn').addEventListener('click', closeTypeManageModal);
+    document.getElementById('typeManageModal').addEventListener('click', (e) => {
+        if (e.target.id === 'typeManageModal') closeTypeManageModal();
+    });
+    document.getElementById('addTypeHebBtn').addEventListener('click', () => addType('hebergement'));
+    document.getElementById('addTypeRestBtn').addEventListener('click', () => addType('restaurant'));
+    document.getElementById('newTypeHeb').addEventListener('keypress', (e) => { if (e.key === 'Enter') addType('hebergement'); });
+    document.getElementById('newTypeRest').addEventListener('keypress', (e) => { if (e.key === 'Enter') addType('restaurant'); });
+}
+
+function openTypeManageModal() {
+    refreshTypeManageLists();
+    document.getElementById('typeManageModal').classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+function closeTypeManageModal() {
+    document.getElementById('typeManageModal').classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+async function addType(cat) {
+    const inputId = cat === 'hebergement' ? 'newTypeHeb' : 'newTypeRest';
+    const input = document.getElementById(inputId);
+    const value = input.value.trim();
+    if (!value) return;
+    if (typesConfig[cat].includes(value)) { showToast("Ce type existe déjà", "error"); return; }
+    typesConfig[cat] = [...typesConfig[cat], value].sort((a,b) => a.localeCompare(b, 'fr'));
+    input.value = '';
+    await saveTypesConfig();
+    showToast("Type ajouté", "success");
+    refreshTypeManageLists();
+}
+
+async function removeType(cat, type) {
+    if (!confirm(`Supprimer le type "${type}" ?\n\nLes établissements existants qui utilisent ce type ne seront pas supprimés.`)) return;
+    typesConfig[cat] = typesConfig[cat].filter(t => t !== type);
+    await saveTypesConfig();
+    showToast("Type supprimé", "success");
+    refreshTypeManageLists();
+}
+
+function refreshTypeManageLists() {
+    const renderList = (containerId, list, cat) => {
+        const el = document.getElementById(containerId);
+        if (!el) return;
+        if (!list.length) {
+            el.innerHTML = '<em style="color:#8899aa;font-size:0.85rem;">Aucun type</em>';
+            return;
+        }
+        el.innerHTML = list.map(t =>
+            `<span class="badge" style="background:#f1f5f9;color:#3a5a7a;">${escapeHtml(t)} <button data-remove-type data-cat="${cat}" data-type="${escapeHtml(t)}" style="background:none;border:none;color:#dc3545;cursor:pointer;margin-left:4px;padding:0;font-size:0.75rem;" title="Supprimer"><i class="fas fa-times"></i></button></span>`
+        ).join('');
+        el.querySelectorAll('[data-remove-type]').forEach(btn => {
+            btn.addEventListener('click', () => removeType(btn.dataset.cat, btn.dataset.type));
+        });
+    };
+    renderList('listTypesHeb', typesConfig.hebergement, 'hebergement');
+    renderList('listTypesRest', typesConfig.restaurant, 'restaurant');
+}
+
+/* === COURRIER === */
 function generateLetter(item) {
     const finDate = item.finClassement ? item.finClassement.toLocaleDateString('fr-FR') : '';
     const typeLabel = getTypeLabel(item.type);
@@ -2576,7 +3159,7 @@ function initLetterFeature() {
     });
 }
 
-/* ====== IMPORT CSV INITIAL ====== */
+/* === IMPORT CSV INITIAL === */
 function parseRowForFirestore(row) {
     const rawClass = row[colMapping.classement];
     const cleaned = cleanClassement(rawClass);
@@ -2584,8 +3167,17 @@ function parseRowForFirestore(row) {
     const fin = parseFrenchDate(row[colMapping.finClassement]);
     const lat = parseFloat(row[colMapping.lat]);
     const lon = parseFloat(row[colMapping.lon]);
+    const cat = String(row[colMapping.categorie] || '').trim().toLowerCase();
+    const categorie = (cat === 'restaurant' || cat === 'restaurants') ? 'restaurant' : 'hebergement';
+    const partRaw = String(row[colMapping.partenaire] || '').trim().toLowerCase();
+    const partenaire = ['oui','1','true','yes','vrai'].includes(partRaw);
+    const accRaw = String(row[colMapping.accessible] || '').trim().toLowerCase();
+    const acc = ['oui','1','true','yes','vrai'].includes(accRaw);
+    const lblRaw = String(row[colMapping.labelTH] || '').trim().toLowerCase();
+    const lblTH = ['oui','1','true','yes','vrai'].includes(lblRaw);
 
     return {
+        categorie,
         nom: (row[colMapping.nom] || "Sans nom").toString().trim(),
         adresse1: (row[colMapping.adresse1] || "").toString().trim(),
         adresse2: (row[colMapping.adresse2] || "").toString().trim(),
@@ -2599,13 +3191,18 @@ function parseRowForFirestore(row) {
         telGest: (row[colMapping.telGest] || "").toString().trim(),
         portableGest: (row[colMapping.portableGest] || "").toString().trim(),
         type: (row[colMapping.type] || "Autre").toString().trim(),
-        classement: cleaned,
-        capacite: Number(row[colMapping.capacite]) || 0,
+        classement: categorie === 'restaurant' ? "Non classé" : cleaned,
+        capacite: categorie === 'restaurant' ? 0 : (Number(row[colMapping.capacite]) || 0),
+        couverts: categorie === 'restaurant' ? (Number(row[colMapping.couverts]) || 0) : 0,
         nbUnites: Number(row[colMapping.nbUnites]) || 1,
-        debutClassement: dateToISO(debut),
-        finClassement: dateToISO(fin),
+        debutClassement: categorie === 'restaurant' ? null : dateToISO(debut),
+        finClassement: categorie === 'restaurant' ? null : dateToISO(fin),
         lat: isNaN(lat) ? null : lat,
-        lon: isNaN(lon) ? null : lon
+        lon: isNaN(lon) ? null : lon,
+        partenaire,
+        accessible: acc || lblTH,
+        labelTH: lblTH,
+        actif: true
     };
 }
 
@@ -2616,9 +3213,9 @@ async function importFileToFirestore(file) {
         if (!rows.length) { hideLoading(); showToast("Fichier vide", "error"); return; }
         const validRows = rows.filter(r => r[colMapping.nom] && String(r[colMapping.nom]).trim() !== "");
         if (!validRows.length) { hideLoading(); showToast("Aucune ligne valide", "error"); return; }
-        if (!confirm(`Importer ${validRows.length} hébergements dans la base partagée ?\n\nIls seront visibles par tous vos collègues.`)) { hideLoading(); return; }
+        if (!confirm(`Importer ${validRows.length} établissement(s) dans la base partagée ?\n\nIls seront visibles par tous vos collègues.`)) { hideLoading(); return; }
 
-        showLoading(`Import de ${validRows.length} hébergements…`);
+        showLoading(`Import de ${validRows.length} fiches…`);
         const batchSize = 400;
         let batch = writeBatch(db);
         let count = 0;
@@ -2628,14 +3225,11 @@ async function importFileToFirestore(file) {
             const ref = doc(collection(db, 'hebergements'));
             batch.set(ref, data);
             count++;
-            if (count % batchSize === 0) {
-                await batch.commit();
-                batch = writeBatch(db);
-            }
+            if (count % batchSize === 0) { await batch.commit(); batch = writeBatch(db); }
         }
         if (count % batchSize !== 0) await batch.commit();
         hideLoading();
-        showToast(`${count} hébergements importés`, "success", 4000);
+        showToast(`${count} fiches importées`, "success", 4000);
     } catch (err) {
         console.error(err);
         hideLoading();
@@ -2660,7 +3254,7 @@ function readFileRows(file) {
     });
 }
 
-/* ====== CARTE ====== */
+/* === CARTE === */
 function initMapIfNeeded() {
     if (mapInitialized) return;
     const mapEl = document.getElementById('map');
@@ -2677,16 +3271,13 @@ function initMapIfNeeded() {
     }, { passive: true });
 
     map = L.map('map', {
-        scrollWheelZoom: false,   // désactive le zoom molette par défaut
-        dragging: true,           // déplacement libre à la souris
-        worldCopyJump: true
+        scrollWheelZoom: false, dragging: true, worldCopyJump: true
     }).setView([44.5, 2.5], 9);
 
     L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap', subdomains: 'abc', maxZoom: 19
     }).addTo(map);
 
-    // Ctrl (Windows/Linux) ou Cmd (Mac) + molette => zoom
     const hint = document.getElementById('mapHint');
     map.on('mousedown', (e) => {
         if (e.originalEvent.ctrlKey || e.originalEvent.metaKey) {
@@ -2706,7 +3297,6 @@ function initMapIfNeeded() {
             if (hint) hint.classList.remove('ctrl-active');
         }
     });
-    // Sécurité : on désactive dès que la souris quitte la carte
     mapEl.addEventListener('mouseleave', () => {
         map.scrollWheelZoom.disable();
         if (hint) hint.classList.remove('ctrl-active');
@@ -2763,6 +3353,12 @@ function initMapFullscreen() {
         }
     });
 }
+
+const CATEGORY_COLORS = {
+    hebergement: '#991917',
+    restaurant: '#c9823f'
+};
+
 async function updateMap() {
     if (currentTab !== 'dashboard') return;
     if (!mapInitialized) initMapIfNeeded();
@@ -2772,14 +3368,19 @@ async function updateMap() {
     const withCoords = filteredData.filter(d => d.lat && d.lon && !isNaN(d.lat) && !isNaN(d.lon));
     if (withCoords.length === 0 && mode !== "choropleth") return;
 
+    const isRest = currentCategorie === 'restaurant';
+    const baseColor = isRest ? CATEGORY_COLORS.restaurant : CATEGORY_COLORS.hebergement;
+    const valueField = isRest ? 'couverts' : 'capacite';
+
     if (mode === "etablissements") {
         const cluster = L.markerClusterGroup({ maxClusterRadius: 45 });
         const markers = [];
         withCoords.forEach(item => {
-            const r = Math.min(35, Math.max(5, Math.sqrt(item.capacite) * 1.5 + 4));
+            const amount = isRest ? (item.couverts || 0) : item.capacite;
+            const r = Math.min(35, Math.max(5, Math.sqrt(amount) * 1.5 + 4));
             const m = L.circleMarker([item.lat, item.lon], {
-                radius: r, fillColor: '#991917', color: '#991917', weight: 1.2, fillOpacity: 0.6
-            }).bindPopup(`<strong>${escapeHtml(item.nom)}</strong><br>${escapeHtml(item.type)}<br>${escapeHtml(item.ville)}<br>Cap: ${item.capacite}`);
+                radius: r, fillColor: baseColor, color: baseColor, weight: 1.2, fillOpacity: 0.6
+            }).bindPopup(`<strong>${escapeHtml(item.nom)}</strong><br>${escapeHtml(item.type)}<br>${escapeHtml(item.ville)}<br>${isRest ? 'Couverts' : 'Cap'}: ${amount}${item.partenaire ? ' <br>🤝 Partenaire' : ''}`);
             cluster.addLayer(m); markers.push(m);
         });
         mapLayers.push(cluster); map.addLayer(cluster);
@@ -2788,16 +3389,17 @@ async function updateMap() {
         const communes = new Map();
         filteredData.forEach(item => {
             if (!item.lat || !item.lon) return;
-            if (!communes.has(item.ville)) communes.set(item.ville, { lat: item.lat, lon: item.lon, capaciteTot: 0, nb: 0 });
+            if (!communes.has(item.ville)) communes.set(item.ville, { lat: item.lat, lon: item.lon, total: 0, nb: 0 });
             const c = communes.get(item.ville);
-            c.capaciteTot += item.capacite; c.nb++;
+            c.total += (isRest ? (item.couverts || 0) : item.capacite);
+            c.nb++;
         });
         const markers = [];
         for (const [ville, data] of communes.entries()) {
-            const r = Math.min(45, Math.max(8, Math.sqrt(data.capaciteTot) * 1.2 + 6));
+            const r = Math.min(45, Math.max(8, Math.sqrt(data.total) * 1.2 + 6));
             const m = L.circleMarker([data.lat, data.lon], {
-                radius: r, fillColor: '#991917', color: '#991917', weight: 1.5, fillOpacity: 0.7
-            }).bindPopup(`<strong>${escapeHtml(ville)}</strong><br>Capacité: ${data.capaciteTot}<br>Étab: ${data.nb}`);
+                radius: r, fillColor: baseColor, color: baseColor, weight: 1.5, fillOpacity: 0.7
+            }).bindPopup(`<strong>${escapeHtml(ville)}</strong><br>${isRest ? 'Couverts' : 'Capacité'}: ${data.total}<br>Étab: ${data.nb}`);
             markers.push(m);
         }
         const layer = L.layerGroup(markers);
@@ -2806,28 +3408,84 @@ async function updateMap() {
     } else if (mode === "choropleth") {
         const overlay = document.createElement('div');
         overlay.className = 'loading-overlay show';
-        overlay.innerHTML = '<div class="spinner"><i class="fas fa-spinner fa-spin"></i></div><div>Chargement des contours…</div>';
+        overlay.innerHTML = `
+            <div class="spinner"><i class="fas fa-spinner fa-spin"></i></div>
+            <div id="choroplethProgress">Chargement des contours…</div>
+            <button id="choroplethCancel" class="modal-btn secondary" style="margin-top: 1rem; min-width: 160px;">
+                <i class="fas fa-xmark"></i> Annuler
+            </button>
+        `;
         document.body.appendChild(overlay);
-        try { await renderChoropleth(); }
-        catch (e) { console.error(e); showToast("Impossible de charger les contours.", "error"); }
-        finally { overlay.remove(); }
+
+        // Controller partagé : le bouton Annuler et la boucle l'utilisent
+        const cancelCtrl = new AbortController();
+        const cancelBtn = overlay.querySelector('#choroplethCancel');
+        cancelBtn.addEventListener('click', () => {
+            cancelBtn.disabled = true;
+            cancelBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Annulation…';
+            cancelCtrl.abort();
+        });
+
+        try {
+            await renderChoropleth(overlay, cancelCtrl.signal);
+        } catch (e) {
+            if (e.name === 'AbortError' || cancelCtrl.signal.aborted) {
+                console.log('[choropleth] Chargement annulé par l\'utilisateur');
+            } else {
+                console.error(e);
+                showToast("Impossible de charger les contours : " + e.message, "error", 6000);
+            }
+        } finally {
+            overlay.remove();
+        }
     }
 }
-async function fetchCommuneContour(communeName) {
-    if (communeGeoCache.has(communeName)) return communeGeoCache.get(communeName);
+
+async function fetchWithTimeout(url, timeoutMs = 8000, externalSignal = null) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+    // Relais d'annulation externe (bouton Annuler)
+    const onExternalAbort = () => controller.abort();
+    if (externalSignal) {
+        if (externalSignal.aborted) controller.abort();
+        else externalSignal.addEventListener('abort', onExternalAbort, { once: true });
+    }
+
+    try {
+        return await fetch(url, { signal: controller.signal });
+    } finally {
+        clearTimeout(timer);
+        if (externalSignal) externalSignal.removeEventListener('abort', onExternalAbort);
+    }
+}
+
+async function fetchCommuneContour(communeName, signal = null) {
+    // Ne pas réutiliser les échecs : un null caché serait définitif
+    if (communeGeoCache.has(communeName)) {
+        const cached = communeGeoCache.get(communeName);
+        if (cached !== null) return cached;
+        communeGeoCache.delete(communeName); // on retente
+    }
     const url = `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(communeName)}&fields=nom,code,contour&geometry=contour&limit=1`;
     try {
-        const r = await fetch(url);
+        const r = await fetchWithTimeout(url, 8000, signal);
         if (!r.ok) throw new Error('HTTP ' + r.status);
         const data = await r.json();
         if (Array.isArray(data) && data.length && data[0].contour) {
             communeGeoCache.set(communeName, data[0].contour);
             return data[0].contour;
         }
-    } catch(e) {}
-    communeGeoCache.set(communeName, null);
-    return null;
+        throw new Error('Commune introuvable ou sans contour');
+    } catch (e) {
+        // 🔑 Annulation → on PROPAGE l'AbortError (ne pas le considérer comme un échec de commune)
+        if (e.name === 'AbortError') throw e;
+        console.warn('[choropleth] Échec pour "' + communeName + '" :', e.message);
+        // On ne cache PAS l'échec → un prochain clic retentera cette commune
+        return null;
+    }
 }
+
 function colorFromRatio(ratio) {
     const stops = [
         { r: 255, g: 245, b: 200 }, { r: 244, g: 162, b: 97 },
@@ -2838,29 +3496,59 @@ function colorFromRatio(ratio) {
     const a = stops[i], b = stops[Math.min(i+1, stops.length-1)];
     return `rgb(${Math.round(a.r+(b.r-a.r)*f)},${Math.round(a.g+(b.g-a.g)*f)},${Math.round(a.b+(b.b-a.b)*f)})`;
 }
-async function renderChoropleth() {
+async function renderChoropleth(overlay, signal = null) {
     const agg = new Map();
+    const isRest = currentCategorie === 'restaurant';
     filteredData.forEach(d => {
-        if (!agg.has(d.ville)) agg.set(d.ville, { capacite: 0, nb: 0 });
+        if (!agg.has(d.ville)) agg.set(d.ville, { total: 0, nb: 0 });
         const a = agg.get(d.ville);
-        a.capacite += d.capacite; a.nb++;
+        a.total += (isRest ? (d.couverts || 0) : d.capacite);
+        a.nb++;
     });
-    const maxCap = Math.max(1, ...Array.from(agg.values()).map(a => a.capacite));
+    const maxVal = Math.max(1, ...Array.from(agg.values()).map(a => a.total));
     const entries = Array.from(agg.entries());
-    const results = await Promise.all(entries.map(async ([ville, stats]) => {
-        const contour = await fetchCommuneContour(ville);
-        return { ville, stats, contour };
-    }));
+    const totalCommunes = entries.length;
+
+    const updateProgress = (done, failed) => {
+        const el = overlay && overlay.querySelector('#choroplethProgress');
+        if (!el) return;
+        el.textContent = `Chargement des contours… ${done}/${totalCommunes}${failed > 0 ? ' (' + failed + ' échec' + (failed > 1 ? 's' : '') + ')' : ''}`;
+    };
+    updateProgress(0, 0);
+
+    // 🔑 Lots de 5 requêtes max en parallèle (le navigateur plafonne à ~6 par host)
+    const BATCH_SIZE = 5;
+    const results = [];
+    let failedCount = 0;
+    for (let i = 0; i < entries.length; i += BATCH_SIZE) {
+        // 🔑 Vérification entre chaque batch → stoppe immédiatement après l'annulation
+        if (signal && signal.aborted) {
+            throw new DOMException('Annulé par l\'utilisateur', 'AbortError');
+        }
+        const batch = entries.slice(i, i + BATCH_SIZE);
+        const batchResults = await Promise.all(batch.map(async ([ville, stats]) => {
+            const contour = await fetchCommuneContour(ville, signal);
+            if (!contour) failedCount++;
+            return { ville, stats, contour };
+        }));
+        results.push(...batchResults);
+        updateProgress(Math.min(i + BATCH_SIZE, totalCommunes), failedCount);
+    }
+
     const features = [];
     for (const { ville, stats, contour } of results) {
         if (!contour) continue;
         features.push({
             type: 'Feature',
-            properties: { name: ville, capacity: stats.capacite, nb: stats.nb, ratio: stats.capacite / maxCap },
+            properties: { name: ville, total: stats.total, nb: stats.nb, ratio: stats.total / maxVal },
             geometry: contour
         });
     }
-    if (!features.length) { showToast("Aucun contour récupéré.", "error"); return; }
+    if (!features.length) {
+        showToast(`Aucun contour récupéré (${failedCount}/${totalCommunes} communes en échec). Réessayez dans un instant.`, "error", 6000);
+        return;
+    }
+
     const geoLayer = L.geoJSON({ type: 'FeatureCollection', features }, {
         style: (feature) => ({
             fillColor: colorFromRatio(feature.properties.ratio),
@@ -2868,25 +3556,32 @@ async function renderChoropleth() {
         }),
         onEachFeature: (feature, layer) => {
             const p = feature.properties;
-            layer.bindPopup(`<strong>${escapeHtml(p.name)}</strong><br>Capacité : ${p.capacity}<br>Étab : ${p.nb}`);
+            layer.bindPopup(`<strong>${escapeHtml(p.name)}</strong><br>${isRest ? 'Couverts' : 'Capacité'} : ${p.total}<br>Étab : ${p.nb}`);
             layer.on('mouseover', () => layer.setStyle({ weight: 2, fillOpacity: 0.9 }));
             layer.on('mouseout', () => geoLayer.resetStyle(layer));
         }
     });
     mapLayers.push(geoLayer); map.addLayer(geoLayer);
     try { map.fitBounds(geoLayer.getBounds().pad(0.1)); } catch(e){}
+
     let gradient = '';
     for (let i = 0; i <= 10; i++) gradient += `<span style="background:${colorFromRatio(i/10)}"></span>`;
-    addMapLegend(`<div><strong>Capacité par commune</strong></div><div class="legend-scale">${gradient}</div><div style="display:flex;justify-content:space-between;"><span>0</span><span>${maxCap} lits</span></div>`);
+    addMapLegend(`<div><strong>${isRest ? 'Couverts' : 'Capacité'} par commune</strong></div><div class="legend-scale">${gradient}</div><div style="display:flex;justify-content:space-between;"><span>0</span><span>${maxVal} ${isRest ? 'couverts' : 'lits'}</span></div>`);
+
+    if (failedCount > 0) {
+        showToast(`${failedCount} commune(s) sur ${totalCommunes} n'ont pas pu être chargées. Recliquez sur Choroplèthe pour retenter.`, "info", 6000);
+    }
 }
 
 function updateFooterInfo() {
     const el = document.getElementById("footerInfo");
     if (rawData.length === 0) { el.textContent = "Aucune donnée."; return; }
-    el.innerHTML = `<strong>${rawData.length} hébergements</strong> synchronisés`;
+    const heb = rawData.filter(d => d.categorie === 'hebergement').length;
+    const rest = rawData.filter(d => d.categorie === 'restaurant').length;
+    el.innerHTML = `<strong>${heb} hébergement${heb>1?'s':''}</strong> · <strong>${rest} restaurant${rest>1?'s':''}</strong> synchronisés`;
 }
 
-/* ====== DROPZONE INITIAL ====== */
+/* === DROPZONE INITIAL === */
 const dropZone = document.getElementById("dropZone");
 const fileInput = document.getElementById("fileInput");
 const chooseBtn = document.getElementById("chooseBtn");
@@ -2906,7 +3601,8 @@ fileInput.addEventListener('change', (e) => {
     if (e.target.files.length) importFileToFirestore(e.target.files[0]);
 });
 
-/* ====== INIT ====== */
+/* === INIT === */
+initResetPartners();   // ← attaché immédiatement, indépendamment de bootstrapUI
 showLoading("Connexion à Firebase…");
 initFirebase();
 </script>
