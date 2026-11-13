@@ -6,6 +6,7 @@
     <title>Observatoire Hébergement - Restauration — Office de Tourisme Conques-Marcillac</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23991917'/%3E%3Ctext x='32' y='44' font-size='36' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'%3EH%3C/text%3E%3C/svg%3E">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
@@ -114,6 +115,57 @@
         .btn-icon.ghost:hover { background: #991917; color: white; }
         .btn-icon.warn { color: #d97706; border: 1px solid #d97706; }
         .btn-icon.warn:hover { background: #d97706; color: white; }
+
+        /* ====== EXPORT DROPDOWN ====== */
+        .export-dropdown { position: relative; }
+        .export-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(91,40,27,0.15);
+            border: 1px solid var(--stone);
+            padding: 6px;
+            min-width: 280px;
+            z-index: 500;
+        }
+        .export-menu.open { display: block; animation: slideDown 0.15s; }
+        .export-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            background: none;
+            border: none;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            color: var(--text);
+            text-align: left;
+            transition: 0.15s;
+            font-family: inherit;
+        }
+        .export-item:hover { background: var(--stone-light); color: var(--primary); }
+        .export-item i:first-child { width: 16px; color: var(--primary); flex-shrink: 0; }
+        .export-label { flex: 1; }
+        .export-count {
+            background: #f1f5f9;
+            color: #3a5a7a;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            min-width: 32px;
+            text-align: center;
+        }
+        .export-separator {
+            height: 1px;
+            background: var(--stone-light);
+            margin: 4px 8px;
+        }
 
         button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible {
             outline: 2px solid #991917; outline-offset: 2px;
@@ -437,6 +489,48 @@
         .stats-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         .stats-table th, .stats-table td { padding: 10px 8px; text-align: center; border-bottom: 1px solid #e2e8f0; }
         .stats-table th { background: #f1f5f9; color: #991917; font-size: 0.8rem; }
+        /* ====== LABELS SECONDAIRES ====== */
+        .labels-checkbox-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 4px 0;
+        }
+        .labels-checkbox-container label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #3a5a7a;
+            background: white;
+            transition: 0.15s;
+            user-select: none;
+        }
+        .labels-checkbox-container label:hover { border-color: #991917; }
+        .labels-checkbox-container label.checked {
+            border-color: #991917;
+            background: #fff0f0;
+            color: #991917;
+            font-weight: 700;
+        }
+        .labels-checkbox-container input[type="checkbox"] { accent-color: #991917; }
+        .badge-labels {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            background: #fef3ec;
+            color: #c9823f;
+            padding: 2px 8px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            cursor: help;
+        }
 
         .modal-overlay {
             display: none; position: fixed; inset: 0;
@@ -789,9 +883,18 @@
                     </select>
                 </div>
 
+                <div class="filter-group">
+                    <label>Label secondaire</label>
+                    <select id="filterLabelSecondaire">
+                        <option value="">Tous</option>
+                        <option value="__any__">Avec au moins un label</option>
+                        <option value="__none__">Sans label secondaire</option>
+                    </select>
+                </div>
+
             </div>
             <div class="filters-actions">
-                <button class="btn-icon small ghost" id="manageTypesBtn" style="margin:0;"><i class="fas fa-tags"></i> Gérer les types</button>
+                <button class="btn-icon small ghost" id="manageTypesBtn" style="margin:0;"><i class="fas fa-tags"></i> Gérer les types & labels</button>
                 <button class="btn-icon small ghost" id="resetFiltersBtn" style="margin:0;"><i class="fas fa-rotate-left"></i> Réinitialiser</button>
                 <button class="btn-icon small" id="closeFiltersBtn" style="margin:0;"><i class="fas fa-check"></i> Appliquer</button>
             </div>
@@ -831,6 +934,39 @@
     <!-- TAB : DATABASE -->
     <section class="tab-view" id="tab-database">
         <div style="display:flex; justify-content:flex-end; gap: 8px; margin-bottom: 0.8rem; flex-wrap: wrap;">
+            <button class="btn-icon small" id="bulkMailBtn" style="margin:0; background:linear-gradient(135deg, #2c6e9e, #1d4f7a); box-shadow:0 2px 8px rgba(44,110,158,0.20);" title="Préparer un email pour les fiches actuellement affichées">
+                <i class="fas fa-envelope"></i> Mail groupé
+                <span id="bulkMailCount" style="background:rgba(255,255,255,0.25); padding:1px 8px; border-radius:20px; font-size:0.72rem; margin-left:4px;">0</span>
+            </button>
+            <div class="export-dropdown">
+                <button class="btn-icon xls small" id="exportExcelBtn" style="margin:0;" title="Exporter au format Excel">
+                    <i class="fas fa-file-excel"></i> Exporter en Excel
+                    <i class="fas fa-caret-down" style="margin-left:4px;font-size:0.7rem;"></i>
+                </button>
+                <div class="export-menu" id="exportMenu">
+                    <button class="export-item" data-export-mode="all">
+                        <i class="fas fa-database"></i>
+                        <span class="export-label">Toute la base</span>
+                        <span class="export-count" id="exportCountAll">0</span>
+                    </button>
+                    <button class="export-item" data-export-mode="filtered">
+                        <i class="fas fa-filter"></i>
+                        <span class="export-label">Vue filtrée actuelle</span>
+                        <span class="export-count" id="exportCountFiltered">0</span>
+                    </button>
+                    <div class="export-separator"></div>
+                    <button class="export-item" data-export-mode="hebergements">
+                        <i class="fas fa-hotel"></i>
+                        <span class="export-label">Tous les hébergements</span>
+                        <span class="export-count" id="exportCountHeb">0</span>
+                    </button>
+                    <button class="export-item" data-export-mode="restaurants">
+                        <i class="fas fa-utensils"></i>
+                        <span class="export-label">Tous les restaurants</span>
+                        <span class="export-count" id="exportCountRest">0</span>
+                    </button>
+                </div>
+            </div>
             <button class="btn-icon small warn" id="resetPartnersBtn" style="margin:0;" title="Remettre à zéro tous les partenariats (nouvelle année)"><i class="fas fa-rotate-left"></i> Réinitialiser les partenariats</button>
             <button class="btn-icon" id="addHebergementBtn" style="margin:0;"><i class="fas fa-plus"></i> Ajouter</button>
         </div>
@@ -904,6 +1040,12 @@
                     <div class="chart-wrap"><canvas id="nbStructuresCommuneChart"></canvas></div>
                 </div>
             </div>
+            <div class="charts-row">
+                <div class="chart-card">
+                    <h3><i class="fas fa-chart-column"></i> Distribution par gamme de capacité</h3>
+                    <canvas id="capaciteGammeChart"></canvas>
+                </div>
+            </div>
             <div class="stats-summary">
                 <h3><i class="fas fa-table"></i> Synthèse par type d'hébergement</h3>
                 <table class="stats-table" id="summaryTable">
@@ -934,6 +1076,10 @@
                 <div class="chart-card">
                     <h3><i class="fas fa-utensils"></i> Nombre de restaurants par commune</h3>
                     <div class="chart-wrap"><canvas id="restaurantsCommuneChart"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <h3><i class="fas fa-chair"></i> Nombre de couverts par commune</h3>
+                    <div class="chart-wrap"><canvas id="couvertsCommuneChart"></canvas></div>
                 </div>
             </div>
             <div class="stats-summary">
@@ -1085,6 +1231,11 @@
                         <label for="fFinClassement">Fin classement <span class="optional">(optionnel)</span></label>
                         <input type="date" id="fFinClassement">
                     </div>
+                    <div class="form-field full" id="fieldNumeroEnregistrement">
+                        <label for="fNumeroEnregistrement">N° d'enregistrement <span class="optional">(optionnel)</span></label>
+                        <input type="text" id="fNumeroEnregistrement" placeholder="Ex: 1234567890123">
+                        <div class="hint">💡 Numéro d'enregistrement obligatoire pour les meublés de tourisme (réforme API Meublé). Laissez vide si non applicable ou non renseigné.</div>
+                    </div>
                     <div class="form-field" id="fieldCouverts" style="display:none;">
                         <label for="fCouverts">Nombre de couverts <span class="required">*</span></label>
                         <input type="number" id="fCouverts" min="0" step="1">
@@ -1111,6 +1262,12 @@
                             <span>La structure dispose du <strong>label Tourisme & Handicap</strong></span>
                         </label>
                         <div class="hint">💡 Cocher cette case coche automatiquement « accessible ».</div>
+                    </div>
+
+                    <div class="form-group-title">Labels secondaires <span class="optional" style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.72rem;color:#8899aa;">(aucun, un ou plusieurs)</span></div>
+                    <div class="form-field full">
+                        <div id="labelsCheckboxContainer" class="labels-checkbox-container"></div>
+                        <div class="hint">💡 Cochez les labels applicables à cette structure. Utilisez « Gérer les types & labels » pour ajouter de nouveaux labels à la liste.</div>
                     </div>
 
                     <div class="form-group-title">Géolocalisation</div>
@@ -1164,29 +1321,107 @@
 <div class="modal-overlay" id="letterModal" style="z-index: 3200;">
     <div class="modal-content">
         <div class="modal-header">
-            <h3><i class="fas fa-envelope"></i> Courrier de relance</h3>
+            <h3><i class="fas fa-envelope"></i> <span id="letterModalTitleText">Courrier de relance</span></h3>
             <button class="modal-close" id="closeLetterModal">×</button>
         </div>
         <div class="modal-body">
             <div class="letter-context" id="letterContext"></div>
             <div class="letter-section">
+                <div class="letter-section-label"><span>Destinataire</span></div>
+                <div style="display:flex; gap:16px; flex-wrap:wrap;">
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                        <input type="radio" name="letterRecipient" value="structure" checked>
+                        <span>Email structure</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                        <input type="radio" name="letterRecipient" value="gest">
+                        <span>Email gestionnaire</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                        <input type="radio" name="letterRecipient" value="both">
+                        <span>Les deux</span>
+                    </label>
+                </div>
+                <div id="letterRecipientWarning" style="font-size:0.8rem; margin-top:6px; display:none;"></div>
+            </div>
+            <div class="letter-section">
                 <div class="letter-section-label">
                     <span>Objet</span>
                     <button class="copy-btn" data-copy="letterSubject"><i class="fas fa-copy"></i> Copier</button>
                 </div>
-                <div class="letter-field" id="letterSubject"></div>
+                <input type="text" class="letter-field" id="letterSubject" placeholder="Objet du message" style="width:100%; font-family:inherit;">
             </div>
             <div class="letter-section">
                 <div class="letter-section-label">
                     <span>Corps du message</span>
                     <button class="copy-btn" data-copy="letterBody"><i class="fas fa-copy"></i> Copier</button>
                 </div>
-                <div class="letter-field multi" id="letterBody"></div>
+                <textarea class="letter-field multi" id="letterBody" rows="10" placeholder="Bonjour,&#10;&#10;...&#10;&#10;Bien cordialement," style="width:100%; font-family:inherit; resize:vertical;"></textarea>
             </div>
         </div>
         <div class="modal-footer">
             <button class="modal-btn secondary" id="closeLetterBtn">Fermer</button>
-            <button class="modal-btn primary" id="copyAllBtn"><i class="fas fa-clipboard"></i> Tout copier</button>
+            <button class="modal-btn secondary" id="copyAllBtn"><i class="fas fa-clipboard"></i> Tout copier</button>
+            <button class="modal-btn primary" id="openMailBtn"><i class="fas fa-envelope"></i> Rédiger l'email</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL BULK MAIL -->
+<div class="modal-overlay" id="bulkMailModal" style="z-index: 3400;">
+    <div class="modal-content" style="max-width: 720px;">
+        <div class="modal-header">
+            <h3><i class="fas fa-envelope"></i> Envoyer un mail groupé</h3>
+            <button class="modal-close" id="closeBulkMailModal">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="letter-context" id="bulkMailContext"></div>
+
+            <div class="letter-section">
+                <div class="letter-section-label"><span>Type d'email à utiliser</span></div>
+                <div style="display:flex; gap:16px; flex-wrap:wrap;">
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                        <input type="radio" name="bulkMailRecipient" value="structure" checked>
+                        <span>Email structure</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                        <input type="radio" name="bulkMailRecipient" value="gest">
+                        <span>Email gestionnaire</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                        <input type="radio" name="bulkMailRecipient" value="both">
+                        <span>Les deux</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="letter-section">
+                <div class="letter-section-label">
+                    <span>Destinataires (<span id="bulkMailDestCount">0</span>)</span>
+                    <button type="button" class="copy-btn" id="toggleBulkRecipientsBtn" style="background:#f1f5f9; color:#3a5a7a; border:1px solid #cbd5e1; border-radius:20px; padding:4px 12px; font-size:0.75rem; font-weight:600; cursor:pointer;">
+                        <i class="fas fa-chevron-down"></i> Voir la liste
+                    </button>
+                </div>
+                <div id="bulkMailRecipientsList" style="display:none; background:#fafbfc; border:1px solid #e2e8f0; border-radius:10px; padding:0.7rem; max-height:220px; overflow-y:auto; font-size:0.85rem;"></div>
+            </div>
+
+            <div class="letter-section">
+                <div class="letter-section-label"><span>Objet</span></div>
+                <input type="text" id="bulkMailSubject" placeholder="Ex : Information importante à votre attention" style="width:100%; padding:10px 12px; border-radius:10px; border:1px solid #cbd5e1; font-size:0.9rem; font-family:inherit;">
+            </div>
+
+            <div class="letter-section">
+                <div class="letter-section-label"><span>Corps du message</span></div>
+                <textarea id="bulkMailBody" rows="8" placeholder="Bonjour,&#10;&#10;Nous vous informons que..." style="width:100%; padding:10px 12px; border-radius:10px; border:1px solid #cbd5e1; font-size:0.9rem; font-family:inherit; resize:vertical;"></textarea>
+                <div class="hint" style="font-size:0.75rem; color:#8899aa; margin-top:6px;">
+                    💡 Le message sera envoyé en <strong>Cci</strong> : chaque destinataire ne verra pas les autres adresses. Un même message pour tous (pas de personnalisation possible).
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn secondary" id="cancelBulkMailBtn">Annuler</button>
+            <button class="modal-btn secondary" id="copyBulkListBtn"><i class="fas fa-clipboard"></i> Copier la liste des emails</button>
+            <button class="modal-btn primary" id="openBulkMailBtn"><i class="fas fa-envelope"></i> Rédiger l'email</button>
         </div>
     </div>
 </div>
@@ -1195,7 +1430,7 @@
 <div class="modal-overlay" id="typeManageModal" style="z-index: 3300;">
     <div class="modal-content" style="max-width: 600px;">
         <div class="modal-header">
-            <h3><i class="fas fa-tags"></i> Gérer les types</h3>
+            <h3><i class="fas fa-tags"></i> Gérer les types & labels secondaires</h3>
             <button class="modal-close" id="closeTypeManageModal">×</button>
         </div>
         <div class="modal-body">
@@ -1217,6 +1452,23 @@
                     <button class="btn-icon small" id="addTypeRestBtn" style="margin:0;"><i class="fas fa-plus"></i></button>
                 </div>
                 <div id="listTypesRest" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+            </div>
+
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+                <label style="display:block;font-size:0.72rem;font-weight:700;color:#5b7a9a;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Labels secondaires — Hébergements</label>
+                <div style="display:flex;gap:6px;margin-bottom:8px;">
+                    <input type="text" id="newLabelHeb" placeholder="Ex: Qualité Tourisme" style="flex:1;padding:9px 12px;border-radius:10px;border:1px solid #cbd5e1;font-size:0.88rem;">
+                    <button class="btn-icon small" id="addLabelHebBtn" style="margin:0;"><i class="fas fa-plus"></i></button>
+                </div>
+                <div id="listLabelsHeb" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+            </div>
+            <div style="margin-top: 1rem;">
+                <label style="display:block;font-size:0.72rem;font-weight:700;color:#5b7a9a;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Labels secondaires — Restaurants</label>
+                <div style="display:flex;gap:6px;margin-bottom:8px;">
+                    <input type="text" id="newLabelRest" placeholder="Ex: Maître Restaurateur" style="flex:1;padding:9px 12px;border-radius:10px;border:1px solid #cbd5e1;font-size:0.88rem;">
+                    <button class="btn-icon small" id="addLabelRestBtn" style="margin:0;"><i class="fas fa-plus"></i></button>
+                </div>
+                <div id="listLabelsRest" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
             </div>
         </div>
         <div class="modal-footer">
@@ -1256,6 +1508,9 @@ let viewingId = null;
 let deactivatingId = null;
 let formInitialState = null;
 let currentTab = 'dashboard';
+let currentLetterItem = null;
+let currentLetterMode = 'relance';
+let bulkMailRecipients = [];
 const communeGeoCache = new Map();
 
 /* === CATÉGORIES & TYPES === */
@@ -1274,6 +1529,18 @@ let typesConfig = {
     hebergement: [...FALLBACK_TYPES_HEBERGEMENT],
     restaurant: [...FALLBACK_TYPES_RESTAURANT]
 };
+const FALLBACK_LABELS_HEBERGEMENT = [
+    "Qualité Tourisme", "Gîtes de France", "Logis", "Accueil Vélo",
+    "Bienvenue Vélo", "Clé Verte", "Famille Plus", "Bienvenue à la Ferme"
+];
+const FALLBACK_LABELS_RESTAURANT = [
+    "Maître Restaurateur", "Bistrot de Pays", "Collège Culinaire de France",
+    "Logis", "Accueil Vélo", "Fait Maison"
+];
+let labelsConfig = {
+    hebergement: [...FALLBACK_LABELS_HEBERGEMENT],
+    restaurant: [...FALLBACK_LABELS_RESTAURANT]
+};
 
 const colMapping = {
     nom: "NOM COMMERCIAL", adresse1: "ADRESSE1", adresse2: "ADRESSE2",
@@ -1285,13 +1552,16 @@ const colMapping = {
     debutClassement: "DEBUT CLASSEMENT", finClassement: "FIN CLASSEMENT",
     lat: "LATITUDE", lon: "LONGITUDE",
     categorie: "CATEGORIE", partenaire: "PARTENAIRE",
-    accessible: "ACCESSIBLE", labelTH: "LABEL TH"
+    accessible: "ACCESSIBLE", labelTH: "LABEL TH",
+    labelsSecondaires: "LABELS SECONDAIRES",
+    numeroEnregistrement: "NUMERO ENREGISTREMENT"
 };
 
 let currentCategorie = "hebergement";
 let currentStatut = "actif", currentType = "Tous", currentClass = "Tous", currentVille = "",
     currentCapaciteMin = 0, currentValidite = "tous", currentSearch = "",
-    currentPartenaire = "tous", currentAccessible = "tous";
+    currentPartenaire = "tous", currentAccessible = "tous",
+    currentLabelSecondaire = "";
 let currentSortKey = null, currentSortDir = "asc";
 let currentPage = 1, pageSize = 25;
 let currentMapMode = "etablissements";
@@ -1301,6 +1571,9 @@ const STORAGE_KEY = 'observatoire_filters_v5';
 
 function escapeHtml(str) {
     return String(str ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
+}
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((email || '').trim());
 }
 function debounce(fn, delay) {
     let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
@@ -1385,6 +1658,7 @@ function saveFilters() {
             class: currentClass, ville: currentVille, capacite: currentCapaciteMin,
             validite: currentValidite, partenaire: currentPartenaire,
             accessible: currentAccessible,
+            labelSecondaire: currentLabelSecondaire,
             sortKey: currentSortKey, sortDir: currentSortDir,
             pageSize: pageSize, mapMode: currentMapMode, tab: currentTab
         }));
@@ -1414,6 +1688,11 @@ function restoreFilters() {
             currentAccessible = s.accessible;
             document.getElementById("filterAccessible").value = s.accessible;
         }
+        if (typeof s.labelSecondaire === 'string') {
+            currentLabelSecondaire = s.labelSecondaire;
+            const sel = document.getElementById("filterLabelSecondaire");
+            if (sel) sel.value = s.labelSecondaire;
+        }
         if (typeof s.capacite === 'number' && s.capacite > 0) {
             currentCapaciteMin = s.capacite; document.getElementById("capaciteMin").value = s.capacite;
         }
@@ -1440,6 +1719,7 @@ async function initFirebase() {
         auth = getAuth(app);
         await signInAnonymously(auth);
         listenToTypesConfig();
+        listenToLabelsConfig();
         listenToFirestore();
     } catch (err) {
         console.error(err);
@@ -1465,6 +1745,35 @@ function listenToTypesConfig() {
         }, (err) => console.warn('types config listen error', err));
     } catch(e) { console.warn(e); }
 }
+
+function listenToLabelsConfig() {
+    try {
+        onSnapshot(doc(db, 'config', 'labels'), (snap) => {
+            if (snap.exists()) {
+                const data = snap.data();
+                if (Array.isArray(data.hebergement) && data.hebergement.length) labelsConfig.hebergement = data.hebergement;
+                if (Array.isArray(data.restaurant) && data.restaurant.length) labelsConfig.restaurant = data.restaurant;
+            }
+            if (bootstrapped) {
+                refreshFiltersOptions();
+                refreshTypeManageLists();
+            }
+        }, (err) => console.warn('labels config listen error', err));
+    } catch(e) { console.warn(e); }
+}
+
+async function saveLabelsConfig() {
+    try {
+        await setDoc(doc(db, 'config', 'labels'), {
+            hebergement: labelsConfig.hebergement,
+            restaurant: labelsConfig.restaurant
+        });
+    } catch (err) {
+        console.error(err);
+        showToast("Erreur sauvegarde labels : " + err.message, "error");
+    }
+}
+
 async function saveTypesConfig() {
     try {
         await setDoc(doc(db, 'config', 'types'), {
@@ -1510,6 +1819,8 @@ function listenToFirestore() {
                 partenaire: data.partenaire === true,
                 accessible: data.accessible === true,
                 labelTH: data.labelTH === true,
+                labelsSecondaires: Array.isArray(data.labelsSecondaires) ? data.labelsSecondaires : [],
+                numeroEnregistrement: data.numeroEnregistrement || "",
                 actif: data.actif !== false
             };
         });
@@ -1557,6 +1868,8 @@ function bootstrapUI() {
     initDeactivateConfirm();
     initDbToolbar();
     initTypeManage();
+    initExport();
+    initBulkMail();
     restoreFilters();
     refreshFiltersOptions();
     refreshTypeManageLists();
@@ -1637,6 +1950,77 @@ function initDbToolbar() {
     document.getElementById('emptyResetBtn').addEventListener('click', resetAllFilters);
 }
 
+function initExport() {
+    const btn = document.getElementById('exportExcelBtn');
+    const menu = document.getElementById('exportMenu');
+    if (!btn || !menu) return;
+
+    // Ouverture / fermeture
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (menu.classList.contains('open')) {
+            menu.classList.remove('open');
+        } else {
+            updateExportCounts();
+            menu.classList.add('open');
+        }
+    });
+
+    // Fermer au clic extérieur
+    document.addEventListener('click', (e) => {
+        if (!menu.contains(e.target) && !btn.contains(e.target)) {
+            menu.classList.remove('open');
+        }
+    });
+
+    // Fermer avec Échap
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && menu.classList.contains('open')) {
+            menu.classList.remove('open');
+        }
+    });
+
+    // Clic sur un item du menu
+    menu.querySelectorAll('[data-export-mode]').forEach(item => {
+        item.addEventListener('click', () => {
+            menu.classList.remove('open');
+            const mode = item.dataset.exportMode;
+            let dataset = [];
+            let suffix = 'export';
+
+            if (mode === 'all') {
+                dataset = rawData;
+                suffix = 'base';
+            } else if (mode === 'filtered') {
+                dataset = filteredData;
+                suffix = 'filtre';
+            } else if (mode === 'hebergements') {
+                dataset = rawData.filter(d => d.categorie === 'hebergement');
+                suffix = 'heb';
+            } else if (mode === 'restaurants') {
+                dataset = rawData.filter(d => d.categorie === 'restaurant');
+                suffix = 'rest';
+            }
+
+            exportToExcel(dataset, suffix);
+        });
+    });
+}
+
+function updateExportCounts() {
+    const counts = {
+        all: rawData.length,
+        filtered: filteredData.length,
+        hebergements: rawData.filter(d => d.categorie === 'hebergement').length,
+        restaurants: rawData.filter(d => d.categorie === 'restaurant').length
+    };
+    const el = (id) => document.getElementById(id);
+    if (el('exportCountAll')) el('exportCountAll').textContent = counts.all;
+    if (el('exportCountFiltered')) el('exportCountFiltered').textContent = counts.filtered;
+    if (el('exportCountHeb')) el('exportCountHeb').textContent = counts.hebergements;
+    if (el('exportCountRest')) el('exportCountRest').textContent = counts.restaurants;
+}
+
 function refreshFiltersOptions() {
     // Types selon la catégorie active
     const dataTypes = [...new Set(rawData.filter(d => d.categorie === currentCategorie).map(d => d.type))].filter(Boolean);
@@ -1679,6 +2063,24 @@ function refreshFiltersOptions() {
     const allVilles = [...new Set(rawData.map(d => d.ville))].filter(Boolean).sort();
     document.getElementById("villesList2").innerHTML = allVilles.map(v => `<option value="${escapeHtml(v)}">`).join('');
 
+    // Labels secondaires
+    const labelSel = document.getElementById("filterLabelSecondaire");
+    if (labelSel) {
+        const curLabel = labelSel.value;
+        const labels = labelsConfig[currentCategorie] || [];
+        let labelOptions = '<option value="">Tous</option>'
+            + '<option value="__any__">Avec au moins un label</option>'
+            + '<option value="__none__">Sans label secondaire</option>';
+        labelOptions += labels.map(l => `<option value="${escapeHtml(l)}">${escapeHtml(l)}</option>`).join('');
+        labelSel.innerHTML = labelOptions;
+        if (curLabel && Array.from(labelSel.options).some(o => o.value === curLabel)) {
+            labelSel.value = curLabel;
+        } else if (curLabel) {
+            currentLabelSecondaire = "";
+            labelSel.value = "";
+        }
+    }
+
     refreshTypeSelectOptions();
 }
 
@@ -1708,6 +2110,7 @@ function initFilters() {
     document.getElementById("filterValidite").addEventListener("change", (e) => { currentValidite = e.target.value; currentPage = 1; applyFilters(); });
     document.getElementById("filterPartenaire").addEventListener("change", (e) => { currentPartenaire = e.target.value; currentPage = 1; applyFilters(); });
     document.getElementById("filterAccessible").addEventListener("change", (e) => { currentAccessible = e.target.value; currentPage = 1; applyFilters(); });
+    document.getElementById("filterLabelSecondaire").addEventListener("change", (e) => { currentLabelSecondaire = e.target.value; currentPage = 1; applyFilters(); });
 }
 
 function resetAllFilters() {
@@ -1719,9 +2122,10 @@ function resetAllFilters() {
     document.getElementById("filterValidite").value = "tous";
     document.getElementById("filterPartenaire").value = "tous";
     document.getElementById("filterAccessible").value = "tous";
+    document.getElementById("filterLabelSecondaire").value = "";
     document.getElementById("dbSearchInput").value = "";
     currentStatut = "actif"; currentType = "Tous"; currentClass = "Tous"; currentVille = "";
-    currentCapaciteMin = 0; currentValidite = "tous"; currentSearch = ""; currentPartenaire = "tous"; currentAccessible = "tous";
+    currentCapaciteMin = 0; currentValidite = "tous"; currentSearch = ""; currentPartenaire = "tous"; currentAccessible = "tous"; currentLabelSecondaire = "";
     currentPage = 1;
     applyFilters();
 }
@@ -1760,6 +2164,12 @@ function applyFilters() {
         if (currentAccessible === "non" && d.accessible) return false;
         if (currentAccessible === "labelth" && !d.labelTH) return false;
         if (currentAccessible === "sans_label" && (!d.accessible || d.labelTH)) return false;
+        if (currentLabelSecondaire) {
+            const itemLabels = d.labelsSecondaires || [];
+            if (currentLabelSecondaire === "__any__" && itemLabels.length === 0) return false;
+            if (currentLabelSecondaire === "__none__" && itemLabels.length > 0) return false;
+            if (!['__any__', '__none__'].includes(currentLabelSecondaire) && !itemLabels.includes(currentLabelSecondaire)) return false;
+        }
         return true;    });
     saveFilters();
     updateDashboard();
@@ -1770,6 +2180,7 @@ function applyFilters() {
     updateKPIHighlights();
     updateDbFilterCount();
     updateTabCounters();
+    updateBulkMailCount();
 }
 
 function updateTabCounters() {
@@ -1786,7 +2197,8 @@ function updateDbFilterCount() {
         currentCapaciteMin > 0,
         currentCategorie === 'hebergement' && currentValidite !== "tous",
         currentPartenaire !== "tous",
-        currentAccessible !== "tous"
+        currentAccessible !== "tous",
+        currentLabelSecondaire !== ""
     ].filter(Boolean).length;
     const countEl = document.getElementById("dbFilterCount");
     const btn = document.getElementById("toggleFiltersBtn");
@@ -1828,6 +2240,11 @@ function updateActiveFilterBadges() {
             labelth: "Label T&H", sans_label: "Accessibles sans label"
         };
         badges.push({ label: `Accessibilité : ${accLabels[currentAccessible]}`, action: () => { currentAccessible = "tous"; document.getElementById("filterAccessible").value = "tous"; } });
+    }
+    if (currentLabelSecondaire) {
+        const labels = { '__any__': "Avec au moins un label", '__none__': "Sans label secondaire" };
+        const lbl = labels[currentLabelSecondaire] || `Label : ${currentLabelSecondaire}`;
+        badges.push({ label: lbl, action: () => { currentLabelSecondaire = ""; document.getElementById("filterLabelSecondaire").value = ""; } });
     }
     if (badges.length === 0) { container.innerHTML = ""; return; }
     container.innerHTML = badges.map((b, i) => `<span class="filter-badge" data-idx="${i}">${escapeHtml(b.label)} <span style="opacity:0.7;">✕</span></span>`).join('');
@@ -2107,9 +2524,59 @@ function updateHebergementCharts() {
     } else {
         hotelRow.style.display = "none";
     }
+    // === Distribution par gamme de capacité ===
+    const ranges = { '1-2': 0, '3-5': 0, '6-7': 0, '8+': 0 };
+    filteredData.forEach(d => {
+        const cap = d.capacite || 0;
+        if (cap <= 0) return;              // fiches sans capacité renseignée → ignorées
+        if (cap <= 2) ranges['1-2']++;
+        else if (cap <= 5) ranges['3-5']++;
+        else if (cap <= 7) ranges['6-7']++;
+        else ranges['8+']++;
+    });
+
+    const canvasGamme = document.getElementById("capaciteGammeChart");
+    if (canvasGamme) {
+        if (charts.capaciteGammeChart) charts.capaciteGammeChart.destroy();
+        charts.capaciteGammeChart = new Chart(canvasGamme, {
+            type: 'bar',
+            data: {
+                labels: ['1-2 pers.', '3-5 pers.', '6-7 pers.', '8 pers. et +'],
+                datasets: [{
+                    label: "Structures",
+                    data: [ranges['1-2'], ranges['3-5'], ranges['6-7'], ranges['8+']],
+                    backgroundColor: ['#f4a261', '#e9c46a', '#c9823f', '#991917'],
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => `${ctx.parsed.y} structure${ctx.parsed.y > 1 ? 's' : ''}`
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0 },
+                        title: { display: true, text: 'Nombre de structures', font: { size: 11 } }
+                    },
+                    x: {
+                        title: { display: true, text: 'Gamme de capacité', font: { size: 11 } }
+                    }
+                }
+            }
+        });
+    }
 }
 
 function updateRestaurantCharts() {
+    // === Nombre de restaurants par commune ===
     const villeNb = {};
     filteredData.forEach(d => { villeNb[d.ville] = (villeNb[d.ville] || 0) + 1; });
     const sortedNb = Object.entries(villeNb).sort((a,b) => b[1] - a[1]);
@@ -2124,6 +2591,31 @@ function updateRestaurantCharts() {
                 label: "Restaurants",
                 data: sortedNb.map(v => v[1]),
                 backgroundColor: '#c9823f',
+                borderRadius: 6
+            }]
+        },
+        options: {
+            indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { ticks: { autoSkip: false, font: { size: 11 } }, grid: { display: false } }, x: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+    });
+
+    // === Nombre de couverts par commune ===
+    const villeCouverts = {};
+    filteredData.forEach(d => { villeCouverts[d.ville] = (villeCouverts[d.ville] || 0) + (d.couverts || 0); });
+    const sortedCouverts = Object.entries(villeCouverts).sort((a,b) => b[1] - a[1]);
+    const canvasCouverts = document.getElementById("couvertsCommuneChart");
+    if (charts.couvertsCommuneChart) charts.couvertsCommuneChart.destroy();
+    setChartHeight(canvasCouverts, sortedCouverts.length);
+    charts.couvertsCommuneChart = new Chart(canvasCouverts, {
+        type: 'bar',
+        data: {
+            labels: sortedCouverts.map(v => v[0]),
+            datasets: [{
+                label: "Couverts",
+                data: sortedCouverts.map(v => v[1]),
+                backgroundColor: '#d4a015',
                 borderRadius: 6
             }]
         },
@@ -2191,6 +2683,9 @@ function sortData(data) {
         if (currentSortKey === 'partenaire') {
             return ((va?1:0) - (vb?1:0)) * dir;
         }
+        if (currentSortKey === 'labelsSecondaires') {
+            return (((va || []).length) - ((vb || []).length)) * dir;
+        }
         if (va instanceof Date && vb instanceof Date) return (va - vb) * dir;
         if (va instanceof Date && !vb) return 1;
         if (!va && vb instanceof Date) return -1;
@@ -2250,6 +2745,7 @@ function buildTableHead() {
                 <th data-sort="partenaire">Partenaire <span class="sort-ind">↕</span></th>
                 <th data-sort="accessible">Access. <span class="sort-ind">↕</span></th>
                 <th data-sort="labelTH">T&H <span class="sort-ind">↕</span></th>
+                <th data-sort="labelsSecondaires">Labels <span class="sort-ind">↕</span></th>
                 <th style="text-align:center;">Actions</th>
             </tr>`;
     } else {
@@ -2266,9 +2762,11 @@ function buildTableHead() {
                 <th data-sort="partenaire">Part. <span class="sort-ind">↕</span></th>
                 <th data-sort="accessible">Access. <span class="sort-ind">↕</span></th>
                 <th data-sort="labelTH">T&H <span class="sort-ind">↕</span></th>
+                <th data-sort="labelsSecondaires">Labels <span class="sort-ind">↕</span></th>
                 <th style="text-align:center;">Actions</th>
             </tr>`;
-    }}
+    }
+}
 
 function updateTable() {
     buildTableHead();
@@ -2321,8 +2819,13 @@ function updateTable() {
         row += `<td>${getPartnerBadge(item.partenaire)}</td>`;
         const accIcon = item.accessible ? '<i class="fas fa-check" style="color:#10b981;font-weight:700;"></i>' : '<i class="fas fa-times" style="color:#cbd5e1;"></i>';
         const thIcon = item.labelTH ? '<i class="fas fa-certificate" style="color:#d4a015;font-weight:700;"></i>' : '<span style="color:#cbd5e1;">—</span>';
+        const labelsArr = item.labelsSecondaires || [];
+        const labelsCell = labelsArr.length > 0
+            ? `<span class="badge-labels" title="${escapeHtml(labelsArr.join(', '))}"><i class="fas fa-tags"></i> ${labelsArr.length}</span>`
+            : '<span style="color:#cbd5e1;">—</span>';
         row += `<td style="text-align:center;">${accIcon}</td>`;
         row += `<td style="text-align:center;">${thIcon}</td>`;
+        row += `<td style="text-align:center;">${labelsCell}</td>`;
         row += `<td>
             <div class="row-actions">
                 <button class="row-action-btn ${partnerClass}" data-partner-id="${item._id}" title="${partnerTitle}"><i class="fas ${partnerIcon}"></i></button>
@@ -2333,7 +2836,7 @@ function updateTable() {
         tbody.insertAdjacentHTML('beforeend', row);
     });
     if (!pageRows.length) {
-        tbody.insertAdjacentHTML('beforeend', `<tr><td colspan="${isRest?8:12}" style="text-align:center;color:#889;padding:30px;">Aucun résultat</td></tr>`);
+        tbody.insertAdjacentHTML('beforeend', `<tr><td colspan="${isRest?9:13}" style="text-align:center;color:#889;padding:30px;">Aucun résultat</td></tr>`);
     }
 
     tbody.querySelectorAll('tr[data-row-id]').forEach(tr => {
@@ -2457,7 +2960,13 @@ function initDetailPanel() {
         }
     });
     document.getElementById('detailLetterBtn').addEventListener('click', () => {
-        if (viewingId) { const item = findItemById(viewingId); if (item) openLetterModal(item); }
+        if (!viewingId) return;
+        const item = findItemById(viewingId);
+        if (!item) return;
+        const isRest = item.categorie === 'restaurant';
+        const vc = checkValidite(item);
+        const mode = (!isRest && (vc === "expire" || vc === "expire_bientot")) ? 'relance' : 'generic';
+        openLetterModal(item, mode);
     });
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
@@ -2525,12 +3034,21 @@ function openDetailPanel(id) {
     `;
 
     const letterBtn = document.getElementById('detailLetterBtn');
-    if (!isRest && (vc === "expire" || vc === "expire_bientot")) {
+    const hasValidEmail = isValidEmail(item.mail) || isValidEmail(item.mailGest);
+    const isRelanceCase = !isRest && (vc === "expire" || vc === "expire_bientot");
+
+    if (!hasValidEmail) {
+        letterBtn.innerHTML = '<i class="fas fa-envelope"></i> Envoyer un mail';
+        letterBtn.disabled = true;
+        letterBtn.title = "Aucun email renseigné pour cette fiche";
+    } else if (isRelanceCase) {
+        letterBtn.innerHTML = '<i class="fas fa-envelope"></i> Relancer';
         letterBtn.disabled = false;
         letterBtn.title = "Générer le courrier de relance";
     } else {
-        letterBtn.disabled = true;
-        letterBtn.title = isRest ? "Non applicable aux restaurants" : "Classement valide - pas de relance nécessaire";
+        letterBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Envoyer un mail';
+        letterBtn.disabled = false;
+        letterBtn.title = "Envoyer un mail à cette fiche";
     }
 
     const sections = [];
@@ -2574,6 +3092,7 @@ function openDetailPanel(id) {
                 ['Classement', item.classement || ''],
                 ['Capacité', item.capacite != null ? item.capacite + ' lits' : ''],
                 ['Unités', item.nbUnites != null ? item.nbUnites : ''],
+                ['N° d\'enregistrement', item.numeroEnregistrement || ''],
                 ['Début', item.debutClassement ? item.debutClassement.toLocaleDateString('fr-FR') : ''],
                 ['Fin', item.finClassement ? item.finClassement.toLocaleDateString('fr-FR') : '']
             ]
@@ -2585,6 +3104,14 @@ function openDetailPanel(id) {
         rows: [
             ['Accessible', item.accessible ? 'Oui' : 'Non'],
             ['Label T&H', item.labelTH ? 'Oui' : 'Non']
+        ]
+    });
+    sections.push({
+        title: '<i class="fas fa-tags"></i> Labels secondaires',
+        rows: [
+            ['Labels', (item.labelsSecondaires || []).length > 0
+                ? (item.labelsSecondaires || []).join(' · ')
+                : '']
         ]
     });
     sections.push({
@@ -2638,6 +3165,7 @@ function initHebergementModal() {
             updateCatRadiosUI();
             updateFormFieldsByCategorie();
             refreshTypeSelectOptions();
+            renderLabelsCheckboxes([]); // reset labels quand on change de catégorie
         });
     });
 
@@ -2686,8 +3214,38 @@ function updateFormFieldsByCategorie() {
     document.getElementById('fieldNbUnites').style.display = isRest ? 'none' : '';
     document.getElementById('fieldDebutClassement').style.display = isRest ? 'none' : '';
     document.getElementById('fieldFinClassement').style.display = isRest ? 'none' : '';
+    document.getElementById('fieldNumeroEnregistrement').style.display = isRest ? 'none' : '';
     document.getElementById('fieldCouverts').style.display = isRest ? '' : 'none';
     document.getElementById('classementSectionTitle').textContent = isRest ? 'Capacité' : 'Classement & capacité';
+}
+function renderLabelsCheckboxes(selectedLabels) {
+    const container = document.getElementById('labelsCheckboxContainer');
+    if (!container) return;
+    const cat = currentEditingCategorie();
+    const labels = labelsConfig[cat] || [];
+    if (labels.length === 0) {
+        container.innerHTML = '<em style="color:#8899aa;font-size:0.85rem;">Aucun label secondaire disponible. Utilisez « Gérer les types & labels » pour en ajouter.</em>';
+        return;
+    }
+    const selectedSet = new Set(selectedLabels || []);
+    container.innerHTML = labels.map(label => {
+        const checked = selectedSet.has(label);
+        return `<label class="${checked ? 'checked' : ''}">
+            <input type="checkbox" data-label-value="${escapeHtml(label)}" ${checked ? 'checked' : ''}>
+            <span>${escapeHtml(label)}</span>
+        </label>`;
+    }).join('');
+    container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', (e) => {
+            e.target.closest('label').classList.toggle('checked', e.target.checked);
+        });
+    });
+}
+
+function getSelectedLabelsFromForm() {
+    return Array.from(
+        document.querySelectorAll('#labelsCheckboxContainer input[type="checkbox"]:checked')
+    ).map(cb => cb.dataset.labelValue);
 }
 
 async function geocodeAddress() {
@@ -2764,11 +3322,13 @@ function openHebergementModal(id) {
         f('fCouverts').value = item.couverts || 0;
         f('fDebutClassement').value = item.debutClassement ? dateToISO(item.debutClassement) : '';
         f('fFinClassement').value = item.finClassement ? dateToISO(item.finClassement) : '';
+        f('fNumeroEnregistrement').value = item.numeroEnregistrement || '';
         f('fLat').value = item.lat != null ? item.lat : '';
         f('fLon').value = item.lon != null ? item.lon : '';
         f('fPartenaire').checked = !!item.partenaire;
         f('fAccessible').checked = !!item.accessible;
         f('fLabelTH').checked = !!item.labelTH;
+        renderLabelsCheckboxes(item.labelsSecondaires || []);
     } else {
         document.getElementById('hebergementForm').reset();
         // Catégorie par défaut = currentCategorie
@@ -2786,6 +3346,7 @@ function openHebergementModal(id) {
         f('fPartenaire').checked = false;
         f('fAccessible').checked = false;
         f('fLabelTH').checked = false;
+        renderLabelsCheckboxes([]);
     }
 
     document.getElementById('hebergementModal').classList.add('show');
@@ -2799,7 +3360,8 @@ function openHebergementModal(id) {
 
 const FORM_FIELDS = ['fNom','fType','fVille','fAdresse1','fAdresse2','fCodePostal','fMail',
     'fCiviliteGest','fNomGest','fPrenomGest','fMailGest','fTelGest','fPortableGest',
-    'fClassement','fCapacite','fNbUnites','fCouverts','fDebutClassement','fFinClassement','fLat','fLon','fPartenaire','fAccessible','fLabelTH'];
+    'fClassement','fCapacite','fNbUnites','fCouverts','fDebutClassement','fFinClassement',
+    'fNumeroEnregistrement','fLat','fLon','fPartenaire','fAccessible','fLabelTH'];
 
 function getFormState() {
     const state = {};
@@ -2810,6 +3372,7 @@ function getFormState() {
     });
     const r = document.querySelector('input[name="fCategorie"]:checked');
     state.__categorie = r ? r.value : 'hebergement';
+    state.__labelsSecondaires = getSelectedLabelsFromForm().sort();
     return state;
 }
 
@@ -2881,7 +3444,9 @@ async function saveHebergement() {
         lon: f('fLon').value ? Number(f('fLon').value) : null,
         partenaire: f('fPartenaire').checked,
         accessible: f('fAccessible').checked || f('fLabelTH').checked,
-        labelTH: f('fLabelTH').checked
+        labelTH: f('fLabelTH').checked,
+        labelsSecondaires: getSelectedLabelsFromForm(),
+        numeroEnregistrement: f('fNumeroEnregistrement').value.trim()
     };
     if (isRest) {
         data.couverts = Number(f('fCouverts').value) || 0;
@@ -2890,6 +3455,7 @@ async function saveHebergement() {
         data.nbUnites = 1;
         data.debutClassement = null;
         data.finClassement = null;
+        data.numeroEnregistrement = ""; // non applicable aux restaurants
     } else {
         data.classement = f('fClassement').value || 'Non classé';
         data.capacite = Number(f('fCapacite').value) || 0;
@@ -3023,6 +3589,31 @@ function initTypeManage() {
     document.getElementById('addTypeRestBtn').addEventListener('click', () => addType('restaurant'));
     document.getElementById('newTypeHeb').addEventListener('keypress', (e) => { if (e.key === 'Enter') addType('hebergement'); });
     document.getElementById('newTypeRest').addEventListener('keypress', (e) => { if (e.key === 'Enter') addType('restaurant'); });
+    document.getElementById('addLabelHebBtn').addEventListener('click', () => addLabel('hebergement'));
+    document.getElementById('addLabelRestBtn').addEventListener('click', () => addLabel('restaurant'));
+    document.getElementById('newLabelHeb').addEventListener('keypress', (e) => { if (e.key === 'Enter') addLabel('hebergement'); });
+    document.getElementById('newLabelRest').addEventListener('keypress', (e) => { if (e.key === 'Enter') addLabel('restaurant'); });
+}
+
+async function addLabel(cat) {
+    const inputId = cat === 'hebergement' ? 'newLabelHeb' : 'newLabelRest';
+    const input = document.getElementById(inputId);
+    const value = input.value.trim();
+    if (!value) return;
+    if (labelsConfig[cat].includes(value)) { showToast("Ce label existe déjà", "error"); return; }
+    labelsConfig[cat] = [...labelsConfig[cat], value].sort((a,b) => a.localeCompare(b, 'fr'));
+    input.value = '';
+    await saveLabelsConfig();
+    showToast("Label ajouté", "success");
+    refreshTypeManageLists();
+}
+
+async function removeLabel(cat, label) {
+    if (!confirm(`Supprimer le label "${label}" ?\n\nLes établissements existants qui utilisent ce label ne seront pas supprimés.`)) return;
+    labelsConfig[cat] = labelsConfig[cat].filter(l => l !== label);
+    await saveLabelsConfig();
+    showToast("Label supprimé", "success");
+    refreshTypeManageLists();
 }
 
 function openTypeManageModal() {
@@ -3073,6 +3664,23 @@ function refreshTypeManageLists() {
     };
     renderList('listTypesHeb', typesConfig.hebergement, 'hebergement');
     renderList('listTypesRest', typesConfig.restaurant, 'restaurant');
+
+    const renderLabelsList = (containerId, list, cat) => {
+        const el = document.getElementById(containerId);
+        if (!el) return;
+        if (!list.length) {
+            el.innerHTML = '<em style="color:#8899aa;font-size:0.85rem;">Aucun label</em>';
+            return;
+        }
+        el.innerHTML = list.map(l =>
+            `<span class="badge" style="background:#fef3ec;color:#c9823f;">${escapeHtml(l)} <button data-remove-label data-cat="${cat}" data-label="${escapeHtml(l)}" style="background:none;border:none;color:#dc3545;cursor:pointer;margin-left:4px;padding:0;font-size:0.75rem;" title="Supprimer"><i class="fas fa-times"></i></button></span>`
+        ).join('');
+        el.querySelectorAll('[data-remove-label]').forEach(btn => {
+            btn.addEventListener('click', () => removeLabel(btn.dataset.cat, btn.dataset.label));
+        });
+    };
+    renderLabelsList('listLabelsHeb', labelsConfig.hebergement, 'hebergement');
+    renderLabelsList('listLabelsRest', labelsConfig.restaurant, 'restaurant');
 }
 
 /* === COURRIER === */
@@ -3098,19 +3706,112 @@ Bien cordialement,`
     };
 }
 
-function openLetterModal(item) {
-    const { subject, body } = generateLetter(item);
+function openLetterModal(item, mode = 'relance') {
+    currentLetterItem = item;
+    currentLetterMode = mode;
+
+    const isRelance = mode === 'relance';
+    const subjectEl = document.getElementById('letterSubject');
+    const bodyEl = document.getElementById('letterBody');
+    const titleEl = document.getElementById('letterModalTitleText');
+
     const finStr = item.finClassement ? item.finClassement.toLocaleDateString('fr-FR') : '—';
-    document.getElementById('letterContext').innerHTML =
-        `<strong>${escapeHtml(item.nom)}</strong> — ${escapeHtml(item.ville)} — ${escapeHtml(item.type)}<br>
-         <span style="font-size:0.85rem;color:#5b7a9a;">Fin de classement : ${finStr}</span>`;
-    document.getElementById('letterSubject').textContent = subject;
-    document.getElementById('letterBody').textContent = body;
+
+    if (isRelance) {
+        const { subject, body } = generateLetter(item);
+        subjectEl.value = subject;
+        bodyEl.value = body;
+        if (titleEl) titleEl.textContent = 'Courrier de relance';
+        document.getElementById('letterContext').innerHTML =
+            `<strong>${escapeHtml(item.nom)}</strong> — ${escapeHtml(item.ville)} — ${escapeHtml(item.type)}<br>
+             <span style="font-size:0.85rem;color:#5b7a9a;">Fin de classement : ${finStr}</span>`;
+    } else {
+        subjectEl.value = '';
+        bodyEl.value = '';
+        if (titleEl) titleEl.textContent = 'Envoyer un mail';
+        document.getElementById('letterContext').innerHTML =
+            `<strong>${escapeHtml(item.nom)}</strong> — ${escapeHtml(item.ville)} — ${escapeHtml(item.type)}<br>
+             <span style="font-size:0.85rem;color:#5b7a9a;">Rédigez librement votre message ci-dessous.</span>`;
+    }
+
     document.querySelectorAll('.copy-btn').forEach(btn => {
         btn.classList.remove('copied');
         btn.innerHTML = `<i class="fas fa-copy"></i> Copier`;
     });
+    document.querySelector('input[name="letterRecipient"][value="structure"]').checked = true;
+    updateLetterRecipientState();
     document.getElementById('letterModal').classList.add('show');
+
+    // Focus sur le premier champ vide (confort en mode générique)
+    setTimeout(() => {
+        if (!isRelance && !subjectEl.value) subjectEl.focus();
+    }, 100);
+}
+
+function updateLetterRecipientState() {
+    if (!currentLetterItem) return;
+    const item = currentLetterItem;
+    const hasStructure = isValidEmail(item.mail);
+    const hasGest = isValidEmail(item.mailGest);
+    const radios = document.querySelectorAll('input[name="letterRecipient"]');
+    radios.forEach(r => {
+        let available = false;
+        if (r.value === 'structure') available = hasStructure;
+        else if (r.value === 'gest') available = hasGest;
+        else if (r.value === 'both') available = hasStructure || hasGest;
+        r.disabled = !available;
+        r.parentElement.style.opacity = available ? '1' : '0.4';
+    });
+    const current = document.querySelector('input[name="letterRecipient"]:checked');
+    if (current && current.disabled) {
+        const available = Array.from(radios).find(r => !r.disabled);
+        if (available) available.checked = true;
+    }
+    const warning = document.getElementById('letterRecipientWarning');
+    const btn = document.getElementById('openMailBtn');
+    if (!hasStructure && !hasGest) {
+        warning.textContent = '⚠ Aucun email renseigné pour cette fiche. Utilisez « Tout copier ».';
+        warning.style.color = '#dc3545';
+        warning.style.display = 'block';
+        btn.disabled = true;
+    } else if (hasStructure && !hasGest) {
+        warning.textContent = 'ℹ Seul l\'email de la structure est renseigné.';
+        warning.style.color = '#2c6e9e';
+        warning.style.display = 'block';
+        btn.disabled = false;
+    } else if (!hasStructure && hasGest) {
+        warning.textContent = 'ℹ Seul l\'email du gestionnaire est renseigné.';
+        warning.style.color = '#2c6e9e';
+        warning.style.display = 'block';
+        btn.disabled = false;
+    } else {
+        warning.style.display = 'none';
+        btn.disabled = false;
+    }
+}
+
+function openSingleMail() {
+    if (!currentLetterItem) return;
+    const item = currentLetterItem;
+    const recipient = document.querySelector('input[name="letterRecipient"]:checked')?.value || 'structure';
+    const to = [];
+    if ((recipient === 'structure' || recipient === 'both') && isValidEmail(item.mail)) to.push(item.mail.trim());
+    if ((recipient === 'gest' || recipient === 'both') && isValidEmail(item.mailGest)) to.push(item.mailGest.trim());
+    if (to.length === 0) { showToast('Aucun email valide', 'error'); return; }
+    const subject = document.getElementById('letterSubject').value.trim();
+    const body = document.getElementById('letterBody').value.trim();
+    if (!subject && !body) {
+        showToast('Renseignez au moins un objet ou un corps de message', 'error');
+        return;
+    }
+    const url = `mailto:${to.map(encodeURIComponent).join(',')}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    try {
+        window.location.href = url;
+        showToast('Préparation de l\'email dans votre messagerie…', 'info', 3000);
+    } catch (err) {
+        console.error(err);
+        showToast('Impossible d\'ouvrir la messagerie. Utilisez « Tout copier ».', 'error', 5000);
+    }
 }
 
 function closeLetterModal() {
@@ -3143,20 +3844,172 @@ async function copyToClipboard(text, btnEl) {
 
 function initLetterFeature() {
     document.getElementById('closeLetterModal').addEventListener('click', closeLetterModal);
+    document.getElementById('openMailBtn').addEventListener('click', openSingleMail);
+    document.querySelectorAll('input[name="letterRecipient"]').forEach(r => {
+        r.addEventListener('change', updateLetterRecipientState);
+    });
     document.getElementById('closeLetterBtn').addEventListener('click', closeLetterModal);
     document.getElementById('letterModal').addEventListener('click', (e) => {
         if (e.target.id === 'letterModal') closeLetterModal();
     });
     document.querySelectorAll('.copy-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            copyToClipboard(document.getElementById(btn.dataset.copy).textContent, btn);
+            const el = document.getElementById(btn.dataset.copy);
+            const text = el.value !== undefined ? el.value : el.textContent;
+            if (!text || !text.trim()) {
+                showToast('Champ vide', 'info', 1500);
+                return;
+            }
+            copyToClipboard(text, btn);
         });
     });
     document.getElementById('copyAllBtn').addEventListener('click', (e) => {
-        const subj = document.getElementById('letterSubject').textContent;
-        const body = document.getElementById('letterBody').textContent;
+        const subj = document.getElementById('letterSubject').value.trim();
+        const body = document.getElementById('letterBody').value.trim();
+        if (!subj && !body) {
+            showToast('Rien à copier : les champs sont vides', 'error');
+            return;
+        }
         copyToClipboard(`Objet : ${subj}\n\n${body}`, e.currentTarget);
     });
+}
+/* === BULK MAIL === */
+function initBulkMail() {
+    const btn = document.getElementById('bulkMailBtn');
+    if (!btn) return;
+    btn.addEventListener('click', openBulkMailModal);
+    document.getElementById('closeBulkMailModal').addEventListener('click', closeBulkMailModal);
+    document.getElementById('cancelBulkMailBtn').addEventListener('click', closeBulkMailModal);
+    document.getElementById('bulkMailModal').addEventListener('click', (e) => {
+        if (e.target.id === 'bulkMailModal') closeBulkMailModal();
+    });
+    document.getElementById('toggleBulkRecipientsBtn').addEventListener('click', () => {
+        const list = document.getElementById('bulkMailRecipientsList');
+        const btn2 = document.getElementById('toggleBulkRecipientsBtn');
+        const isOpen = list.style.display !== 'none';
+        list.style.display = isOpen ? 'none' : 'block';
+        btn2.innerHTML = isOpen
+            ? '<i class="fas fa-chevron-down"></i> Voir la liste'
+            : '<i class="fas fa-chevron-up"></i> Masquer la liste';
+    });
+    document.querySelectorAll('input[name="bulkMailRecipient"]').forEach(r => {
+        r.addEventListener('change', updateBulkRecipients);
+    });
+    document.getElementById('copyBulkListBtn').addEventListener('click', async (e) => {
+        if (bulkMailRecipients.length === 0) return;
+        const list = bulkMailRecipients.map(r => r.email).join(', ');
+        await copyToClipboard(list, e.currentTarget);
+    });
+    document.getElementById('openBulkMailBtn').addEventListener('click', openBulkMail);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && document.getElementById('bulkMailModal').classList.contains('show')) {
+            closeBulkMailModal();
+        }
+    });
+}
+
+function openBulkMailModal() {
+    if (filteredData.length === 0) { showToast('Aucun résultat à contacter', 'info'); return; }
+    document.getElementById('bulkMailSubject').value = '';
+    document.getElementById('bulkMailBody').value = '';
+    document.getElementById('bulkMailRecipientsList').style.display = 'none';
+    document.getElementById('toggleBulkRecipientsBtn').innerHTML = '<i class="fas fa-chevron-down"></i> Voir la liste';
+    document.querySelector('input[name="bulkMailRecipient"][value="structure"]').checked = true;
+    updateBulkRecipients();
+    document.getElementById('bulkMailModal').classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeBulkMailModal() {
+    document.getElementById('bulkMailModal').classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+function updateBulkRecipients() {
+    const mode = document.querySelector('input[name="bulkMailRecipient"]:checked')?.value || 'structure';
+    const collected = new Map();
+    filteredData.forEach(item => {
+        const emails = [];
+        if ((mode === 'structure' || mode === 'both') && isValidEmail(item.mail)) emails.push(item.mail.trim().toLowerCase());
+        if ((mode === 'gest' || mode === 'both') && isValidEmail(item.mailGest)) emails.push(item.mailGest.trim().toLowerCase());
+        emails.forEach(email => {
+            if (!collected.has(email)) collected.set(email, { names: [], categories: new Set() });
+            collected.get(email).names.push(item.nom);
+            collected.get(email).categories.add(item.categorie);
+        });
+    });
+    bulkMailRecipients = Array.from(collected.entries()).map(([email, data]) => ({
+        email, names: data.names, categories: Array.from(data.categories)
+    })).sort((a, b) => a.email.localeCompare(b.email));
+
+    const withoutEmail = filteredData.filter(d => {
+        const hasStructure = isValidEmail(d.mail);
+        const hasGest = isValidEmail(d.mailGest);
+        if (mode === 'structure') return !hasStructure;
+        if (mode === 'gest') return !hasGest;
+        return !hasStructure && !hasGest;
+    }).length;
+
+    document.getElementById('bulkMailDestCount').textContent = bulkMailRecipients.length;
+
+    const hebCount = filteredData.filter(d => d.categorie === 'hebergement').length;
+    const restCount = filteredData.filter(d => d.categorie === 'restaurant').length;
+    let html = `<strong>${bulkMailRecipients.length} destinataire${bulkMailRecipients.length > 1 ? 's' : ''}</strong>`;
+    if (hebCount || restCount) {
+        html += ` — `;
+        const parts = [];
+        if (hebCount) parts.push(`${hebCount} hébergement${hebCount > 1 ? 's' : ''}`);
+        if (restCount) parts.push(`${restCount} restaurant${restCount > 1 ? 's' : ''}`);
+        html += parts.join(', ');
+    }
+    if (withoutEmail > 0) {
+        html += `<br><span style="color:#d97706; font-size:0.85rem;">⚠ ${withoutEmail} fiche${withoutEmail > 1 ? 's' : ''} sans email valide ${mode === 'both' ? '(ni structure ni gestionnaire)' : ''} ignorée${withoutEmail > 1 ? 's' : ''}</span>`;
+    }
+    if (bulkMailRecipients.length > 50) {
+        html += `<br><span style="color:#dc3545; font-size:0.85rem;"><strong>⚠ ${bulkMailRecipients.length} destinataires</strong> — au-delà de 50, certains logiciels de messagerie refusent d'ouvrir le lien. Utilisez plutôt « Copier la liste des emails ».</span>`;
+    }
+    if (bulkMailRecipients.length === 0) {
+        html += `<br><span style="color:#dc3545; font-size:0.85rem;">Aucun destinataire disponible.</span>`;
+    }
+    document.getElementById('bulkMailContext').innerHTML = html;
+
+    if (bulkMailRecipients.length === 0) {
+        document.getElementById('bulkMailRecipientsList').innerHTML = '<em style="color:#8899aa;">Aucun destinataire</em>';
+    } else {
+        document.getElementById('bulkMailRecipientsList').innerHTML = bulkMailRecipients.map(r => {
+            const label = r.names.length > 1 ? `${escapeHtml(r.names[0])} <span style="color:#8899aa; font-size:0.8rem;">(+${r.names.length - 1})</span>` : escapeHtml(r.names[0]);
+            return `<div style="padding:4px 0; border-bottom:1px solid #f1f5f9;"><i class="fas fa-check" style="color:#10b981; margin-right:6px;"></i><strong>${escapeHtml(r.email)}</strong> — ${label}</div>`;
+        }).join('');
+    }
+
+    const noRecipient = bulkMailRecipients.length === 0;
+    document.getElementById('openBulkMailBtn').disabled = noRecipient;
+    document.getElementById('copyBulkListBtn').disabled = noRecipient;
+}
+
+function openBulkMail() {
+    if (bulkMailRecipients.length === 0) return;
+    const subject = document.getElementById('bulkMailSubject').value.trim();
+    const body = document.getElementById('bulkMailBody').value.trim();
+    if (!subject && !body) { showToast('Renseignez au moins un objet ou un corps de message', 'error'); return; }
+    const bcc = bulkMailRecipients.map(r => r.email).join(',');
+    const url = `mailto:?bcc=${encodeURIComponent(bcc)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    if (url.length > 2000 && bulkMailRecipients.length > 20) {
+        if (!confirm(`Ce message compte ${bulkMailRecipients.length} destinataires et peut dépasser les limites de certains logiciels de messagerie.\n\nContinuer quand même ?`)) return;
+    }
+    try {
+        window.location.href = url;
+        showToast(`Préparation de l'email pour ${bulkMailRecipients.length} destinataire${bulkMailRecipients.length > 1 ? 's' : ''}…`, 'info', 3000);
+    } catch (err) {
+        console.error(err);
+        showToast('Impossible d\'ouvrir la messagerie. Utilisez « Copier la liste des emails ».', 'error', 5000);
+    }
+}
+
+function updateBulkMailCount() {
+    const count = document.getElementById('bulkMailCount');
+    if (!count) return;
+    count.textContent = filteredData.length;
 }
 
 /* === IMPORT CSV INITIAL === */
@@ -3175,6 +4028,9 @@ function parseRowForFirestore(row) {
     const acc = ['oui','1','true','yes','vrai'].includes(accRaw);
     const lblRaw = String(row[colMapping.labelTH] || '').trim().toLowerCase();
     const lblTH = ['oui','1','true','yes','vrai'].includes(lblRaw);
+    const labelsRaw = String(row[colMapping.labelsSecondaires] || '').trim();
+    const labelsSecondaires = labelsRaw ? labelsRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+    const numeroEnregistrement = (row[colMapping.numeroEnregistrement] || "").toString().trim();
 
     return {
         categorie,
@@ -3202,6 +4058,8 @@ function parseRowForFirestore(row) {
         partenaire,
         accessible: acc || lblTH,
         labelTH: lblTH,
+        labelsSecondaires,
+        numeroEnregistrement: categorie === 'restaurant' ? "" : numeroEnregistrement,
         actif: true
     };
 }
@@ -3570,6 +4428,108 @@ async function renderChoropleth(overlay, signal = null) {
 
     if (failedCount > 0) {
         showToast(`${failedCount} commune(s) sur ${totalCommunes} n'ont pas pu être chargées. Recliquez sur Choroplèthe pour retenter.`, "info", 6000);
+    }
+}
+
+/* === EXPORT EXCEL === */
+function exportToExcel(dataset, filenameSuffix = 'export') {
+    if (!dataset || !dataset.length) {
+        showToast("Aucune donnée à exporter", "info");
+        return;
+    }
+
+    const hebergements = dataset.filter(d => d.categorie === 'hebergement');
+    const restaurants = dataset.filter(d => d.categorie === 'restaurant');
+
+    const wb = XLSX.utils.book_new();
+
+    if (hebergements.length > 0) {
+        const rows = hebergements.map(d => ({
+            'Nom commercial': d.nom,
+            'Type': d.type,
+            'Ville': d.ville,
+            'Code postal': d.codePostal,
+            'Adresse': d.adresse1,
+            'Complément': d.adresse2,
+            'Email structure': d.mail,
+            'Civilité gestionnaire': d.civiliteGest,
+            'Nom gestionnaire': d.nomGest,
+            'Prénom gestionnaire': d.prenomGest,
+            'Email gestionnaire': d.mailGest,
+            'Téléphone fixe': d.telGest,
+            'Portable': d.portableGest,
+            'Classement': d.classement,
+            'Capacité (lits)': d.capacite,
+            'Nombre d\'unités': d.nbUnites,
+            'N° d\'enregistrement': d.numeroEnregistrement || '',
+            'Début classement': d.debutClassement ? dateToISO(d.debutClassement) : '',
+            'Fin classement': d.finClassement ? dateToISO(d.finClassement) : '',
+            'Partenaire': d.partenaire ? 'Oui' : 'Non',
+            'Accessible': d.accessible ? 'Oui' : 'Non',
+            'Label T&H': d.labelTH ? 'Oui' : 'Non',
+            'Labels secondaires': (d.labelsSecondaires || []).join(', '),
+            'Latitude': d.lat != null ? d.lat : '',
+            'Longitude': d.lon != null ? d.lon : '',
+            'Actif': d.actif ? 'Oui' : 'Non'
+        }));
+        const ws = XLSX.utils.json_to_sheet(rows);
+        ws['!cols'] = [
+            { wch: 32 }, { wch: 22 }, { wch: 18 }, { wch: 10 }, { wch: 28 }, { wch: 20 },
+            { wch: 28 }, { wch: 10 }, { wch: 20 }, { wch: 18 }, { wch: 28 }, { wch: 16 },
+            { wch: 16 }, { wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 20 },
+            { wch: 14 }, { wch: 14 }, { wch: 12 }, { wch: 12 }, { wch: 12 },
+            { wch: 30 }, { wch: 12 }, { wch: 12 }, { wch: 8 }
+        ];
+        XLSX.utils.book_append_sheet(wb, ws, 'Hébergements');
+    }
+
+    if (restaurants.length > 0) {
+        const rows = restaurants.map(d => ({
+            'Nom commercial': d.nom,
+            'Type': d.type,
+            'Ville': d.ville,
+            'Code postal': d.codePostal,
+            'Adresse': d.adresse1,
+            'Complément': d.adresse2,
+            'Email structure': d.mail,
+            'Civilité gestionnaire': d.civiliteGest,
+            'Nom gestionnaire': d.nomGest,
+            'Prénom gestionnaire': d.prenomGest,
+            'Email gestionnaire': d.mailGest,
+            'Téléphone fixe': d.telGest,
+            'Portable': d.portableGest,
+            'Nombre de couverts': d.couverts,
+            'Partenaire': d.partenaire ? 'Oui' : 'Non',
+            'Accessible': d.accessible ? 'Oui' : 'Non',
+            'Label T&H': d.labelTH ? 'Oui' : 'Non',
+            'Labels secondaires': (d.labelsSecondaires || []).join(', '),
+            'Latitude': d.lat != null ? d.lat : '',
+            'Longitude': d.lon != null ? d.lon : '',
+            'Actif': d.actif ? 'Oui' : 'Non'
+        }));
+        const ws = XLSX.utils.json_to_sheet(rows);
+        ws['!cols'] = [
+            { wch: 32 }, { wch: 22 }, { wch: 18 }, { wch: 10 }, { wch: 28 }, { wch: 20 },
+            { wch: 28 }, { wch: 10 }, { wch: 20 }, { wch: 18 }, { wch: 28 }, { wch: 16 },
+            { wch: 16 }, { wch: 16 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 30 },
+            { wch: 12 }, { wch: 12 }, { wch: 8 }
+        ];
+        XLSX.utils.book_append_sheet(wb, ws, 'Restaurants');
+    }
+
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const total = hebergements.length + restaurants.length;
+    const filename = `Observatoire_Conques-Marcillac_${filenameSuffix}_${total}_${y}-${m}-${day}.xlsx`;
+
+    try {
+        XLSX.writeFile(wb, filename);
+        showToast(`${total} fiche${total > 1 ? 's' : ''} exportée${total > 1 ? 's' : ''} en Excel`, "success", 3500);
+    } catch (err) {
+        console.error('[export] Erreur :', err);
+        showToast("Erreur export : " + err.message, "error", 5000);
     }
 }
 
